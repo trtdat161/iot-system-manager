@@ -1,0 +1,88 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\IoT-system-manager\\IoT-system\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|d:\\iot-system-manager\\iot-system\\iot-system\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|solutionrelative:iot-system\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|d:\\iot-system-manager\\iot-system\\iot-system\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|solutionrelative:iot-system\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|d:\\iot-system-manager\\iot-system\\iot-system\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|solutionrelative:iot-system\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|d:\\iot-system-manager\\iot-system\\iot-system\\converters\\dateconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45F8774B-5E49-4715-8DD2-9112A104AE7F}|IoT-system\\IoT-system.csproj|solutionrelative:iot-system\\converters\\dateconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\appsettings.json",
+              "RelativeDocumentMoniker": "IoT-system\\appsettings.json",
+              "ToolTip": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\appsettings.json",
+              "RelativeToolTip": "IoT-system\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-05T14:16:27.832Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DateConverters.cs",
+              "DocumentMoniker": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Converters\\DateConverters.cs",
+              "RelativeDocumentMoniker": "IoT-system\\Converters\\DateConverters.cs",
+              "ToolTip": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Converters\\DateConverters.cs",
+              "RelativeToolTip": "IoT-system\\Converters\\DateConverters.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-05T13:32:23.061Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Program.cs",
+              "RelativeDocumentMoniker": "IoT-system\\Program.cs",
+              "ToolTip": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Program.cs",
+              "RelativeToolTip": "IoT-system\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-05T13:31:07.231Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Message.cs",
+              "DocumentMoniker": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Message.cs",
+              "RelativeDocumentMoniker": "IoT-system\\Message.cs",
+              "ToolTip": "D:\\IoT-system-manager\\IoT-system\\IoT-system\\Message.cs",
+              "RelativeToolTip": "IoT-system\\Message.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-05T13:28:42.364Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>IoT_system</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Authentications\jwt\" />
+    <Folder Include="Authentications\form\" />
+    <Folder Include="Authentications\Bootstrap\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+    <Folder Include="DTOS\" />
+    <Folder Include="Midlewares\" />
+    <Folder Include="Mqtt\" />
+    <Folder Include="Services\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+</Project>
