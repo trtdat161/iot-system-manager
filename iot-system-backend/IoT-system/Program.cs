@@ -1,9 +1,10 @@
 ﻿using IoT_system.Converters;
+using IoT_system.Models;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 /* ======================================== BUILDER ==================================== */
-
 var builder = WebApplication.CreateBuilder(args);
 // add cors policy để sau này FE gọi được
 builder.Services.AddCors(option =>
@@ -19,6 +20,9 @@ builder.Services.AddControllers().AddJsonOptions(option =>
 {
     option.JsonSerializerOptions.Converters.Add(new DateConverters()); // my function convert
 });
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+builder.Services.AddDbContext<DatabaseContext>(option => option.UseLazyLoadingProxies().UseSqlServer(connectionString));
+
 // khai báo web api để sau dùng các services
 builder.Services.AddControllers();
 
@@ -26,7 +30,6 @@ builder.Services.AddControllers();
 
 
 /* ======================================== APP ==================================== */
-
 var app = builder.Build();
 // enable cors
 app.UseCors();

@@ -8,19 +8,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Authentications\jwt\" />
-    <Folder Include="Authentications\form\" />
-    <Folder Include="Authentications\Bootstrap\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
-    <Folder Include="DTOS\" />
-    <Folder Include="Midlewares\" />
-    <Folder Include="Mqtt\" />
-    <Folder Include="Resources\" />
-    <Folder Include="Services\" />
+    <Compile Remove="Authentications\**" />
+    <Compile Remove="Mqtt\**" />
+    <Content Remove="Authentications\**" />
+    <Content Remove="Mqtt\**" />
+    <EmbeddedResource Remove="Authentications\**" />
+    <EmbeddedResource Remove="Mqtt\**" />
+    <None Remove="Authentications\**" />
+    <None Remove="Mqtt\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Configurations\jwt\" />
+    <Folder Include="Configurations\mqtt\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+    <Folder Include="Midlewares\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
       <PrivateAssets>all</PrivateAssets>
