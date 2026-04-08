@@ -1,10 +1,11 @@
-﻿using IoT_system.Models;
+﻿using IoT_system.DTOS;
+using IoT_system.Models;
 
 namespace IoT_system.Services
 {
     public interface AccountServices
     {
-        public IResult Register(Account account);// iresult
-        public bool Login(string email, string password);
+        public Task<IResult> Register(AccountRegisterDtos dto);// iresult
+        public Task<IResult> Login(AccountLoginDtos dto);
     }
 }

@@ -15,25 +15,25 @@ public partial class Account
 
     public bool Status { get; set; }
 
-    public string? Note { get; set; }
+    public string? Note { get; set; }// null
 
-    public string Role { get; set; } = null!;
+    public string Role { get; set; } = null!;// understand null
 
-    public int? DeviceId { get; set; }
+    public int? DeviceId { get; set; }// null
 
     public int LanguageId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }// null
 
-    public DateTime? DeletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }// null
 
     public string? ResetToken { get; set; }
 
-    public DateTime? ResetTokenExpires { get; set; }
+    public DateTime? ResetTokenExpires { get; set; }// null
 
-    public virtual Device? Device { get; set; }
+    public virtual Device? Device { get; set; }// null
 
     public virtual Language Language { get; set; } = null!;
 

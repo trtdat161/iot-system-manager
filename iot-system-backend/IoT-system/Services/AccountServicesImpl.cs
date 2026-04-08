@@ -2,6 +2,7 @@
 using IoT_system.Models;
 using Mapster;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.RegularExpressions;
 
@@ -34,7 +35,7 @@ namespace IoT_system.Services
                 {
                     return Results.BadRequest("email không hợp lệ !");
                 }
-                if(dbContext.Accounts.Any(acc => acc.Email == dto.Email))// check email unique
+                if(await dbContext.Accounts.AnyAsync(acc => acc.Email == dto.Email))// check email unique
                 {
                     return Results.BadRequest("email này đã tồn tại !");
                 }
@@ -49,7 +50,7 @@ namespace IoT_system.Services
                 }
 
                 // cho user chọn ngôn ngữ khi đăng ký
-                if(!dbContext.Accounts.Any(acc => acc.LanguageId == dto.LanguageId))
+                if(!await dbContext.Languages.AnyAsync(l => l.Id == dto.LanguageId))
                 {
                     return Results.BadRequest("select your language !");
                 }
@@ -64,23 +65,74 @@ namespace IoT_system.Services
 
                 // save db
                 dbContext.Accounts.Add(account);
-                await dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync(); // insert thật vào db
 
                 // map đến AccountResponseDtos
                 var accountDto = account.Adapt<AccountResponseDtos>();// trả client sau khi regidter để có thể get ra các info user
                 return Results.Ok(accountDto);
+                /* ---- trả về dto với các field sạch thay vì trả về account chứa các field nhạy cảm,... ---- */
 
             }
             catch (Exception ex) {
                 return Results.BadRequest(new
                 {
-                    error = "error register"
+                    error = "error :"+ ex.Message,
                 });
             }
         }
-        public bool Login(string email, string password)
+        public async Task<IResult> Login(AccountLoginDtos dto)
         {
+            try
+            {
+                // email login
+                if (string.IsNullOrWhiteSpace(dto.Email))
+                {
+                    return Results.BadRequest("email không được để trống !");
+                }
+                if(!Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                {
+                    return Results.BadRequest("email không hợp lệ !");
+                }
+                // ko check email đã tồn tại vì nếu làm vậy sẽ ko bao h login đc
 
+                // password
+                if (string.IsNullOrWhiteSpace(dto.Password))
+                {
+                    return Results.BadRequest("không để trống passowrd !");
+                }
+                // ko check Regex vì nếu lỡ đủ patern nhưng sai pass thì cũng đi luôn nên chỉ check password rỗng
+
+                // check
+                var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == dto.Email && acc.Status == true);
+                if (account == null)
+                {
+                    return Results.BadRequest("sai email hoặc mật khẩu !");
+                }
+                // nếu ok chạy đc đến đây thì thực hiện tiếp
+                bool isValid = BCrypt.Net.BCrypt.Verify(dto.Password, account.Password);
+                if (!isValid)
+                {
+                    return Results.BadRequest("sai email hoặc mật khẩu !");
+                }
+                // done
+                return Results.Ok(new
+                {
+                    Msg_login = "login done"
+                });
+            }
+            catch(Exception ex)
+            {
+                return Results.BadRequest(new
+                {
+                    error = "error :" + ex.Message,
+                });
+            }
         }
     }
 }
+/*
+ => async - awati trong C# 
+
+ await = đợi kết quả
+ nhưng không bị “kẹt” trong lúc đợi
+ */
