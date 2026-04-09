@@ -1,5 +1,6 @@
 ﻿using IoT_system.Configurations.jwt;
 using IoT_system.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,11 +10,11 @@ namespace CaiderProject.Authen
 {
     public class JwtTokenServices
     {
-        private readonly JwtOptions _options;
+        private readonly JwtOptions options;
 
-        public JwtTokenServices(JwtOptions options)
+        public JwtTokenServices(IOptions<JwtOptions> _options)
         {
-            _options = options;// _options = dữ liệu từ appsettings.json
+            options = _options.Value;// _options = dữ liệu từ appsettings.json
         }
         /*
         - Nhận Account (user)
@@ -33,7 +34,7 @@ namespace CaiderProject.Authen
 
             // tạo mã khoá bí mật và convert sang byte vì thuật toán mã hóa chỉ hiểu byte
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_options.Key)
+                Encoding.UTF8.GetBytes(options.Key)
             );
 
             // tạo chữ ký chống giả mạo token
@@ -44,10 +45,10 @@ namespace CaiderProject.Authen
 
             // đây là  bước tạo (LẮP RAP TOKEN)
             var token = new JwtSecurityToken(
-                issuer: _options.Issuer,// ai phát hành token
-                audience: _options.Audience,// token dùng cho app nào
+                issuer: options.Issuer,// ai phát hành token
+                audience: options.Audience,// token dùng cho app nào
                 claims: claims,// DATA user
-                expires: DateTime.UtcNow.AddMinutes(_options.DurationInMinutes),// thời gian hết hạn dùng UTC để tránh lệch giờ
+                expires: DateTime.UtcNow.AddMinutes(options.DurationInMinutes),// thời gian hết hạn dùng UTC để tránh lệch giờ
                 signingCredentials: creds// chữ ký đã tạo ở trên
             );
 
