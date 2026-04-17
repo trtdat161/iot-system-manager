@@ -1,6 +1,6 @@
 ﻿using IoT_system.Models;
 
-namespace IoT_system.DTOS
+namespace IoT_system.DTOS.Accounts
 {
     // DTO này dùng để khi update profile account
     public class AccountUpldateDtos

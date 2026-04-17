@@ -14,7 +14,7 @@ namespace CaiderProject.Authen
 
         public JwtTokenServices(IOptions<JwtOptions> _options)
         {
-            options = _options.Value;// _options = dữ liệu từ appsettings.json
+            options = _options.Value;// inject vào dùng luôn mà ko cần đọc appsetting chỉ quan tâm “Key/Issuer/Audience/DurationInMinutes có sẵn”
         }
         /*
         - Nhận Account (user)
@@ -52,8 +52,8 @@ namespace CaiderProject.Authen
                 signingCredentials: creds// chữ ký đã tạo ở trên
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);// Convert token -> string vì token hiện là object C# HTTP chỉ gửi được string             
-          
+            // Convert token -> string vì token hiện là object C# HTTP chỉ gửi được string   
+            return new JwtSecurityTokenHandler().WriteToken(token);          
         }
     }
 }

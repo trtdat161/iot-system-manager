@@ -1,5 +1,7 @@
-﻿using IoT_system.Converters;
+﻿using IoT_system.Configurations.jwt;
 using IoT_system.Models;
+using IoT_system.Profiles;
+using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -16,20 +18,28 @@ builder.Services.AddCors(option =>
               .AllowAnyMethod();
     });
 });
-builder.Services.AddControllers().AddJsonOptions(option =>
-{
-    option.JsonSerializerOptions.Converters.Add(new DateConverters()); // my function convert
-});
+
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 builder.Services.AddDbContext<DatabaseContext>(option => option.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 // khai báo web api để sau dùng các services
 builder.Services.AddControllers();
 
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "Resources";
+});
+
 // services dưới đây ...
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddJwtAuthentication(builder.Configuration);// gọi vào toàn bộ các cấu hình trong JwtServicesExtensions
+builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
 
 
+// khai báo DTO
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 /* ======================================== APP ==================================== */
+
 var app = builder.Build();
 // enable cors
 app.UseCors();
@@ -48,10 +58,9 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     SupportedCultures = cultures,
     SupportedUICultures = cultures
 });
-app.UseSession();// cho phep dung session cho session len truoc midlewar thi moi co ma sai
-
-// ------- su dung midleware -------
-//app.UseMiddleware<>();// dua security len tren dau
+/* jwt */
+app.UseAuthentication();// use xác thực
+app.UseAuthorization();// use phân quyền
 
 app.MapControllerRoute(
     name: "default",

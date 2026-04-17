@@ -5,13 +5,13 @@ export function Register() {
     fullname: "",
     email: "",
     password: "",
-    language: "",
+    languageId: 0,
   });
   const [errors, setErrors] = useState({
     fullname: "",
     email: "",
     password: "",
-    language: "",
+    languageId: "",
   });
 
   // change
