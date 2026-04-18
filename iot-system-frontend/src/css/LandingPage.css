@@ -1,0 +1,719 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   LANDING PAGE STYLES - DTECH IoT Platform
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS VARIABLES ─── */
+
+:root {
+  --dt-bg: #060c18;
+  --dt-surface: #0b1628;
+  --dt-cyan: #00e5ff;
+  --dt-cyan-dim: #00b8d4;
+  --dt-cyan-glow: rgba(0, 229, 255, 0.15);
+  --dt-text: #e2eaf5;
+  --dt-muted: #7a90aa;
+  --dt-border: rgba(0, 229, 255, 0.18);
+  --dt-brand: "Orbitron", monospace;
+  --dt-body: "Rajdhani", sans-serif;
+}
+
+/* ─── RESET & BASE ─── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--dt-bg);
+  color: var(--dt-text);
+  font-family: var(--dt-body);
+  overflow-x: hidden;
+}
+
+/* ─── CIRCUIT BACKGROUND ─── */
+
+.dt-circuit-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dt-circuit-bg svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.07;
+}
+
+/* ─── PARTICLES ─── */
+
+.dt-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dtech-dot {
+  position: absolute;
+  background: var(--dt-cyan);
+  border-radius: 50%;
+  animation: dtFloatDot linear infinite;
+}
+
+@keyframes dtFloatDot {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1);
+    opacity: 0;
+  }
+}
+
+/* ─── BLINK ─── */
+
+@keyframes dtBlink {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 6px var(--dt-cyan);
+  }
+  50% {
+    opacity: 0.3;
+    box-shadow: none;
+  }
+}
+
+.dt-blink {
+  animation: dtBlink 1.4s ease-in-out infinite;
+}
+
+/* ─── BAR CHART ─── */
+
+@keyframes dtBarGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.dt-bar {
+  background: var(--dt-cyan);
+  opacity: 0.7;
+  border-radius: 2px 2px 0 0;
+  flex: 1;
+  animation: dtBarGrow 0.8s ease-out forwards;
+  transform-origin: bottom;
+}
+
+/* ─── SHIMMER on CTA ─── */
+
+@keyframes dtShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.dt-btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.dt-btn-primary:hover::after {
+  transform: translateX(100%);
+}
+
+/* ─── FEATURE CARD ─── */
+
+.dt-feature-card {
+  background: var(--dt-surface);
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  padding: 1.6rem;
+  height: 100%;
+  transition:
+    border-color 0.25s,
+    transform 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.dt-feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--dt-cyan);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.dt-feature-card:hover {
+  border-color: var(--dt-cyan);
+  transform: translateY(-4px);
+}
+
+.dt-feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ─── NAVBAR ─── */
+
+.dt-navbar {
+  background: rgba(6, 12, 24, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dt-border);
+  padding: 0.9rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.dt-brand {
+  font-family: var(--dt-brand);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--dt-cyan);
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+
+.dt-brand-white {
+  color: #fff;
+}
+
+.dt-brand-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--dt-cyan);
+  border-radius: 50%;
+  margin-left: 4px;
+}
+
+.dt-nav-link {
+  font-family: var(--dt-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dt-muted);
+  text-decoration: none;
+  padding: 0.3rem 0.8rem;
+  transition: color 0.2s;
+}
+
+.dt-nav-link:hover {
+  color: var(--dt-cyan);
+}
+
+/* ─── BUTTONS ─── */
+
+.dt-btn {
+  font-family: var(--dt-body);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  padding: 0.45rem 1.4rem;
+  border-radius: 2px;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dt-btn-outline {
+  border: 1px solid var(--dt-cyan);
+  color: var(--dt-cyan);
+  background: transparent;
+}
+
+.dt-btn-outline:hover {
+  background: var(--dt-cyan-glow);
+}
+
+.dt-btn-solid {
+  border: 1px solid var(--dt-cyan);
+  color: var(--dt-bg);
+  background: var(--dt-cyan);
+}
+
+.dt-btn-solid:hover {
+  background: var(--dt-cyan-dim);
+  border-color: var(--dt-cyan-dim);
+}
+
+/* ─── HERO BUTTONS ─── */
+
+.dt-hero-btn {
+  font-family: var(--dt-body);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  padding: 0.85rem 2.6rem;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dt-hero-btn-primary {
+  background: var(--dt-cyan);
+  color: var(--dt-bg);
+  border: none;
+}
+
+.dt-hero-btn-primary:hover {
+  transform: translateY(-2px);
+  background: var(--dt-cyan-dim);
+}
+
+.dt-hero-btn-secondary {
+  background: transparent;
+  color: var(--dt-cyan);
+  border: 1px solid var(--dt-border);
+}
+
+.dt-hero-btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--dt-cyan);
+  background: var(--dt-cyan-glow);
+}
+
+/* ─── HERO SECTION ─── */
+
+.dt-hero-section {
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 5rem 0 3rem;
+}
+
+.dt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid var(--dt-border);
+  border-radius: 2px;
+  padding: 0.3rem 1rem;
+  font-family: var(--dt-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dt-cyan);
+  margin-bottom: 1.6rem;
+}
+
+.dt-badge-dot {
+  width: 6px;
+  height: 6px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: dtBlink 1s infinite;
+}
+
+.dt-hero-title {
+  font-family: var(--dt-brand);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 1rem;
+}
+
+.dt-hero-title-main {
+  color: var(--dt-cyan);
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
+  display: block;
+  letter-spacing: 0.06em;
+}
+
+.dt-hero-title-sub {
+  color: #fff;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  opacity: 0.7;
+  display: block;
+  margin-top: 0.3rem;
+}
+
+.dt-hero-desc {
+  font-size: clamp(0.95rem, 2vw, 1.12rem);
+  color: var(--dt-muted);
+  line-height: 1.75;
+  max-width: 520px;
+  margin-bottom: 2.4rem;
+}
+
+.dt-hero-desc strong {
+  color: var(--dt-text);
+  font-weight: 600;
+}
+
+.dt-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.dt-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dt-stat-num {
+  font-family: var(--dt-brand);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dt-cyan);
+}
+
+.dt-stat-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dt-muted);
+}
+
+/* ─── FEATURES SECTION ─── */
+
+.dt-features-section {
+  position: relative;
+  z-index: 1;
+  padding: 5rem 0;
+  border-top: 1px solid var(--dt-border);
+}
+
+.dt-section-tag {
+  font-family: var(--dt-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dt-cyan);
+  margin-bottom: 0.8rem;
+}
+
+.dt-section-title {
+  font-family: var(--dt-brand);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.dt-section-title-highlight {
+  color: var(--dt-cyan);
+}
+
+.dt-section-desc {
+  color: var(--dt-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ─── CTA BANNER ─── */
+
+.dt-cta-banner {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 5rem;
+  padding: 4rem 0;
+  border-top: 1px solid var(--dt-border);
+  border-bottom: 1px solid var(--dt-border);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 229, 255, 0.04) 0%,
+    transparent 60%
+  );
+}
+
+.dt-cta-title {
+  font-family: var(--dt-brand);
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.dt-cta-desc {
+  font-size: 1rem;
+  color: var(--dt-muted);
+  max-width: 500px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ─── FOOTER ─── */
+
+.dt-footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--dt-border);
+  padding: 2rem 0;
+  background: var(--dt-surface);
+}
+
+.dt-footer-brand {
+  font-family: var(--dt-brand);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--dt-cyan);
+  letter-spacing: 0.1em;
+}
+
+.dt-footer-brand-dot {
+  color: #fff;
+}
+
+.dt-footer-desc {
+  font-size: 0.8rem;
+  color: var(--dt-muted);
+  margin-top: 0.3rem;
+  margin-bottom: 0;
+}
+
+.dt-footer-link {
+  font-size: 0.78rem;
+  color: var(--dt-muted);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+
+.dt-footer-link:hover {
+  color: var(--dt-cyan);
+}
+
+.dt-footer-copy {
+  font-size: 0.75rem;
+  color: var(--dt-muted);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ─── DASHBOARD MOCKUP ─── */
+
+.dt-dashboard {
+  background: var(--dt-surface);
+  border: 1px solid var(--dt-border);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow:
+    0 0 60px rgba(0, 229, 255, 0.07),
+    0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.dt-dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--dt-border);
+  background: rgba(0, 229, 255, 0.03);
+}
+
+.dt-dashboard-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dt-dashboard-title {
+  font-family: var(--dt-brand);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--dt-muted);
+  margin-left: auto;
+}
+
+.dt-dashboard-body {
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.dt-metric {
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+}
+
+.dt-metric-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dt-muted);
+  margin-bottom: 0.2rem;
+}
+
+.dt-metric-value {
+  font-family: var(--dt-brand);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dt-cyan);
+}
+
+.dt-metric-change {
+  font-size: 0.65rem;
+  margin-top: 0.1rem;
+}
+
+.dt-metric-change.positive {
+  color: #00ff88;
+}
+
+.dt-metric-change.warning {
+  color: #febc2e;
+}
+
+.dt-metric-change.error {
+  color: #ff5f57;
+}
+
+.dt-chart {
+  grid-column: 1 / -1;
+  background: rgba(0, 229, 255, 0.02);
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+}
+
+.dt-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 48px;
+  margin-top: 0.5rem;
+}
+
+.dt-devices {
+  grid-column: 1 / -1;
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+}
+
+.dt-device-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+}
+
+.dt-device-item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+}
+
+.dt-device-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dt-device-dot.online {
+  background: #00ff88;
+  animation: dtBlink 1s infinite;
+}
+
+.dt-device-dot.idle {
+  background: #febc2e;
+  animation: dtBlink 2s infinite;
+}
+
+.dt-device-name {
+  font-size: 0.68rem;
+  color: var(--dt-text);
+  flex: 1;
+  font-family: var(--dt-body);
+}
+
+.dt-device-value {
+  font-size: 0.68rem;
+  font-family: var(--dt-brand);
+  color: var(--dt-cyan);
+}
+
+/* ─── FEATURE ICON ─── */
+
+.dt-feature-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--dt-cyan-glow);
+  border: 1px solid var(--dt-border);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  color: var(--dt-cyan);
+}
+
+.dt-feature-title {
+  font-family: var(--dt-body);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 0.6rem;
+}
+
+.dt-feature-desc {
+  font-size: 0.87rem;
+  color: var(--dt-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 768px) {
+  .dt-badge {
+    margin-bottom: 1rem;
+  }
+  .dt-stats {
+    gap: 1.5rem;
+  }
+}

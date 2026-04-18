@@ -160,12 +160,12 @@ D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\ref\IoT-sy
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\BCrypt.Net-Core.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT-system.csproj.GenerateResource.cache
-D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Account.Message.resources
-D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Account.Message.en-US.resources
-D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Account.Message.vi-VN.resources
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\en-US\IoT-system.resources.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\vi-VN\IoT-system.resources.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\AutoMapper.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\en-US\IoT-system.resources.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\vi-VN\IoT-system.resources.dll
+D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Accounts.Message.resources
+D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Accounts.Message.en-US.resources
+D:\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT_system.Resources.Accounts.Message.vi-VN.resources

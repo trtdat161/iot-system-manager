@@ -4,7 +4,7 @@ using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IoT_system.Controllers
+namespace IoT_system.Controllers.Accounts
 {
     [Route("api/auth")]
     public class AccountController : ControllerBase // ko dùng Controller vì nó mặc định load cả mấy cái của view MVC => nặng
@@ -14,6 +14,20 @@ namespace IoT_system.Controllers
         public AccountController(AccountServices _accountServices)
         {
             accountServices = _accountServices;
+        }
+        [Produces("application/json")]// BE trả json
+        [HttpGet("accounts-list")]
+        public async Task<IActionResult> GetAccounts()
+        {
+            try
+            {
+                return Ok(await accountServices.FindAll());
+            }
+            catch (Exception ex) {
+                return BadRequest(new {
+                    error = ex.Message 
+                });
+            }
         }
 
         [AllowAnonymous]// AllowAnonymous vì làn đầu

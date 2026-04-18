@@ -55,12 +55,17 @@ namespace IoT_system.Services.Accounts
                 Path = "/"
             });
         }
+        // list account
+        public async Task<List<AccountResponseDtos>> FindAll()
+        {
+            
+            var accounts = await dbContext.Accounts.ToListAsync();
+            return mapper.Map<List<AccountResponseDtos>>(accounts);
+        }
 
         // ------------------ register ------------------
         public async Task<AccountResponseDtos> Register(AccountRegisterDtos accountRegisterDtos)// dto parameter
         {
-            try
-            {
                 // fullname
                 if (string.IsNullOrWhiteSpace(accountRegisterDtos.Fullname))
                 {
@@ -115,19 +120,12 @@ namespace IoT_system.Services.Accounts
                 var accountDto = mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
                 return accountDto;
                 /* ---- trả về dto với các field sạch thay vì trả về account chứa các field nhạy cảm,... ---- */
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("INNER: " + ex.InnerException?.Message);
-                throw;// ném lên cho controller xử lý
-            }
         }
+            
 
         // ------------------ login ------------------
         public async Task<AccountLoginResponseDtos> Login(AccountLoginDtos accountLoginDtos)
         {
-            try
-            {
                 // email login
                 if (string.IsNullOrWhiteSpace(accountLoginDtos.Email))
                 {
@@ -167,19 +165,12 @@ namespace IoT_system.Services.Accounts
                 {
                     Message = "LOGIN_SUCCESS"
                 };
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("INNER: " + ex.InnerException?.Message);
-                throw;// ném lên cho controller xử lý
-            }
         }
+            
 
         // logout 
         public AccountLogoutResponseDtos Logout()
         {
-            try
-            {
                 httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
                 {
                     /*
@@ -193,13 +184,7 @@ namespace IoT_system.Services.Accounts
                 {
                     Message = "LOGOUT_SUCCESS"
                 };
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine("INNER: " + ex.InnerException?.Message);
-                throw;// ném lên cho controller xử lý
-            }
-        }
+            }   
     }
 }
 /*

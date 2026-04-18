@@ -2,6 +2,7 @@
 using IoT_system.Models;
 using IoT_system.Profiles;
 using IoT_system.Services.Accounts;
+using IoT_system.Services.Languages;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -9,13 +10,16 @@ using System.Globalization;
 /* ======================================== BUILDER ==================================== */
 var builder = WebApplication.CreateBuilder(args);
 // add cors policy để sau này FE gọi được
-builder.Services.AddCors(option =>
+builder.Services.AddCors(options =>
 {
-    option.AddDefaultPolicy(policy =>
+    options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins("http:...")// demo tạm, lấy url FE js
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+                "http://localhost:5173" // dev FE
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // nếu có JWT cookie / auth
     });
 });
 
@@ -34,6 +38,7 @@ builder.Services.AddLocalization(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddJwtAuthentication(builder.Configuration);// gọi vào toàn bộ các cấu hình trong JwtServicesExtensions
 builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
+builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
 
 
 // khai báo DTO
@@ -42,7 +47,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 var app = builder.Build();
 // enable cors
-app.UseCors();
+app.UseCors("ReactApp");
 
 // khai bao ngon ngu
 var cultures = new CultureInfo[]

@@ -1,0 +1,374 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   AUTH FORMS STYLES - DTECH IoT Platform
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --dt-bg: #060c18;
+  --dt-surface: #0b1628;
+  --dt-cyan: #00e5ff;
+  --dt-cyan-dim: #00b8d4;
+  --dt-cyan-glow: rgba(0, 229, 255, 0.15);
+  --dt-text: #e2eaf5;
+  --dt-muted: #7a90aa;
+  --dt-border: rgba(0, 229, 255, 0.18);
+  --dt-error: #ff5f57;
+  --dt-success: #28c840;
+  --dt-warning: #febc2e;
+  --dt-body:
+    "Rajdhani", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ─── PAGE LAYOUT ─── */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dt-bg);
+  color: var(--dt-text);
+  font-family: var(--dt-body);
+  position: relative;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* Background effects */
+
+.auth-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(0, 229, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(0, 229, 255, 0.03) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 229, 255, 0.02) 2px,
+    rgba(0, 229, 255, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* ─── CONTAINER ─── */
+
+.auth-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card {
+  background: var(--dt-surface);
+  border: 1px solid var(--dt-border);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 229, 255, 0.1);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── HEADER ─── */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--dt-cyan);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--dt-muted);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ─── FORM ─── */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dt-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(11, 22, 40, 0.7);
+  border: 1px solid var(--dt-border);
+  border-radius: 8px;
+  color: var(--dt-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: var(--dt-muted);
+  opacity: 0.6;
+}
+
+.form-control:focus {
+  background: rgba(11, 22, 40, 0.95);
+  border-color: var(--dt-cyan);
+  box-shadow:
+    0 0 20px rgba(0, 229, 255, 0.2),
+    inset 0 0 10px rgba(0, 229, 255, 0.05);
+}
+
+.form-control.is-invalid {
+  border-color: var(--dt-error);
+}
+
+.form-control.is-invalid:focus {
+  box-shadow:
+    0 0 20px rgba(255, 95, 87, 0.2),
+    inset 0 0 10px rgba(255, 95, 87, 0.05);
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--dt-error);
+  margin-top: 0.25rem;
+}
+
+/* ─── ALERTS ─── */
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid;
+  margin: 0;
+}
+
+.alert-danger {
+  background: rgba(255, 95, 87, 0.1);
+  border-color: rgba(255, 95, 87, 0.3);
+  color: #ff9a92;
+}
+
+.alert-success {
+  background: rgba(40, 200, 64, 0.1);
+  border-color: rgba(40, 200, 64, 0.3);
+  color: #5fd17f;
+}
+
+/* ─── SUBMIT BUTTON ─── */
+
+.btn-submit {
+  padding: 0.9rem 1.5rem;
+  background: var(--dt-cyan);
+  border: 1px solid var(--dt-cyan);
+  border-radius: 8px;
+  color: var(--dt-bg);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--dt-cyan-dim);
+  border-color: var(--dt-cyan-dim);
+  box-shadow:
+    0 0 30px rgba(0, 229, 255, 0.4),
+    0 0 60px rgba(0, 229, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── FOOTER ─── */
+
+.auth-footer {
+  margin-top: 2rem;
+  border-top: 1px solid var(--dt-border);
+  padding-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--dt-muted);
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--dt-cyan);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.auth-link:hover {
+  color: var(--dt-cyan-dim);
+  text-decoration: underline;
+}
+
+/* Contact info */
+
+.contact-info {
+  margin-top: 1rem;
+}
+
+.contact-info p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.auth-contact-link {
+  color: var(--dt-cyan);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.auth-contact-link:hover {
+  color: var(--dt-cyan-dim);
+  text-decoration: underline;
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+  .auth-title {
+    font-size: 1.5rem;
+  }
+  .auth-subtitle {
+    font-size: 0.85rem;
+  }
+  .form-control {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  .btn-submit {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ─── UTILITY CLASSES ─── */
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 1rem;
+}
+
+.gap-4 {
+  gap: 1.5rem;
+}
