@@ -1,0 +1,26 @@
+{
+  "new_account": "Create new account",
+  "have_account": "Already have an account?",
+  "support": "Need support? Contact",
+  "fullname": "Full name",
+  "email": "Email",
+  "language": "Language",
+  "password": "Password",
+  "dont_have_account": "don't have an account yet",
+  "register": "Register",
+  "register_now": "register now",
+  "register_success": "Register success",
+  "login": "Login",
+  "login_subtitle": "Log in to the system",
+  "loading": "Loading...",
+  "errors": {
+    "fullname_required": "Please enter your full name",
+    "email_required": "Please enter your email",
+    "email_invalid": "Invalid email",
+    "password_required": "Please enter your password",
+    "password_min": "Password must be at least 6 characters",
+    "password_lowercase": "Password must contain at least 1 lowercase letter",
+    "password_uppercase": "Password must contain at least 1 uppercase letter",
+    "password_number": "Password must contain at least 1 number"
+  }
+}

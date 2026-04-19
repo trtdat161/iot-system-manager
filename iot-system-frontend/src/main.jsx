@@ -1,3 +1,6 @@
+import "./i18n.js"; // import main cho cả app sài đc
+
+/*---------------------------------*/
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 // import "./index.css";

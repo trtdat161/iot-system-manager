@@ -1,0 +1,26 @@
+{
+  "new_account": "Tạo tài khoản mới",
+  "have_account": "Đã có tài khoản?",
+  "support": "Cần hỗ trợ? Liên hệ",
+  "fullname": "Tên đầy đủ",
+  "email": "Email",
+  "language": "Ngôn ngữ",
+  "password": "Mật khẩu",
+  "dont_have_account": "Chua có tài khoản",
+  "register": "Đăng ký",
+  "register_now": "Đăng ký ngay",
+  "register_success": "Đăng ký thành công",
+  "login": "Đăng nhập",
+  "login_subtitle": "Đăng nhập vào hệ thống",
+  "loading": "Loading...",
+  "errors": {
+    "fullname_required": "Vui lòng nhập tên đầy đủ",
+    "email_required": "Vui lòng nhập email",
+    "email_invalid": "Email không hợp lệ",
+    "password_required": "Vui lòng nhập mật khẩu",
+    "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
+    "password_lowercase": "Mật khẩu phát ít nhất 1 chữ thường",
+    "password_uppercase": "Mật khẩu phát ít nhất 1 chữ hoa",
+    "password_number": "Mật khẩu phải ít nhất 1 chữ số"
+  }
+}

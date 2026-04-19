@@ -10,7 +10,8 @@ namespace IoT_system.Profiles
         public MappingProfiles() {
 
             // ------- Account ------
-            CreateMap<Account, AccountResponseDtos>();
+            CreateMap<Account, AccountResponseDtos>()
+                .ForMember(dest => dest.LanguageCode, opt => opt.MapFrom(src => src.Language.Code));
             CreateMap<AccountRegisterDtos, Account>();
             CreateMap<AccountUpldateDtos, Account>();
 

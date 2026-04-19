@@ -114,6 +114,9 @@ namespace IoT_system.Services.Accounts
                 dbContext.Accounts.Add(account);
                 await dbContext.SaveChangesAsync(); // insert thật vào db
 
+                // load lại account kèm Language vì sau insert navigation property chưa được load
+                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync();
+
                 GenerateJwt(account);
 
                 // dùng account thật đã register map đến AccountResponseDtos trả về cho client
@@ -163,7 +166,8 @@ namespace IoT_system.Services.Accounts
                 // done
                 return new AccountLoginResponseDtos
                 {
-                    Message = "LOGIN_SUCCESS"
+                    Message = "LOGIN_SUCCESS",
+                    LanguageCode = account.Language.Code
                 };
         }
             
