@@ -1,6 +1,6 @@
-﻿namespace IoT_system.DTOS.languages
+﻿namespace IoT_system.DTOS.Languages
 {
-    public class LanguageResponseDtos // dto trả về language
+    public class LanguageResponseDtoscs
     {
         public int Id { get; set; }
 

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using IoT_system.DTOS.languages;
+using IoT_system.DTOS.Languages;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +17,10 @@ namespace IoT_system.Services.Languages
             mapper = _mapper;
         }
 
-        public async Task<List<LanguageResponseDtos>> FindAll()
+        public async Task<List<LanguageResponseDtoscs>> FindAll()
         {
-            var languages = await dbContext.Languages.ToListAsync();
-            return mapper.Map<List<LanguageResponseDtos>>(languages);
+            var languages = await dbContext.Languages.AsNoTracking().ToListAsync();
+            return mapper.Map<List<LanguageResponseDtoscs>>(languages);
         }
     }
 }

@@ -53,9 +53,14 @@ export function Login() {
     try {
       const response = await LoginAction(form); // form
       const user = response.data;
+      const { role } = response.data; // Lấy role từ response.data
       i18n.changeLanguage(user.languageCode);
       localStorage.setItem("lang", user.languageCode);
-      navigate("/dashboard");
+      if (role === "admin") {
+        navigate("/dashboard-admin");
+      } else {
+        navigate("/dashboard-user");
+      }
       /*
       login cũng phải set lại vì
       User đăng ký chọn tiếng Anh => localStorage lưu "en-US" ok
@@ -117,16 +122,18 @@ export function Login() {
                 />
               </div>
 
-              {/* Error */}
-              {errors.form && (
-                <div className="alert alert-danger">{errors.form}</div>
-              )}
-
               {/* Submit Button */}
               <button type="submit" className="btn-submit" disabled={loading}>
                 {loading ? t("loading") : t("login")}
               </button>
             </form>
+
+            {/* Error */}
+            {errors.form && (
+              <div className="alert alert-danger text-center mt-3">
+                {errors.form}
+              </div>
+            )}
 
             {/* Footer */}
             <div className="auth-footer">

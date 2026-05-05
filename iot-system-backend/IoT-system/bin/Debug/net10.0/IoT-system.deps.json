@@ -18,14 +18,6 @@
         },
         "runtime": {
           "IoT-system.dll": {}
-        },
-        "resources": {
-          "en-US/IoT-system.resources.dll": {
-            "locale": "en-US"
-          },
-          "vi-VN/IoT-system.resources.dll": {
-            "locale": "vi-VN"
-          }
         }
       },
       "AutoMapper/12.0.1": {

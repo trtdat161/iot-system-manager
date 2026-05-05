@@ -1,4 +1,5 @@
 ﻿using IoT_system.Configurations.jwt;
+using IoT_system.Configurations.midleware;
 using IoT_system.Models;
 using IoT_system.Profiles;
 using IoT_system.Services.Accounts;
@@ -29,10 +30,6 @@ builder.Services.AddDbContext<DatabaseContext>(option => option.UseLazyLoadingPr
 // khai báo web api để sau dùng các services
 builder.Services.AddControllers();
 
-builder.Services.AddLocalization(options =>
-{
-    options.ResourcesPath = "Resources";
-});
 
 // services dưới đây ...
 builder.Services.AddHttpContextAccessor();
@@ -49,20 +46,9 @@ var app = builder.Build();
 // enable cors
 app.UseCors("ReactApp");
 
-// khai bao ngon ngu
-var cultures = new CultureInfo[]
-{
-    // vi-VN, en-US, (tạo mảng chưa chứa 2 ngôn ngữ)
-    new CultureInfo("vi-VN"),
-    new CultureInfo("en-US"),
-};
-app.UseRequestLocalization(new RequestLocalizationOptions
-{
-    // cau hinh ngon ngu mac dinh
-    DefaultRequestCulture = new RequestCulture(cultures[0]),
-    SupportedCultures = cultures,
-    SupportedUICultures = cultures
-});
+/* midleware */
+app.UseExceptionMiddleware();
+
 /* jwt */
 app.UseAuthentication();// use xác thực
 app.UseAuthorization();// use phân quyền

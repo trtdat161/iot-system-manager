@@ -1,3 +1,3 @@
 import { axiosInstance } from "./axiosInstance";
 
-export const GetAccounts = () => axiosInstance.get("auth/accounts-list");
+export const GetAccounts = () => axiosInstance.get("action/accounts-list");

@@ -21,6 +21,7 @@ namespace CaiderProject.Authen
         - Tạo thông tin (claims)
         - Ký token bằng key bí mật
         - Trả về chuỗi JWT
+        - (generate token với Role)
         */
         public string GenerateToken(Account account)// nhận paramoter từ account trả về jwt...
         {
@@ -29,7 +30,7 @@ namespace CaiderProject.Authen
                 new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
                 new Claim(ClaimTypes.Email, account.Email),
                 new Claim(ClaimTypes.Name, account.Fullname),
-                new Claim(ClaimTypes.Role, account.Role)
+                new Claim(ClaimTypes.Role, account.Role) 
             };
 
             // tạo mã khoá bí mật và convert sang byte vì thuật toán mã hóa chỉ hiểu byte

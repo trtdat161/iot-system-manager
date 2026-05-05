@@ -90,10 +90,15 @@ export function Register() {
     try {
       const response = await RegisterAction(form); // thuộc tính data từ object response
       const user = response.data;
+      const { role } = response.data; // Lấy role từ response.data
       console.log("user response:", user);
       i18n.changeLanguage(user.languageCode); // languageCode là hàm mặc định của i18n
       localStorage.setItem("lang", user.languageCode);
-      navigate("/login"); // sau này vô dashboard
+      if (role === "admin") {
+        navigate("/dashboard-admin");
+      } else {
+        navigate("/dashboard-user");
+      }
     } catch (err) {
       console.log("error:", { form: err.message });
       setErrors({ form: "Đăng nhập thất bại" });
@@ -203,15 +208,17 @@ export function Register() {
                 )}
               </div>
 
-              {/* Form Error */}
-              {errors.form && (
-                <div className="alert alert-danger">{errors.form}</div>
-              )}
-
               {/* Submit Button */}
               <button type="submit" className="btn-submit" disabled={loading}>
                 {loading ? t("loading") : t("login")}
               </button>
+
+              {/* Form Error */}
+              {errors.form && (
+                <div className="alert alert-danger text-center mt-3">
+                  {errors.form}
+                </div>
+              )}
             </form>
 
             {/* Footer */}

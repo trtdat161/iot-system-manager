@@ -8,7 +8,7 @@ namespace IoT_system.Configurations.jwt
 {
     public static class JwtServicesExtensions
     {
-        // =============> cấu hình authen midleware, ko cần viết api midlerare riêng nữa    
+        // =============> cấu hình authen midleware chp app, ko cần viết api midlerare riêng nữa    
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration) {
 
             // đăng ký jwtOption -> validate ngay khi app khởi động

@@ -22,6 +22,13 @@ namespace IoT_system.Controllers.Languages
             {
                 return Ok(await languageServices.FindAll());
             }
+            catch (BadHttpRequestException ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
             catch (Exception ex) {
                 return BadRequest(new
                 {

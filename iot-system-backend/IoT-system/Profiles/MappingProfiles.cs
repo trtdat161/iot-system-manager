@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using IoT_system.DTOS.Accounts;
-using IoT_system.DTOS.languages;
+using IoT_system.DTOS.Languages;
 using IoT_system.Models;
 
 namespace IoT_system.Profiles
@@ -16,7 +16,7 @@ namespace IoT_system.Profiles
             CreateMap<AccountUpldateDtos, Account>();
 
             // ------- Language -----
-            CreateMap<Language, LanguageResponseDtos>();
+            CreateMap<Language, LanguageResponseDtoscs>();
         }
     }
 }
