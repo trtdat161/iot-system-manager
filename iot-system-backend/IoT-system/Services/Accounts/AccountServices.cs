@@ -8,10 +8,10 @@ namespace IoT_system.Services.Accounts
     {
         public Task<List<AccountResponseDtos>> ListOfAccounts();// dashboard admin list user
         public Task<AccountResponseDtos> FindAccountById(int id);// find by id
-        public Task<AccountResponseDtos> LockAccountById(int id);// khoá tk
+        public Task<AccountResponseDtos> LockAccountById(int id, string note);// khoá tk
         public Task<AccountResponseDtos> OpenAccountById(int id);// Mở tk
 
-        // -----------------------------------------------------
+        // --------------------------- auth --------------------------
         public Task<AccountResponseDtos> Register(AccountRegisterDtos dto);// iresult
         public Task<AccountLoginResponseDtos> Login(AccountLoginDtos dto);
         public AccountLogoutResponseDtos Logout();

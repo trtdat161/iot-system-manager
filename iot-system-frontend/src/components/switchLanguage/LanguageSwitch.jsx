@@ -1,3 +1,4 @@
+import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function LanguageSwitcher() {
@@ -9,9 +10,21 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div>
-      <button onClick={() => changeLanguage("vi")}>🇻🇳 VI</button>
-      <button onClick={() => changeLanguage("en")}>🇬🇧 EN</button>
+    <div className="flex gap-2">
+      <button
+        onClick={() => changeLanguage("vi-VN")}
+        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+      >
+        <Globe size={18} />
+        VI
+      </button>
+      <button
+        onClick={() => changeLanguage("en-US")}
+        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+      >
+        <Globe size={18} />
+        EN
+      </button>
     </div>
   );
 }

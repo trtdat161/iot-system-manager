@@ -1,0 +1,15 @@
+{
+  "name": "Name",
+  "email": "Email",
+  "created_at": "Created",
+  "status": "Status",
+  "actions": "Actions",
+  "active": "Active",
+  "locked": "Locked",
+  "lock": "Lock",
+  "unlock": "Unlock",
+  "delete": "Delete",
+  "delete_account": "Delete Account",
+  "manage_users": "Manage Users",
+  "lock_account": "Lock"
+}

@@ -13,6 +13,7 @@
   "login": "Login",
   "login_subtitle": "Log in to the system",
   "loading": "Loading...",
+  "select_language": "Select language",
   "errors": {
     "fullname_required": "Please enter your full name",
     "email_required": "Please enter your email",
@@ -21,6 +22,8 @@
     "password_min": "Password must be at least 6 characters",
     "password_lowercase": "Password must contain at least 1 lowercase letter",
     "password_uppercase": "Password must contain at least 1 uppercase letter",
-    "password_number": "Password must contain at least 1 number"
+    "password_number": "Password must contain at least 1 number",
+    "language_required": "Please select a language",
+    "login_failed": "Login failed"
   }
 }

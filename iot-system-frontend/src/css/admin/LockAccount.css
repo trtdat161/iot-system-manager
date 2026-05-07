@@ -1,0 +1,536 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOCK ACCOUNT FORM STYLES - Admin Panel
+   Theme: Light Cyan with Red Action Buttons
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --lock-bg: #0f2847;
+  --lock-surface: #1a3f5a;
+  --lock-cyan: #00e5ff;
+  --lock-cyan-dim: #00b8d4;
+  --lock-cyan-glow: rgba(0, 229, 255, 0.15);
+  --lock-danger: #ff6b6b;
+  --lock-danger-dim: #ff5252;
+  --lock-text: #e2eaf5;
+  --lock-muted: #8fa3b8;
+  --lock-border: rgba(0, 229, 255, 0.22);
+  --lock-body:
+    "Rajdhani", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ─── PAGE LAYOUT ─── */
+
+.lock-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lock-bg);
+  color: var(--lock-text);
+  font-family: var(--lock-body);
+  position: relative;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* Background effects */
+
+.lock-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(0, 229, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(0, 229, 255, 0.03) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lock-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 229, 255, 0.02) 2px,
+    rgba(0, 229, 255, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* ─── CONTAINER ─── */
+
+.lock-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 500px;
+}
+
+.lock-card {
+  background: var(--lock-surface);
+  border: 1px solid var(--lock-border);
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 229, 255, 0.1);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── HEADER ─── */
+
+.lock-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--lock-border);
+}
+
+.lock-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--lock-cyan);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.lock-title::before {
+  content: "⚠️";
+  font-size: 1.5rem;
+}
+
+.lock-subtitle {
+  font-size: 0.85rem;
+  color: var(--lock-muted);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ─── USER INFO SECTION ─── */
+
+.user-info-section {
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px solid var(--lock-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.user-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+.user-info-item:last-child {
+  border-bottom: none;
+}
+
+.user-info-label {
+  font-size: 0.9rem;
+  color: var(--lock-muted);
+  font-weight: 500;
+}
+
+.user-info-value {
+  font-size: 0.95rem;
+  color: var(--lock-text);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+/* ─── FORM ─── */
+
+.lock-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.lock-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lock-form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--lock-text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lock-form-input,
+.lock-form-textarea {
+  padding: 0.875rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--lock-border);
+  border-radius: 6px;
+  color: var(--lock-text);
+  font-family: var(--lock-body);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.lock-form-input:focus,
+.lock-form-textarea:focus {
+  outline: none;
+  border-color: var(--lock-cyan);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.lock-form-input::placeholder,
+.lock-form-textarea::placeholder {
+  color: var(--lock-muted);
+  opacity: 0.7;
+}
+
+.lock-form-input:read-only {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--lock-muted);
+  cursor: not-allowed;
+}
+
+/* ─── ERROR MESSAGE ─── */
+
+.lock-error {
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid var(--lock-danger);
+  border-radius: 6px;
+  color: #ff9999;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: shake 0.3s ease-in-out;
+}
+
+.lock-error::before {
+  content: "❌";
+  font-size: 1rem;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* ─── SUCCESS MESSAGE ─── */
+
+.lock-success {
+  padding: 1rem;
+  background: rgba(40, 200, 64, 0.15);
+  border: 1px solid #28c840;
+  border-radius: 6px;
+  color: #66ff99;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lock-success::before {
+  content: "✅";
+  font-size: 1rem;
+}
+
+/* ─── BUTTONS ─── */
+
+.lock-button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.lock-btn {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  font-family: var(--lock-body);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lock-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lock-btn:hover::before {
+  opacity: 1;
+}
+
+/* Primary Button - Lock Account (Danger) */
+
+.lock-btn-danger {
+  background: linear-gradient(
+    135deg,
+    var(--lock-danger) 0%,
+    var(--lock-danger-dim) 100%
+  );
+  color: #fff;
+  box-shadow:
+    0 4px 15px rgba(255, 107, 107, 0.3),
+    0 0 20px rgba(255, 107, 107, 0.2);
+}
+
+.lock-btn-danger:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 25px rgba(255, 107, 107, 0.4),
+    0 0 30px rgba(255, 107, 107, 0.3);
+}
+
+.lock-btn-danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.lock-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Secondary Button - Cancel */
+
+.lock-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--lock-border);
+  color: var(--lock-muted);
+  transition: all 0.3s ease;
+}
+
+.lock-btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: var(--lock-danger);
+  color: var(--lock-text);
+}
+
+/* ─── CONFIRMATION MODAL ─── */
+
+.lock-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+.lock-modal-content {
+  background: var(--lock-surface);
+  border: 2px solid var(--lock-danger);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 107, 107, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lock-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.lock-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--lock-danger);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 1px;
+}
+
+.lock-modal-message {
+  color: var(--lock-text);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.lock-modal-username {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--lock-border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  color: var(--lock-danger);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.lock-modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.lock-modal-btn {
+  flex: 1;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--lock-body);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.lock-modal-btn-confirm {
+  background: linear-gradient(
+    135deg,
+    var(--lock-danger) 0%,
+    var(--lock-danger-dim) 100%
+  );
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.lock-modal-btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 107, 107, 0.4);
+}
+
+.lock-modal-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--lock-border);
+  color: var(--lock-muted);
+}
+
+.lock-modal-btn-cancel:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: var(--lock-danger);
+  color: var(--lock-text);
+}
+
+/* ─── LOADING STATE ─── */
+
+.lock-loading {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--lock-border);
+  border-top-color: var(--lock-danger);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 600px) {
+  .lock-card {
+    padding: 1.5rem;
+  }
+  .lock-title {
+    font-size: 1.5rem;
+  }
+  .lock-button-group {
+    flex-direction: column;
+  }
+  .lock-modal-content {
+    margin: 1rem;
+    max-width: 90%;
+  }
+}

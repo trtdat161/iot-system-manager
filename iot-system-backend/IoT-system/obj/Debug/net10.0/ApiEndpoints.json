@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "ContainingType": "AccountAuthController",
+    "Method": "LoginAccount",
+    "RelativePath": "api/auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "account",
+        "Type": "IoT_system.DTOS.Accounts.AccountLoginDtos",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AccountAuthController",
+    "Method": "LogoutAccount",
+    "RelativePath": "api/auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AccountAuthController",
+    "Method": "RegisterAccount",
+    "RelativePath": "api/auth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "account",
+        "Type": "IoT_system.DTOS.Accounts.AccountRegisterDtos",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

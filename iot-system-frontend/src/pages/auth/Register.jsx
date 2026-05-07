@@ -4,6 +4,7 @@ import "../../css/Auth.css";
 import { GetLanguages } from "../../api/languageApi";
 import { RegisterAction } from "../../api/authApi";
 import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "../../components/switchLanguage/LanguageSwitch";
 
 export function Register() {
   const { t, i18n } = useTranslation("register_login"); // t("key") => trả ra string theo ngôn ngữ hiện tại
@@ -74,7 +75,7 @@ export function Register() {
     }
 
     if (!form.languageId) {
-      newErrors.languageId = "Vui lòng chọn ngôn ngữ";
+      newErrors.languageId = t("errors.language_required");
     }
 
     setErrors(newErrors); // set lỗi nếu có
@@ -101,7 +102,7 @@ export function Register() {
       }
     } catch (err) {
       console.log("error:", { form: err.message });
-      setErrors({ form: "Đăng nhập thất bại" });
+      setErrors({ form: t("errors.register_failed") });
     } finally {
       setLoading(false);
     }
@@ -122,6 +123,9 @@ export function Register() {
             <form onSubmit={handleSubmit} className="auth-form">
               {/* Fullname */}
               <div className="form-group">
+                {/* <div>
+                  <LanguageSwitcher />
+                </div> */}
                 <label htmlFor="fullname" className="form-label">
                   {t("fullname")}
                 </label>
@@ -191,7 +195,7 @@ export function Register() {
                   onChange={handleChange}
                 >
                   <option value={0} className="text-center">
-                    Chọn ngôn ngữ
+                    {t("select_language")}
                   </option>
                   {languages.map((lang) => (
                     <option
@@ -210,7 +214,7 @@ export function Register() {
 
               {/* Submit Button */}
               <button type="submit" className="btn-submit" disabled={loading}>
-                {loading ? t("loading") : t("login")}
+                {loading ? t("loading") : t("register")}
               </button>
 
               {/* Form Error */}

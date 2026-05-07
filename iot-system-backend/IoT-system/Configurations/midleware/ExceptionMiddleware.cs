@@ -17,7 +17,7 @@ namespace IoT_system.Configurations.midleware
 
         public async Task Invoke(HttpContext httpContext)// add async
         {
-
+            // Mỗi request đi vào server sẽ phải chạy qua từng middleware trước.
             try
             {
                 await _next(httpContext);
@@ -26,7 +26,7 @@ namespace IoT_system.Configurations.midleware
                 await HandleException(httpContext, ex);
             }
         }
-        // tạo methed bắt lỗi toàn hệ thống (GIẢM VIỆC try catch)
+        // tạo methed bắt lỗi toàn hệ thống (GIẢM VIỆC try catch ở controllers)
         private static Task HandleException(HttpContext httpContext, Exception ex)
         {
             httpContext.Response.ContentType = "application/json";// response là json => Đây là header HTTP: Content - Type: application / json

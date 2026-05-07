@@ -13,6 +13,7 @@
   "login": "Đăng nhập",
   "login_subtitle": "Đăng nhập vào hệ thống",
   "loading": "Loading...",
+  "select_language": "Chọn ngôn ngữ",
   "errors": {
     "fullname_required": "Vui lòng nhập tên đầy đủ",
     "email_required": "Vui lòng nhập email",
@@ -21,6 +22,8 @@
     "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
     "password_lowercase": "Mật khẩu phát ít nhất 1 chữ thường",
     "password_uppercase": "Mật khẩu phát ít nhất 1 chữ hoa",
-    "password_number": "Mật khẩu phải ít nhất 1 chữ số"
+    "password_number": "Mật khẩu phải ít nhất 1 chữ số",
+    "language_required": "Vui lòng chọn ngôn ngữ",
+    "login_failed": "Đăng nhập thất bại"
   }
 }

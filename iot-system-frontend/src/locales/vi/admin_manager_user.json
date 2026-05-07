@@ -1,0 +1,15 @@
+{
+  "name": "Tên",
+  "email": "Email",
+  "created_at": "Ngày tạo",
+  "status": "Trạng thái",
+  "actions": "Thao tác",
+  "active": "Hoạt động",
+  "locked": "Đã khoá",
+  "lock": "Khoá",
+  "unlock": "Mở khoá",
+  "delete": "Xoá",
+  "delete_account": "Xoá tài khoản",
+  "manage_users": "Quản lý người dùng",
+  "lock_account": "Khoá"
+}

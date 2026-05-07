@@ -20,26 +20,36 @@ namespace IoT_system.Controllers.Accounts
         [HttpGet("accounts-list")]
         public async Task<IActionResult> GetAccounts()
         {
-             return Ok(await accountServices.ListOfAccounts());
+            var result = await accountServices.ListOfAccounts();
+             return Ok(result);
         }
 
-        // find by id admin
-        [Authorize(Roles = "admin")]
-        [Produces("application/json")]
-        [HttpGet("account-detail/{id}")]
-        public async Task<IActionResult> GetUserByIdForAdmin(int id) {
-            
-             return Ok(await accountServices.FindAccountById(id));
-        }
-
-        // find by id user
-        [Authorize(Roles = "user")]
-        [Produces("application/json")]
-        [HttpGet("account-detail/{id}")]
-        public async Task<IActionResult> GetUserByIdForUser(int id)
+        // khoả tk
+        [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
+        [Produces("application/json")]// BE trả json
+        [HttpPost("accounts-lock/{id}")]
+        public async Task<IActionResult> LockAccount(int id, string note)
         {
-
-            return Ok(await accountServices.FindAccountById(id));
+            var result = await accountServices.LockAccountById(id, note);
+            return Ok(result);
         }
+        // find by id admin
+        //[Authorize(Roles = "admin")]
+        //[Produces("application/json")]
+        //[HttpGet("account-detail/{id}")]
+        //public async Task<IActionResult> GetUserByIdForAdmin(int id) {
+
+        //     return Ok(await accountServices.FindAccountById(id));
+        //}
+
+        //// find by id user
+        //[Authorize(Roles = "user")]
+        //[Produces("application/json")]
+        //[HttpGet("account-detail/{id}")]
+        //public async Task<IActionResult> GetUserByIdForUser(int id)
+        //{
+
+        //    return Ok(await accountServices.FindAccountById(id));
+        //}
     }
 }

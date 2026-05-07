@@ -65,7 +65,7 @@ namespace IoT_system.Services.Accounts
             var accounts = await dbContext.Accounts.Where(a => a.DeletedAt == null).AsNoTracking().ToListAsync();
             return mapper.Map<List<AccountResponseDtos>>(accounts);
         }
-        // detail
+        // find by id
         public async Task<AccountResponseDtos> FindAccountById(int id)
         {
             if(id <= 0)// ko chấp nhận số âm or 0
@@ -81,18 +81,19 @@ namespace IoT_system.Services.Accounts
             return mapper.Map<AccountResponseDtos>(account);
         }
         // khoá tk
-        public async Task<AccountResponseDtos> LockAccountById(int id)
+        public async Task<AccountResponseDtos> LockAccountById(int id, string note)
         {
             if(id <= 0)
             {
                 throw new BadHttpRequestException("id invalid !");
             }
-            var account = dbContext.Accounts.FirstOrDefault(a => a.Id == id);
+            var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id);
             if(account == null)
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
             account.Status = false;
+            account.Note = note;
             await dbContext.SaveChangesAsync(); // lưu thay đổi sau khí khoá
             return mapper.Map<AccountResponseDtos>(account);
         }
@@ -103,7 +104,7 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("id invalid !");
             }
-            var account = dbContext.Accounts.FirstOrDefault(a => a.Id == id);
+            var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id);
             if (account == null)
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
@@ -168,7 +169,7 @@ namespace IoT_system.Services.Accounts
                 await dbContext.SaveChangesAsync(); // insert thật vào db
 
                 // load lại account kèm Language vì sau insert navigation property chưa được load
-                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync();
+                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //l oad thêm data Language cho account
 
                 GenerateJwt(account);
 

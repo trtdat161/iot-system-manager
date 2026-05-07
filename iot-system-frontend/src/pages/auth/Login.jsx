@@ -54,7 +54,7 @@ export function Login() {
       const response = await LoginAction(form); // form
       const user = response.data;
       const { role } = response.data; // Lấy role từ response.data
-      i18n.changeLanguage(user.languageCode);
+      i18n.changeLanguage(user.languageCode); // render lại đúng ngôn ngữ đã chọn ở lúc register
       localStorage.setItem("lang", user.languageCode);
       if (role === "admin") {
         navigate("/dashboard-admin");
@@ -67,11 +67,11 @@ export function Login() {
       User xoá cache / dùng máy khác / mở tab ẩn danh
       => localStorage trống => i18n fallback "vi-VN" X
       User login => BE trả về languageCode "en-US"
-      => set lại localStorage =? đúng ngôn ngữ 
+      => set lại localStorage => đúng ngôn ngữ 
       */
     } catch (err) {
       console.log("error:", form);
-      setErrors({ form: "Đăng nhập thất bại" });
+      setErrors({ form: t("errors.login_failed") });
     } finally {
       setLoading(false);
     }
@@ -104,6 +104,9 @@ export function Login() {
                   value={form.email}
                   onChange={handleChange}
                 />
+                {errors.email && (
+                  <div className="form-error">{errors.email}</div>
+                )}
               </div>
 
               {/* Password */}
@@ -120,6 +123,9 @@ export function Login() {
                   value={form.password}
                   onChange={handleChange}
                 />
+                {errors.password && (
+                  <div className="form-error">{errors.password}</div>
+                )}
               </div>
 
               {/* Submit Button */}
