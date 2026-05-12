@@ -9,6 +9,7 @@
         public int Id { get; set; }
         public string Fullname { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public string? Note { get; set; }// null
         public DateTime CreatedAt { get; set; }
         public bool Status { get; set; }
         public int LanguageId { get; set; }

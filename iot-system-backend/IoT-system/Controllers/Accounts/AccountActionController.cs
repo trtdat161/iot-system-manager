@@ -33,6 +33,17 @@ namespace IoT_system.Controllers.Accounts
             var result = await accountServices.LockAccountById(id, note);
             return Ok(result);
         }
+
+        // mớ tk
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpPost("account-unlock/{id}")]
+        public async Task<IActionResult> UnlockAccount(int id)
+        {
+            var result = await accountServices.OpenAccountById(id);
+            return Ok(result);
+        }
+
         // find by id admin
         //[Authorize(Roles = "admin")]
         //[Produces("application/json")]

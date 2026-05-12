@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AdminLockAccount, GetAccounts } from "../../api/accountApi";
+import {
+  AdminLockAccount,
+  AdminUnlockAccount,
+  GetAccounts,
+} from "../../api/accountApi";
 import "../../css/admin/LockAccount.css";
+import { useTranslation } from "react-i18next";
 
 export function LockAccount() {
+  const { t, i18n } = useTranslation("admin_manager_user");
+
   const [user, setUser] = useState(null);
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
@@ -51,15 +58,27 @@ export function LockAccount() {
     setError("");
 
     try {
-      const response = await AdminLockAccount(id, reason);
+      const statusAccount = user.status; // biến check status để gọi api tương ứng
 
-      if (response.data) {
-        setSuccess("Account locked successfully!");
-        setTimeout(() => {
-          navigate("/manager-user");
-        }, 1500);
+      if (statusAccount) {
+        // nếu true thì gọi api khoá
+        const response = await AdminLockAccount(id, reason);
+        if (response.data) {
+          setSuccess("Account unlocked successfully!");
+          setTimeout(() => {
+            navigate("/manager-user");
+          }, 1500);
+        } else {
+          setError("Failed to lock account!");
+        }
       } else {
-        setError("Failed to lock account!");
+        // néu false thì gọi api mở
+        const response = await AdminUnlockAccount(id);
+        if (response.data) {
+          navigate("/manager-user");
+        } else {
+          setError("Failed to unlock account!");
+        }
       }
     } catch (err) {
       console.error("Lock error:", err);
@@ -134,35 +153,47 @@ export function LockAccount() {
             <form onSubmit={handleSubmit} className="lock-form">
               <div className="lock-form-group">
                 <label htmlFor="reason" className="lock-form-label">
-                  Reason for Locking
+                  {t("reason_lock")}
                 </label>
                 <textarea
                   id="reason"
                   className="lock-form-textarea"
-                  value={reason}
+                  value={reason || user.note}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Enter the reason for locking this account (optional)"
                   disabled={loading}
                 />
               </div>
+              {/* Buttons lock và unlock */}
 
-              {/* Buttons */}
               <div className="lock-button-group">
-                <button
-                  type="submit"
-                  className="lock-btn lock-btn-danger"
-                  disabled={loading}
-                >
-                  {loading && <span className="lock-loading"></span>}
-                  {!loading && "Lock Account"}
-                </button>
+                {user.status === true ? (
+                  <button
+                    type="submit"
+                    className="lock-btn lock-btn-danger"
+                    disabled={loading}
+                  >
+                    {loading && <span className="lock-loading"></span>}
+                    {!loading && t("lock")}
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="lock-btn lock-btn-success"
+                    disabled={loading}
+                  >
+                    {loading && <span className="lock-loading"></span>}
+                    {!loading && t("unlock")}
+                  </button>
+                )}
+
                 <button
                   type="button"
                   className="lock-btn lock-btn-cancel"
                   onClick={handleCancel}
                   disabled={loading}
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </form>
@@ -190,7 +221,7 @@ export function LockAccount() {
                 className="lock-modal-btn lock-modal-btn-confirm"
                 onClick={handleConfirmLock}
               >
-                Yes, Lock It
+                {user.status === true ? t("yes_lock") : t("yes_unlock")}
               </button>
               <button
                 className="lock-modal-btn lock-modal-btn-cancel"

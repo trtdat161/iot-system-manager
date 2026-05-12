@@ -4,15 +4,15 @@
 ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --lock-bg: #0f2847;
-  --lock-surface: #1a3f5a;
+  --lock-bg: #01408d;
+  --lock-surface: #0f619c;
   --lock-cyan: #00e5ff;
-  --lock-cyan-dim: #00b8d4;
+  --lock-cyan-dim: #0edfff;
   --lock-cyan-glow: rgba(0, 229, 255, 0.15);
   --lock-danger: #ff6b6b;
   --lock-danger-dim: #ff5252;
-  --lock-text: #e2eaf5;
-  --lock-muted: #8fa3b8;
+  --lock-text: #f1f7ff;
+  --lock-muted: #b6c5d5;
   --lock-border: rgba(0, 229, 255, 0.22);
   --lock-body:
     "Rajdhani", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

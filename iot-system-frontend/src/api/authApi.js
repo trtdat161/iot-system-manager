@@ -5,3 +5,5 @@ export const RegisterAction = (data) =>
 
 export const LoginAction = (data) => axiosInstance.post("auth/login", data);
 // file này chỉ gọi axios và export, còn k có j khác
+
+export const LogoutAccount = () => axiosInstance.post("auth/logout");

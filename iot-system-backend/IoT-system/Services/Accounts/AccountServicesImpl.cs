@@ -233,10 +233,17 @@ namespace IoT_system.Services.Accounts
                 httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
                 {
                     /*
-                     HttpOnly, Secure, SameSite, Expires — 
-                     những cái này là thuộc tính bảo mật của cookie, chỉ có ý nghĩa khi tạo cookie
-                     nên khi logout và xoá thì ko cần gọi lại các thuộc tính trên
+                     do SameSiteMode.None
+                     => nên phải khai báo lại SameSiteMode.None là:
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.None,
+
+                    => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
                      */
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,  // <- bắt buộc phải có
                     Path = "/"// trỏ vào cookie đó
                 });
                 return new AccountLogoutResponseDtos

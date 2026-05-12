@@ -1,0 +1,67 @@
+/* ===== Base button ===== */
+
+.btn {
+  border-radius: 7px !important;
+  font-weight: 500;
+  transition: all 0.2s ease !important;
+  border-width: 1.5px !important;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* ===== LOCK ===== */
+
+.btn-outline-primary {
+  background-color: rgba(13, 110, 253, 0.12) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+}
+
+/* ===== UNLOCK ===== */
+
+.btn-outline-warning {
+  background-color: rgba(255, 193, 7, 0.15) !important;
+}
+
+.btn-outline-warning:hover {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+/* ===== DELETE ===== */
+
+.btn-outline-danger {
+  background-color: rgba(220, 53, 69, 0.12) !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+}
+
+/* ===== ADMIN EDIT riêng màu tím ===== */
+
+.admin-edit {
+  background-color: rgba(76, 58, 237, 0.12) !important;
+  border-color: #6221d2 !important;
+  color: #7c3aed !important;
+}
+
+.admin-edit:hover {
+  background-color: #7c3aed !important;
+  border-color: #7c3aed !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
