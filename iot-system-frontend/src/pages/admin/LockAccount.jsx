@@ -66,7 +66,7 @@ export function LockAccount() {
         if (response.data) {
           setSuccess("Account unlocked successfully!");
           setTimeout(() => {
-            navigate("/manager-user");
+            navigate("/frame-layout/manager-user");
           }, 1500);
         } else {
           setError("Failed to lock account!");
@@ -75,7 +75,7 @@ export function LockAccount() {
         // néu false thì gọi api mở
         const response = await AdminUnlockAccount(id);
         if (response.data) {
-          navigate("/manager-user");
+          navigate("/frame-layout/manager-user");
         } else {
           setError("Failed to unlock account!");
         }
@@ -89,7 +89,7 @@ export function LockAccount() {
   };
 
   const handleCancel = () => {
-    navigate("/manager-user");
+    navigate("/frame-layout/manager-user");
   };
 
   if (isLoadingUser) {

@@ -33,6 +33,7 @@ namespace IoT_system.Configurations.midleware
 
             int statusCode = ex switch // switch expression (C# hiện đại)
             {
+                BadHttpRequestException => StatusCodes.Status400BadRequest, // request ko đc do bị khoá hay sao đó...
                 ArgumentOutOfRangeException => StatusCodes.Status400BadRequest,// input sai
                 KeyNotFoundException => StatusCodes.Status404NotFound,// không tìm thấy
                 _ => StatusCodes.Status500InternalServerError// _ trường hợp còn lại lỗi hệ thống,...
@@ -43,7 +44,7 @@ namespace IoT_system.Configurations.midleware
             return httpContext.Response.WriteAsJsonAsync(new // Ghi JSON xuống response body
             {
                 status = statusCode,
-                error = ex.Message
+                error = ex.Message // FE sẽ đọc field này
             });
         }
     }

@@ -8,6 +8,6 @@ export const axiosInstance = axios.create({
 
 // cấu hình ngôn ngữ
 axiosInstance.interceptors.request.use((config) => {
-  config.headers["Accept-Language"] = localStorage.getItem("lang") || "vi-VN";
+  config.headers["Accept-Language"] = localStorage.getItem("lang") || "en-US";
   return config;
 });

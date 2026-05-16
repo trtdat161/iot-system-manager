@@ -44,6 +44,16 @@ namespace IoT_system.Controllers.Accounts
             return Ok(result);
         }
 
+        // xoá tài khoản
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpDelete("delete-account/{id}")]
+        public async Task<IActionResult> RemoveAccount(int id)
+        {
+            var result = await accountServices.DeleteAccount(id);
+            return Ok(result);
+        }
+
         // find by id admin
         //[Authorize(Roles = "admin")]
         //[Produces("application/json")]

@@ -87,8 +87,8 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("id invalid !");
             }
-            var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id);
-            if(account == null)
+            var account = await dbContext.Accounts.FindAsync(id);
+            if (account == null)
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
@@ -104,7 +104,7 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("id invalid !");
             }
-            var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id);
+            var account = await dbContext.Accounts.FindAsync(id);
             if (account == null)
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
@@ -117,6 +117,23 @@ namespace IoT_system.Services.Accounts
             await dbContext.SaveChangesAsync(); // lưu thay đổi sau khí khoá
             return mapper.Map<AccountResponseDtos>(account);
         }
+
+        // xoá tài khoản(soft delete để sau còn lưu đc lịch sử của user đó, thống kê, thuộc thiết bị nào...)
+        public async Task<bool> DeleteAccount(int id)
+        {
+            if(id <= 0)
+            {
+                throw new BadHttpRequestException("id invalid !");
+            }
+            var account = await dbContext.Accounts.FindAsync(id);
+            if(account == null)
+            {
+                throw new BadHttpRequestException($"not found account id = {id}!");
+            }
+            account.DeletedAt = DateTime.UtcNow; // không cần await vì nó chỉ đánh dấu
+            return await dbContext.SaveChangesAsync() > 0;
+        }
+
         // ------------------ register ------------------
         public async Task<AccountResponseDtos> Register(AccountRegisterDtos accountRegisterDtos)// dto parameter
         {
@@ -176,7 +193,6 @@ namespace IoT_system.Services.Accounts
                 // dùng account thật đã register map đến AccountResponseDtos trả về cho client
                 var accountDto = mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
                 return accountDto;
-                /* ---- trả về dto với các field sạch thay vì trả về account chứa các field nhạy cảm,... ---- */
         }
             
 
@@ -201,13 +217,17 @@ namespace IoT_system.Services.Accounts
                 }// ko check Regex vì nếu lỡ đủ patern nhưng sai pass thì cũng đi luôn nên chỉ check password rỗng
 
 
-                // check
-                var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email && acc.Status == true);
-                if (account == null)
+                // ------- check tồn tại tk trước -------
+                var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
+                if (account == null) 
                 {
                     throw new BadHttpRequestException("Email or password is incorrect");
                 }
-
+                // ------- rồi mới check status -------
+                if (!account.Status)
+                {
+                throw new BadHttpRequestException("ACCOUNT_LOCKED"); // FE dùng key này để check
+                }
                 bool isValid = BCrypt.Net.BCrypt.Verify(accountLoginDtos.Password, account.Password);
                 if (!isValid)
                 {
@@ -259,4 +279,8 @@ namespace IoT_system.Services.Accounts
 
  await = đợi kết quả
  nhưng không bị “kẹt” trong lúc đợi
+
+    (findAsync): 
+    thao tác với id là PK trong 1 số trường hợp dùng findAsync sẽ nhanh và tối ưu hơn firstOrDefault
+    do thao tác với id là PK trong 1 số trường hợp dùng findAsync sẽ nhanh và tối ưu hơn firstOrDefault
  */

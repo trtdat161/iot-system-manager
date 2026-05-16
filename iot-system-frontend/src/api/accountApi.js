@@ -10,3 +10,7 @@ export const AdminLockAccount = (id, note) =>
 // mở account
 export const AdminUnlockAccount = (id) =>
   axiosInstance.post(`action/account-unlock/${id}`);
+
+// xoá account
+export const DeleteAccount = (id) =>
+  axiosInstance.delete(`action/delete-account/${id}`);

@@ -52,14 +52,16 @@ export function Login() {
     setLoading(true);
     try {
       const response = await LoginAction(form); // form
-      const user = response.data;
-      const { role } = response.data; // Lấy role từ response.data
-      i18n.changeLanguage(user.languageCode); // render lại đúng ngôn ngữ đã chọn ở lúc register
-      localStorage.setItem("lang", user.languageCode);
-      if (role === "admin") {
-        navigate("/dashboard-admin");
-      } else {
-        navigate("/dashboard-user");
+      if (response.data.message === "LOGIN_SUCCESS") {
+        const user = response.data;
+        const { role } = response.data; // Lấy role từ response.data
+        i18n.changeLanguage(user.languageCode); // render lại đúng ngôn ngữ đã chọn ở lúc register
+        localStorage.setItem("lang", user.languageCode);
+        if (role === "admin") {
+          navigate("/frame-layout/dashboard-admin");
+        } else {
+          navigate("/dashboard-user");
+        }
       }
       /*
       login cũng phải set lại vì
@@ -71,7 +73,21 @@ export function Login() {
       */
     } catch (err) {
       console.log("error:", form);
-      setErrors({ form: t("errors.login_failed") });
+      const errorKey = err?.response?.data?.error;
+      if (errorKey === "ACCOUNT_LOCKED") {
+        setErrors({
+          form: t("errors.account_locked"),
+        });
+      } else {
+        setErrors({
+          form: t("errors.login_failed"),
+        });
+      }
+      /*
+      nếu Nếu err tồn tại -> lấy response, response tồn tại -> lấy data, data tồn tại ->
+      lấy error, còn không thì trả về undefined luôn, không crash
+      Nếu KHÔNG có ?. thì nếu 1 trong err và response và data undefine thì js báo lỗi...
+      */
     } finally {
       setLoading(false);
     }

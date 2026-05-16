@@ -1,5 +1,39 @@
 /* ===== Base button ===== */
 
+/* ===== OVERLAY ===== */
+
+.sure-delete-overlay {
+  position: fixed;
+  inset: 0;
+  /* top/right/bottom/left: 0 */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sure-delete {
+  /* bỏ position absolute cũ */
+  padding: 20px 24px;
+  border: 1px solid black;
+  background-color: #fdc50d;
+  border-radius: 12px;
+  color: rgb(74, 74, 74);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 220px;
+}
+
+.sure-delete-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* dialog xác nhận xoá */
+
 .btn {
   border-radius: 7px !important;
   font-weight: 500;
@@ -18,7 +52,7 @@
 /* ===== LOCK ===== */
 
 .btn-outline-primary {
-  background-color: rgba(13, 110, 253, 0.12) !important;
+  background-color: rgba(143, 154, 169, 0.12) !important;
 }
 
 .btn-outline-primary:hover {
@@ -48,20 +82,20 @@
 .btn-outline-danger:hover {
   background-color: #dc3545 !important;
   color: white !important;
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+  box-shadow: 0 4px 12px rgba(220, 49, 66, 0.25);
 }
 
 /* ===== ADMIN EDIT riêng màu tím ===== */
 
 .admin-edit {
-  background-color: rgba(76, 58, 237, 0.12) !important;
-  border-color: #6221d2 !important;
-  color: #7c3aed !important;
+  background-color: rgba(191, 170, 32, 0.12) !important;
+  border-color: #e9a112 !important;
+  color: #606055 !important;
 }
 
 .admin-edit:hover {
-  background-color: #7c3aed !important;
-  border-color: #7c3aed !important;
+  background-color: #e9a112 !important;
+  border-color: #e9a112 !important;
   color: white !important;
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }

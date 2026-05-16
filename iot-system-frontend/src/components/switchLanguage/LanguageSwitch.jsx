@@ -13,14 +13,14 @@ export function LanguageSwitcher() {
     <div className="flex gap-2">
       <button
         onClick={() => changeLanguage("vi-VN")}
-        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+        className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors"
       >
         <Globe size={18} />
         VI
       </button>
       <button
         onClick={() => changeLanguage("en-US")}
-        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+        className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors"
       >
         <Globe size={18} />
         EN
