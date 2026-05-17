@@ -1,5 +1,6 @@
 ﻿using IoT_system.Configurations.jwt;
 using IoT_system.Configurations.midleware;
+using IoT_system.Configurations.mqtt;
 using IoT_system.Models;
 using IoT_system.Profiles;
 using IoT_system.Services.Accounts;
@@ -36,6 +37,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddJwtAuthentication(builder.Configuration);// gọi vào toàn bộ các cấu hình trong JwtServicesExtensions
 builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
 builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
+// DI của mqtt IoT dùng Singleton vì chỉ cần 1 connection toàn app, giữ kết nối lâu dài
+builder.Services.AddSingleton<MqttClient>();
 
 
 // khai báo DTO
