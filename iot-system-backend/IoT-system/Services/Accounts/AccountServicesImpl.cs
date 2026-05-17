@@ -61,7 +61,7 @@ namespace IoT_system.Services.Accounts
         // list account for admin
         public async Task<List<AccountResponseDtos>> ListOfAccounts()
         {
-
+            // tolist nếu ko có record thì trả về [] nên ko cần check null
             var accounts = await dbContext.Accounts.Where(a => a.DeletedAt == null).AsNoTracking().ToListAsync();
             return mapper.Map<List<AccountResponseDtos>>(accounts);
         }
@@ -186,13 +186,12 @@ namespace IoT_system.Services.Accounts
                 await dbContext.SaveChangesAsync(); // insert thật vào db
 
                 // load lại account kèm Language vì sau insert navigation property chưa được load
-                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //l oad thêm data Language cho account
+                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //load thêm data Language cho account
 
                 GenerateJwt(account);
 
                 // dùng account thật đã register map đến AccountResponseDtos trả về cho client
-                var accountDto = mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
-                return accountDto;
+                return mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
         }
             
 

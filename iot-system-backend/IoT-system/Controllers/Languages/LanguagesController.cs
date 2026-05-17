@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace IoT_system.Controllers.Languages
 {
     [Route("api/language")]
-    public class LanguagesController : Controller
+    public class LanguagesController : ControllerBase
     {
         private readonly LanguageServices languageServices;
 

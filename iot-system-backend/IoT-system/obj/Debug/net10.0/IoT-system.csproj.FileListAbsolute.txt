@@ -161,3 +161,5 @@ D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\BCrypt.Net
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\AutoMapper.dll
 D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\MQTTnet.dll
+D:\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\MQTTnet.Extensions.ManagedClient.dll

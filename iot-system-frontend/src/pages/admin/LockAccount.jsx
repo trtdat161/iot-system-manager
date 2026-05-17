@@ -4,7 +4,7 @@ import {
   AdminLockAccount,
   AdminUnlockAccount,
   GetAccounts,
-} from "../../api/accountApi";
+} from "../../api/admin/accountApi";
 import "../../css/admin/LockAccount.css";
 import { useTranslation } from "react-i18next";
 

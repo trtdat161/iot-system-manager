@@ -1,5 +1,5 @@
 import { useEffect, useState, useTransition } from "react";
-import { DeleteAccount, GetAccounts } from "../../api/accountApi";
+import { DeleteAccount, GetAccounts } from "../../api/admin/accountApi";
 import {
   FaTrash,
   FaLock,

@@ -1,11 +1,11 @@
-import { axiosInstance } from "./axiosInstance";
+import { axiosInstance } from "../axiosInstance";
 
 // list account
-export const GetAccounts = () => axiosInstance.get("action/accounts-list");
+export const GetAccounts = () => axiosInstance.get("action/account-list");
 
 // khoá account
 export const AdminLockAccount = (id, note) =>
-  axiosInstance.post(`action/accounts-lock/${id}?note=${note}`);
+  axiosInstance.post(`action/account-lock/${id}?note=${note}`);
 
 // mở account
 export const AdminUnlockAccount = (id) =>

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IoT_system.Controllers.Accounts
 {
     [Route("api/action")]
-    public class AccountActionController : Controller
+    public class AccountActionController : ControllerBase
     {
         private readonly AccountServices accountServices;   
 
@@ -17,7 +17,7 @@ namespace IoT_system.Controllers.Accounts
         /* Authorize(Roles = "admin") là dòng chủ chốt để phân quyền */
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
-        [HttpGet("accounts-list")]
+        [HttpGet("account-list")]
         public async Task<IActionResult> GetAccounts()
         {
             var result = await accountServices.ListOfAccounts();
@@ -27,7 +27,7 @@ namespace IoT_system.Controllers.Accounts
         // khoả tk
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
-        [HttpPost("accounts-lock/{id}")]
+        [HttpPost("account-lock/{id}")]
         public async Task<IActionResult> LockAccount(int id, string note)
         {
             var result = await accountServices.LockAccountById(id, note);

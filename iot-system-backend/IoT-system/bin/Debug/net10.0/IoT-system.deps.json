@@ -10,6 +10,8 @@
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "BCrypt.Net-Core": "1.6.0",
+          "MQTTnet": "4.3.7.1207",
+          "MQTTnet.Extensions.ManagedClient": "4.3.7.1207",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.5",
           "Microsoft.EntityFrameworkCore": "10.0.5",
           "Microsoft.EntityFrameworkCore.Design": "10.0.5",
@@ -683,6 +685,25 @@
           }
         }
       },
+      "MQTTnet/4.3.7.1207": {
+        "runtime": {
+          "lib/net7.0/MQTTnet.dll": {
+            "assemblyVersion": "4.3.7.1207",
+            "fileVersion": "4.3.7.1207"
+          }
+        }
+      },
+      "MQTTnet.Extensions.ManagedClient/4.3.7.1207": {
+        "dependencies": {
+          "MQTTnet": "4.3.7.1207"
+        },
+        "runtime": {
+          "lib/net7.0/MQTTnet.Extensions.ManagedClient.dll": {
+            "assemblyVersion": "4.3.7.1207",
+            "fileVersion": "4.3.7.1207"
+          }
+        }
+      },
       "Newtonsoft.Json/13.0.3": {
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
@@ -1068,6 +1089,20 @@
       "sha512": "sha512-YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==",
       "path": "mono.texttemplating/3.0.0",
       "hashPath": "mono.texttemplating.3.0.0.nupkg.sha512"
+    },
+    "MQTTnet/4.3.7.1207": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ah7aHXoedWp5m5a4zy2u4phOEVj0QFYzOb5tFKQeV8RRBrxp+1QREF4ymZuG8D+hzB2dhtrrG81WxTFv0PzOeQ==",
+      "path": "mqttnet/4.3.7.1207",
+      "hashPath": "mqttnet.4.3.7.1207.nupkg.sha512"
+    },
+    "MQTTnet.Extensions.ManagedClient/4.3.7.1207": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-i7T+4dsBqy3VVvuDuh9mmTbeZwF7eYP+8rHir4rdriM+k2dGwDNuXrScpz6xI3mEBfJZTVno8zy8+r0zzmFQuQ==",
+      "path": "mqttnet.extensions.managedclient/4.3.7.1207",
+      "hashPath": "mqttnet.extensions.managedclient.4.3.7.1207.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",

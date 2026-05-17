@@ -30,22 +30,22 @@ const MENU_ITEMS = [
   {
     key: "devices",
     icon: <MdDevices size={18} />,
-    path: "/dashboard-admin/devices",
+    path: "/frame-layout/manager-device",
   },
   {
     key: "statistics",
     icon: <FaChartBar size={16} />,
-    path: "/dashboard-admin/statistics",
+    path: "/frame-layout/",
   },
   {
     key: "notifications",
     icon: <FaBell size={16} />,
-    path: "/dashboard-admin/notifications",
+    path: "/frame-layout/",
   },
   {
     key: "settings",
     icon: <FaCog size={16} />,
-    path: "/dashboard-admin/settings",
+    path: "/frame-layout/",
   },
 ];
 

@@ -17,10 +17,10 @@ namespace IoT_system.Services.Languages
             mapper = _mapper;
         }
 
-        public async Task<List<LanguageResponseDtoscs>> FindAll()
+        public async Task<List<LanguageResponseDtos>> FindAll()
         {
             var languages = await dbContext.Languages.AsNoTracking().ToListAsync();
-            return mapper.Map<List<LanguageResponseDtoscs>>(languages);
+            return mapper.Map<List<LanguageResponseDtos>>(languages);
         }
     }
 }

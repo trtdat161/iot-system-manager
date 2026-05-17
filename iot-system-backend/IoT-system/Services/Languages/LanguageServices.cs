@@ -4,6 +4,6 @@ namespace IoT_system.Services.Languages
 {
     public interface LanguageServices
     {
-        public Task<List<LanguageResponseDtoscs>> FindAll();
+        public Task<List<LanguageResponseDtos>> FindAll();
     }
 }
