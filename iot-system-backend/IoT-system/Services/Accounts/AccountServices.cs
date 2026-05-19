@@ -1,4 +1,5 @@
 ﻿using IoT_system.DTOS.Accounts;
+using IoT_system.DTOS.Common;
 using IoT_system.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +7,12 @@ namespace IoT_system.Services.Accounts
 {
     public interface AccountServices
     {
-        public Task<List<AccountResponseDtos>> ListOfAccounts();// dashboard admin list user
+        public Task<PagedResponseDtos<AccountResponseDtos>> ListOfAccounts(int page, int pageSize);// dashboard admin list user
         public Task<AccountResponseDtos> FindAccountById(int id);// find by id
         public Task<AccountResponseDtos> LockAccountById(int id, string note);// khoá tk
         public Task<bool> DeleteAccount(int id);
         public Task<AccountResponseDtos> OpenAccountById(int id);// Mở tk
+        public Task<List<AccountResponseDtos>> Search(string? keyword, bool? status); // search keyword
 
         // --------------------------- auth --------------------------
         public Task<AccountResponseDtos> Register(AccountRegisterDtos dto);// iresult

@@ -18,9 +18,9 @@ namespace IoT_system.Controllers.Accounts
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
         [HttpGet("account-list")]
-        public async Task<IActionResult> GetAccounts()
+        public async Task<IActionResult> GetAccounts([FromQuery] int page = 1, [FromQuery] int pageSize = 10) // FromQuery
         {
-            var result = await accountServices.ListOfAccounts();
+            var result = await accountServices.ListOfAccounts(page, pageSize);
              return Ok(result);
         }
 
@@ -54,23 +54,16 @@ namespace IoT_system.Controllers.Accounts
             return Ok(result);
         }
 
-        // find by id admin
-        //[Authorize(Roles = "admin")]
-        //[Produces("application/json")]
-        //[HttpGet("account-detail/{id}")]
-        //public async Task<IActionResult> GetUserByIdForAdmin(int id) {
-
-        //     return Ok(await accountServices.FindAccountById(id));
-        //}
-
-        //// find by id user
-        //[Authorize(Roles = "user")]
-        //[Produces("application/json")]
-        //[HttpGet("account-detail/{id}")]
-        //public async Task<IActionResult> GetUserByIdForUser(int id)
-        //{
-
-        //    return Ok(await accountServices.FindAccountById(id));
-        //}
+        // search 
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("search-account")]
+        public async Task<IActionResult> SeachAccount([FromQuery] string? name, [FromQuery] bool? status)
+        /* không dùng fromQuery cũng đc nhưng để từ minh querystring nên có FromQuery */
+        {
+            var result = await accountServices.Search(name, status);
+            return Ok(result);
+        }
+       
     }
 }

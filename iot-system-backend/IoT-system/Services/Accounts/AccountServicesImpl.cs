@@ -3,6 +3,7 @@ using CaiderProject.Authen;
 using IoT_system.Configurations.jwt;
 
 using IoT_system.DTOS.Accounts;
+using IoT_system.DTOS.Common;
 using IoT_system.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -59,11 +60,31 @@ namespace IoT_system.Services.Accounts
              */
         }
         // list account for admin
-        public async Task<List<AccountResponseDtos>> ListOfAccounts()
+        public async Task<PagedResponseDtos<AccountResponseDtos>> ListOfAccounts(int page, int pageSize)
         {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (pageSize <= 0 || pageSize > 100){
+                pageSize = 10; // giới hạn max 100
+            }
             // tolist nếu ko có record thì trả về [] nên ko cần check null
-            var accounts = await dbContext.Accounts.Where(a => a.DeletedAt == null).AsNoTracking().ToListAsync();
-            return mapper.Map<List<AccountResponseDtos>>(accounts);
+            var query = dbContext.Accounts.Where(a => a.DeletedAt == null).AsNoTracking();
+
+            var totalItems = await query.CountAsync(); // đếm tổng trước khi phân trang
+            var accounts = await query.OrderBy(a => a.Id) // orderBy tăng dân theo id (PHẢI CÓ KHI PHÂN TRANG)
+                                     .Skip((page - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToListAsync();
+
+            return new PagedResponseDtos<AccountResponseDtos>
+            {
+                Data = mapper.Map<List<AccountResponseDtos>>(accounts),
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
         }
         // find by id
         public async Task<AccountResponseDtos> FindAccountById(int id)
@@ -117,6 +138,28 @@ namespace IoT_system.Services.Accounts
             await dbContext.SaveChangesAsync(); // lưu thay đổi sau khí khoá
             return mapper.Map<AccountResponseDtos>(account);
         }
+
+        // search keyword + status
+        public async Task<List<AccountResponseDtos>> Search(string? keyword, bool? status)
+        {
+            var query = dbContext.Accounts.Where(a => a.DeletedAt == null).AsQueryable();
+            // AsQueryable chủ yếu để viết LINQ chain tiếp tục
+
+            if (status.HasValue) // nếu có status
+            {
+                query = query.Where(a => a.Status == status);
+            }
+
+            if (!string.IsNullOrWhiteSpace(keyword)) // nếu có keyword
+            {
+                query = query.Where(a => a.Fullname.ToLower().Contains(keyword.ToLower()));
+            }
+
+            var accounts = await query.AsNoTracking().ToListAsync();
+
+            return mapper.Map<List<AccountResponseDtos>>(accounts);
+        }
+
 
         // xoá tài khoản(soft delete để sau còn lưu đc lịch sử của user đó, thống kê, thuộc thiết bị nào...)
         public async Task<bool> DeleteAccount(int id)
