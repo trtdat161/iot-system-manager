@@ -1,5 +1,9 @@
 import { useEffect, useState, useTransition } from "react";
-import { DeleteAccount, GetAccounts } from "../../api/admin/accountApi";
+import {
+  DeleteAccount,
+  GetAccounts,
+  SearchAccount,
+} from "../../api/admin/accountApi";
 import {
   FaTrash,
   FaLock,
@@ -7,6 +11,9 @@ import {
   FaEdit,
   FaCrown,
   FaUser,
+  FaSearch,
+  FaFilter,
+  FaRedoAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,10 +29,12 @@ export function ManagerUser() {
   const [deleteUser, setDeleteUser] = useState(null); // null nhận object
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 8;
 
   const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
+  const [searchStatus, setSearchStatus] = useState(null);
+  const [searchName, setSearchName] = useState("");
   const { t, i18n } = useTranslation("admin_manager_user");
 
   const fetchAccounts = async (currentPage) => {
@@ -57,6 +66,24 @@ export function ManagerUser() {
     }
   };
 
+  // search + filter
+  const handleSearch = async (name, status) => {
+    try {
+      const response = await SearchAccount(name, status);
+      setAccounts(Array.isArray(response.data) ? response.data : []);
+      setSearchName("");
+    } catch (err) {
+      console.log("error:", err?.message || err);
+      setAccounts([]);
+    }
+  };
+
+  const handleReset = () => {
+    setSearchName("");
+    setSearchStatus("true");
+    fetchAccounts(1);
+  };
+
   useEffect(() => {
     fetchAccounts(pages);
   }, [pages]);
@@ -64,13 +91,70 @@ export function ManagerUser() {
   return (
     <div>
       <h5 className="mb-3 fw-semibold parent">
-        <span className="bg-white text-dark px-3 py-2 rounded d-inline-flex align-items-center shadow-sm border">
-          {t("manage_users")}
+        <div className="bg-white p-3 text-dark d-flex justify-content-between align-items-center shadow-sm border rounded-2">
+          <div className="title">
+            {t("manage_users")}
+            <span className="account-count-badge">
+              <MdManageAccounts />
+              {accounts.length}
+            </span>
+          </div>
+          {/* search */}
+          <div className="search-filter-container">
+            <div className="search-filter">
+              <div className="filter-group">
+                <label className="filter-label">
+                  <FaFilter size={14} />
+                </label>
+                <select
+                  className="filter-select"
+                  value={searchStatus || ""}
+                  onChange={(e) => setSearchStatus(e.target.value)}
+                >
+                  <option value="" className="text-center">
+                    {t("all_status")}
+                  </option>
+                  <option value="true" className="text-center">
+                    {t("active_status")}
+                  </option>
+                  <option value="false" className="text-center">
+                    {t("locked_status")}
+                  </option>
+                </select>
+              </div>
 
-          <span className="ms-2">
-            <MdManageAccounts />
-          </span>
-        </span>
+              <div className="search-group">
+                <FaSearch size={14} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder={t("search_users")}
+                  className="search-input"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleSearch(searchName, searchStatus)
+                  }
+                />
+              </div>
+
+              <button
+                className="btn btn-search"
+                onClick={() => handleSearch(searchName, searchStatus)}
+                title={t("search")}
+              >
+                <FaSearch size={14} />
+              </button>
+
+              <button
+                className="btn btn-reset"
+                onClick={handleReset}
+                title={t("reset")}
+              >
+                <FaRedoAlt size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
       </h5>
       {/* demo in tạm */}
       {errorAccount && <span className="text-danger">{errorAccount}</span>}
@@ -92,7 +176,7 @@ export function ManagerUser() {
             {accounts.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center">
-                  không có dữ liệu người dùng
+                  {t("no_user_data")}
                 </td>
               </tr>
             ) : (
@@ -225,19 +309,19 @@ export function ManagerUser() {
             onClick={() => setDeleteUser(null)}
           >
             <div className="sure-delete" onClick={(e) => e.stopPropagation()}>
-              <span>Xác nhận xoá tài khoản này?</span>
+              <span>{t("confirm_delete_account")}</span>
               <div className="sure-delete-actions">
                 <button
                   className="btn btn-sm btn-danger"
                   onClick={() => removeAccount(deleteUser)}
                 >
-                  Xoá
+                  {t("delete")}
                 </button>
                 <button
                   className="btn btn-sm btn-secondary"
                   onClick={() => setDeleteUser(null)}
                 >
-                  Huỷ
+                  {t("cancel")}
                 </button>
               </div>
             </div>
