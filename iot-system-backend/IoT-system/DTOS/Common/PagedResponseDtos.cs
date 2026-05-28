@@ -6,7 +6,7 @@
         public int Page { get; set; }       // trang hiện tại
         public int PageSize { get; set; }   // số item / trang
         public int TotalItems { get; set; } // tổng item
-        public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
+        public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);// ceiling làm tròn lên
         public bool HasNext => Page < TotalPages;
         public bool HasPrev => Page > 1;
     }

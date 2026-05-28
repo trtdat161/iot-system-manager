@@ -18,11 +18,32 @@ namespace IoT_system.Controllers.Devices
 
         [Authorize(Roles = "admin")]
         [Produces("application/json")]
-        [HttpGet("list")]
-        public async Task<IActionResult> Getdevices()
+        [HttpGet("device-list")]
+        public async Task<IActionResult> Getdevices([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await deviceServices.listOfDevices();
+            var result = await deviceServices.ListOfDevices(page, pageSize);
             return Ok(result);
+        }
+
+        // ------------- action ----------
+        // find by id
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("find-device-by-id/{id}")]
+        public async Task<IActionResult> FindDevicdeById(int id)
+        {
+            var device = await deviceServices.FindDeviceById(id);
+            return Ok(device);
+        }
+
+        // search
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("search-device")]
+        public async Task<IActionResult> SearchDevice([FromQuery] string? keyword, [FromQuery] bool? status)
+        {
+            var device = await deviceServices.Search(keyword, status);
+            return Ok(device);
         }
 
         // --------- CRUD -----------
@@ -32,7 +53,7 @@ namespace IoT_system.Controllers.Devices
         [HttpPost("add")]
         public async Task<IActionResult> AddDevices([FromBody] DeviceCreateDtos deviceCreateDtos)
         {
-            var result = await deviceServices.createDevice(deviceCreateDtos);
+            var result = await deviceServices.CreateDevice(deviceCreateDtos);
             return Ok(result);
         }
 
@@ -42,7 +63,7 @@ namespace IoT_system.Controllers.Devices
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateDevices(int id, [FromBody] DeviceUpdateDtos deviceUpdateDtos)
         {
-            var result = await deviceServices.updateDevice(id, deviceUpdateDtos);
+            var result = await deviceServices.UpdateDevice(id, deviceUpdateDtos);
             return Ok(result);
         }
 
@@ -52,7 +73,7 @@ namespace IoT_system.Controllers.Devices
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> RemoveDevices(int id)
         {
-            var result = await deviceServices.deleteDevice(id);
+            var result = await deviceServices.DeleteDevice(id);
             return Ok(result);
         }
     }

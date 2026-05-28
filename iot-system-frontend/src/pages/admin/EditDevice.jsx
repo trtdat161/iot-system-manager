@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { GetDevices, AdminUpdateDevice } from "../../api/admin/deviceApi";
+import { AdminUpdateDevice, GetDeviceById } from "../../api/admin/deviceApi";
 import "../../css/admin/LockAccount.css";
 
 export function EditDevice() {
@@ -21,13 +21,12 @@ export function EditDevice() {
     const fetchDevice = async () => {
       try {
         setIsLoadingDevice(true);
-        const response = await GetDevices();
-        const found = response.data.find((d) => d.id === parseInt(id));
-
-        if (found) {
-          setDevice(found);
-          setName(found.name);
-          setStatus(found.status);
+        const response = await GetDeviceById(id);
+        console.log("Device info:", response.data);
+        if (response.data) {
+          setDevice(response.data);
+          setName(response.data.name);
+          setStatus(response.data.status);
         } else {
           setError("Không tìm thấy thiết bị!");
         }

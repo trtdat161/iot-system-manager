@@ -1,6 +1,7 @@
 ﻿using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IoT_system.Controllers.Accounts
 {
@@ -28,7 +29,7 @@ namespace IoT_system.Controllers.Accounts
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
         [HttpPost("account-lock/{id}")]
-        public async Task<IActionResult> LockAccount(int id, string note)
+        public async Task<IActionResult> LockAccount(int id, [FromQuery] string note)
         {
             var result = await accountServices.LockAccountById(id, note);
             return Ok(result);
@@ -58,12 +59,30 @@ namespace IoT_system.Controllers.Accounts
         [Authorize(Roles = "admin")]
         [Produces("application/json")]
         [HttpGet("search-account")]
-        public async Task<IActionResult> SeachAccount([FromQuery] string? name, [FromQuery] bool? status)
+        public async Task<IActionResult> SeachAccount([FromQuery] string? keyword, [FromQuery] bool? status)
         /* không dùng fromQuery cũng đc nhưng để từ minh querystring nên có FromQuery */
         {
-            var result = await accountServices.Search(name, status);
+            var result = await accountServices.Search(keyword, status);
             return Ok(result);
         }
-       
+
+        // findById xem detail
+        [Authorize] // đăng nhập là truy cập đc method này, sau mới check role bên trong
+        [Produces("application/json")]
+        [HttpGet("find-account-by-id/{id}")]
+        public async Task<IActionResult> FindAccountById(int id)
+        {
+            var currentUser = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var isAdmin = User.IsInRole("admin");
+
+            // chỉ user xem đc chính mình
+            if(!isAdmin && currentUser != id)
+            {
+                return Forbid(); // 403 
+            }
+
+            var account = await accountServices.FindAccountById(id);
+            return Ok(account);
+        }
     }
 }

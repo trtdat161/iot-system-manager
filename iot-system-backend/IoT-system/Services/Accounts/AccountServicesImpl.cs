@@ -93,7 +93,7 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("id invalid !");
             }
-            var account = await dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+            var account = await dbContext.Accounts.FindAsync(id);
 
             if (account == null)
             {

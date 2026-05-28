@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using IoT_system.DTOS.Accounts;
+using IoT_system.DTOS.Common;
 using IoT_system.DTOS.Devices;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +17,98 @@ namespace IoT_system.Services.Devices
             dbContext = _dbContext;
             mapper = _mapper;
         }
-        public async Task<List<DeviceResponseDtos>> listOfDevices()
+        public async Task<PagedResponseDtos<DeviceResponseDtos>> ListOfDevices(int page, int pageSize)
         {
-            var devices = await dbContext.Devices.Where(d => d.DeletedAt == null).AsNoTracking().ToListAsync();
+            if(page <= 0)
+            {
+                page = 1;
+            }
+            if(pageSize <= 0 || pageSize > 100)
+            {
+                pageSize = 10; 
+            }
+
+            var query = dbContext.Devices.Where(d => d.DeletedAt == null).AsNoTracking();
+
+            var totalItems = await query.CountAsync();
+            var devices = await query.OrderBy(d => d.Id)
+                                     .Skip((page - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToListAsync();
+
+            return new PagedResponseDtos<DeviceResponseDtos>
+            {
+                Data = mapper.Map<List<DeviceResponseDtos>>(devices),
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
+        }
+        /*
+         if (page <= 0)
+            {
+                page = 1;
+            }
+            if (pageSize <= 0 || pageSize > 100){
+                pageSize = 10; // giới hạn max 100
+            }
+            // tolist nếu ko có record thì trả về [] nên ko cần check null
+            var query = dbContext.Accounts.Where(a => a.DeletedAt == null).AsNoTracking();
+
+            var totalItems = await query.CountAsync(); // đếm tổng trước khi phân trang
+            var accounts = await query.OrderBy(a => a.Id) // orderBy tăng dân theo id (PHẢI CÓ KHI PHÂN TRANG)
+                                     .Skip((page - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToListAsync();
+
+            return new PagedResponseDtos<AccountResponseDtos>
+            {
+                Data = mapper.Map<List<AccountResponseDtos>>(accounts),
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };*/
+
+        // find by id
+        public async Task<DeviceResponseDtos> FindDeviceById(int id)
+        {
+            if(id <= 0)
+            {
+                throw new BadHttpRequestException("id invalid");
+            }
+
+            var device = await dbContext.Devices.FindAsync(id);
+            if(device == null)
+            {
+                throw new BadHttpRequestException("device not found");
+            }
+
+            return mapper.Map<DeviceResponseDtos>(device);
+        }
+
+        // search and filter
+        public async Task<List<DeviceResponseDtos>> Search(string? keyword, bool? status)
+        {
+            var query = dbContext.Devices.Where(d => d.DeletedAt == null).AsQueryable();
+
+            if (status.HasValue) // nếu có status
+            {
+                query = query.Where(d => d.Status == status);
+            }
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(d => d.Name.ToLower().Contains(keyword.ToLower()));
+            }
+
+            var devices = await query.AsNoTracking().ToListAsync();
             return mapper.Map<List<DeviceResponseDtos>>(devices);
         }
 
         // --------- CRUD ----------
 
         // add device
-        public async Task<DeviceResponseDtos> createDevice(DeviceCreateDtos deviceCreateDtos)
+        public async Task<DeviceResponseDtos> CreateDevice(DeviceCreateDtos deviceCreateDtos)
         {
             if (string.IsNullOrWhiteSpace(deviceCreateDtos.Name))
             {
@@ -47,7 +131,7 @@ namespace IoT_system.Services.Devices
         }
 
         // update device
-        public async Task<DeviceResponseDtos> updateDevice(int id, DeviceUpdateDtos deviceUpdateDtos)
+        public async Task<DeviceResponseDtos> UpdateDevice(int id, DeviceUpdateDtos deviceUpdateDtos)
         {
             if(id <= 0)
             {
@@ -74,7 +158,7 @@ namespace IoT_system.Services.Devices
         }
 
         // delete device
-        public async Task<bool> deleteDevice(int id)
+        public async Task<bool> DeleteDevice(int id)
         {
             if(id <= 0)
             {

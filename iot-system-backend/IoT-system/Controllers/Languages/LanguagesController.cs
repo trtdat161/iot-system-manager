@@ -18,23 +18,7 @@ namespace IoT_system.Controllers.Languages
         [HttpGet("languages-list")]
         public async Task<IActionResult> GetLanguages()
         {
-            try
-            {
-                return Ok(await languageServices.FindAll());
-            }
-            catch (BadHttpRequestException ex)
-            {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
-            }
-            catch (Exception ex) {
-                return BadRequest(new
-                {
-                    error = ex.Message
-                });
-            }
+             return Ok(await languageServices.FindAll());
         }
     }
 }

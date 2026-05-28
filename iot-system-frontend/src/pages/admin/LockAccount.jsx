@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   AdminLockAccount,
   AdminUnlockAccount,
-  GetAccounts,
+  GetAccountById,
 } from "../../api/admin/accountApi";
 import "../../css/admin/LockAccount.css";
 import { useTranslation } from "react-i18next";
@@ -27,8 +27,8 @@ export function LockAccount() {
     const fetchUser = async () => {
       try {
         setIsLoadingUser(true);
-        const response = await GetAccounts();
-        const foundUser = response.data.find((acc) => acc.id === parseInt(id)); // get list ra rồi so sánh với id thay vì viết thêm find by id
+        const response = await GetAccountById(id);
+        const foundUser = response.data;
 
         if (foundUser) {
           setUser(foundUser);

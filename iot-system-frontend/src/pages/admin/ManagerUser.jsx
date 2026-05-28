@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LogoutAccount } from "../../api/authApi";
 import dayjs from "dayjs";
-import "../../css/admin/ManagerUser.css";
+import "../../css/admin/ManagerUserAndDevice.css";
 import { Sidebar } from "../../components/admin/Sidebar";
 import { MdManageAccounts } from "react-icons/md";
 import { Pagination } from "../../components/common/Pagination";
@@ -29,7 +29,7 @@ export function ManagerUser() {
   const [deleteUser, setDeleteUser] = useState(null); // null nhận object
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 10;
 
   const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export function ManagerUser() {
       const paged = response.data;
       // i18n.changeLanguage(localStorage.getItem("lang") || "vi-VN");
       setAccounts(Array.isArray(paged.data) ? paged.data : []);
-      setTotalPages(paged.totalPages ?? 1);
+      setTotalPages(paged.totalPages ?? 1); // totalPages là của BE PagedResponseDtos
     } catch (err) {
       console.log("error:", err?.message || err);
       setAccounts([]);
@@ -54,9 +54,12 @@ export function ManagerUser() {
     try {
       const response = await DeleteAccount(id);
       if (response.data) {
-        setDeleteUser(null); //set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
-        const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages;
-        newPage !== page ? setPages(newPage) : fetchAccounts(page);
+        setDeleteUser(null); //nếu api xoá ok thì set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
+        const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages; // nếu user chỉ còn 1 trên trang và ko phải trag 1 thì sau khi xoá sẽ về trang trước đó, ko thì vẫn ở trang hiện tại
+        newPage !== pages ? setPages(newPage) : fetchAccounts(pages);
+        /*
+        nếu page thay đổi -> chuyển sang page mới, nếu page không đổi -> chỉ reload lại data của page hiện tại
+        */
       } else {
         setDeleteUser(null);
       }
@@ -80,7 +83,7 @@ export function ManagerUser() {
 
   const handleReset = () => {
     setSearchName("");
-    setSearchStatus("true");
+    setSearchStatus("");
     fetchAccounts(1);
   };
 
@@ -158,183 +161,187 @@ export function ManagerUser() {
       </h5>
       {/* demo in tạm */}
       {errorAccount && <span className="text-danger">{errorAccount}</span>}
-      <div className="table-responsive">
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-light">
-            <tr>
-              <th style={{ width: 50 }}>#</th>
-              <th>{t("name")}</th>
-              <th>{t("email")}</th>
-              <th>{t("role")}</th>
-              <th>{t("created_at")}</th>
-              <th>{t("status")}</th>
-              <th colSpan={2}>{t("actions")}</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {accounts.length === 0 ? (
+      <div className="table-wrapper-fixed">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
               <tr>
-                <td colSpan={7} className="text-center">
-                  {t("no_user_data")}
-                </td>
+                <th style={{ width: 50 }}>#</th>
+                <th>{t("name")}</th>
+                <th>{t("email")}</th>
+                <th>{t("role")}</th>
+                <th>{t("created_at")}</th>
+                <th>{t("status")}</th>
+                <th colSpan={2}>{t("actions")}</th>
               </tr>
-            ) : (
-              accounts.map((account, index) => (
-                <tr key={account.id}>
-                  {/* số thứ tự đúng theo trang */}
-                  <td className="text-muted">
-                    {(pages - 1) * PAGE_SIZE + index + 1}
-                  </td>
+            </thead>
 
-                  {/* fullname */}
-                  <td>
-                    {account.role === "admin" ? (
-                      <span
-                        className="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 fw-semibold"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #f59e0b, #d97706)",
-                          color: "#fff",
-                          fontSize: "0.78rem",
-                        }}
-                      >
-                        <FaCrown size={13} />
-                        {account.fullname}
-                      </span>
-                    ) : (
-                      <span className="d-inline-flex align-items-center gap-1 text-muted">
-                        <FaUser size={12} />
-                        <span>{account.fullname}</span>
-                      </span>
-                    )}
-                  </td>
-
-                  {/* email */}
-                  <td className="text-muted">{account.email}</td>
-
-                  {/* role */}
-                  <td className="text-muted">
-                    {account.role === "admin" ? (
-                      <span
-                        style={{
-                          fontWeight: "bold",
-                          color: "#e9a112",
-                        }}
-                      >
-                        {t("admin")}
-                      </span>
-                    ) : (
-                      t("user")
-                    )}
-                  </td>
-
-                  {/* created at */}
-                  <td className="text-muted">
-                    {dayjs(account.createdAt).format("DD/MM/YYYY HH:mm")}
-                  </td>
-
-                  {/* status */}
-                  <td className="text-muted">
-                    {account.status === true ? (
-                      <span className="badge text-bg-success">
-                        {t("active")}
-                      </span>
-                    ) : (
-                      <span className="badge text-bg-danger">
-                        {t("locked")}
-                      </span>
-                    )}
-                  </td>
-
-                  {/* actions */}
-                  <td>
-                    {/* nếu role là admin thì xử lý sẽ có nút edit thay vì khoá và xoá */}
-                    {account.role === "admin" ? (
-                      <button className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1">
-                        <FaEdit size={12} />
-                        <span>{t("edit_account_admin")}</span>
-                      </button>
-                    ) : (
-                      <div className="d-flex gap-2">
-                        {/* lock / unlock */}
-                        <button
-                          onClick={() =>
-                            navigate(`/frame-layout/lock-account/${account.id}`)
-                          }
-                          className={`btn btn-sm d-inline-flex align-items-center gap-1 ${
-                            account.status === true
-                              ? "btn-outline-primary"
-                              : "btn-outline-warning"
-                          }`}
-                          title={
-                            account.status === false ? t("unlock") : t("lock")
-                          }
-                        >
-                          {account.status === false ? (
-                            <>
-                              <FaUnlock size={12} />
-                              <span>{t("unlock")}</span>
-                            </>
-                          ) : (
-                            <>
-                              <FaLock size={12} />
-                              <span>{t("lock")}</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* delete */}
-                        <button
-                          onClick={() => setDeleteUser(account.id)} // lưu id để dialog hiện đúng row
-                          className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
-                          title={t("delete_account")}
-                        >
-                          <FaTrash size={12} />
-                          <span>{t("delete")}</span>
-                        </button>
-                      </div>
-                    )}
+            <tbody>
+              {accounts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center">
+                    {t("no_user_data")}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                accounts.map((account, index) => (
+                  <tr key={account.id}>
+                    {/* số thứ tự đúng theo trang */}
+                    <td className="text-muted">
+                      {(pages - 1) * PAGE_SIZE + index + 1}
+                    </td>
 
-        {/* Dialog xác nhận xoá — đặt ngoài table */}
-        {deleteUser && (
-          <div
-            className="sure-delete-overlay"
-            onClick={() => setDeleteUser(null)}
-          >
-            <div className="sure-delete" onClick={(e) => e.stopPropagation()}>
-              <span>{t("confirm_delete_account")}</span>
-              <div className="sure-delete-actions">
-                <button
-                  className="btn btn-sm btn-danger"
-                  onClick={() => removeAccount(deleteUser)}
-                >
-                  {t("delete")}
-                </button>
-                <button
-                  className="btn btn-sm btn-secondary"
-                  onClick={() => setDeleteUser(null)}
-                >
-                  {t("cancel")}
-                </button>
+                    {/* fullname */}
+                    <td>
+                      {account.role === "admin" ? (
+                        <span
+                          className="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 fw-semibold"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #f59e0b, #d97706)",
+                            color: "#fff",
+                            fontSize: "0.78rem",
+                          }}
+                        >
+                          <FaCrown size={13} />
+                          {account.fullname}
+                        </span>
+                      ) : (
+                        <span className="d-inline-flex align-items-center gap-1 text-muted">
+                          <FaUser size={12} />
+                          <span>{account.fullname}</span>
+                        </span>
+                      )}
+                    </td>
+
+                    {/* email */}
+                    <td className="text-muted">{account.email}</td>
+
+                    {/* role */}
+                    <td className="text-muted">
+                      {account.role === "admin" ? (
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: "#e9a112",
+                          }}
+                        >
+                          {t("admin")}
+                        </span>
+                      ) : (
+                        t("user")
+                      )}
+                    </td>
+
+                    {/* created at */}
+                    <td className="text-muted">
+                      {dayjs(account.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+
+                    {/* status */}
+                    <td className="text-muted">
+                      {account.status === true ? (
+                        <span className="badge text-bg-success">
+                          {t("active")}
+                        </span>
+                      ) : (
+                        <span className="badge text-bg-danger">
+                          {t("locked")}
+                        </span>
+                      )}
+                    </td>
+
+                    {/* actions */}
+                    <td>
+                      {/* nếu role là admin thì xử lý sẽ có nút edit thay vì khoá và xoá */}
+                      {account.role === "admin" ? (
+                        <button className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1">
+                          <FaEdit size={12} />
+                          <span>{t("edit_account_admin")}</span>
+                        </button>
+                      ) : (
+                        <div className="d-flex gap-2">
+                          {/* lock / unlock */}
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/frame-layout/lock-account/${account.id}`,
+                              )
+                            }
+                            className={`btn btn-sm d-inline-flex align-items-center gap-1 ${
+                              account.status === true
+                                ? "btn-outline-primary"
+                                : "btn-outline-warning"
+                            }`}
+                            title={
+                              account.status === false ? t("unlock") : t("lock")
+                            }
+                          >
+                            {account.status === false ? (
+                              <>
+                                <FaUnlock size={12} />
+                                <span>{t("unlock")}</span>
+                              </>
+                            ) : (
+                              <>
+                                <FaLock size={12} />
+                                <span>{t("lock")}</span>
+                              </>
+                            )}
+                          </button>
+
+                          {/* delete */}
+                          <button
+                            onClick={() => setDeleteUser(account.id)} // lưu id để dialog hiện đúng row
+                            className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
+                            title={t("delete_account")}
+                          >
+                            <FaTrash size={12} />
+                            <span>{t("delete")}</span>
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* Dialog xác nhận xoá — đặt ngoài table */}
+          {deleteUser && (
+            <div
+              className="sure-delete-overlay"
+              onClick={() => setDeleteUser(null)}
+            >
+              <div className="sure-delete" onClick={(e) => e.stopPropagation()}>
+                <span>{t("confirm_delete_account")}</span>
+                <div className="sure-delete-actions">
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => removeAccount(deleteUser)}
+                  >
+                    {t("delete")}
+                  </button>
+                  <button
+                    className="btn btn-sm btn-secondary"
+                    onClick={() => setDeleteUser(null)}
+                  >
+                    {t("cancel")}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Pagination — dùng lại ở bất kỳ đâu chỉ cần 3 props */}
-      <Pagination
-        page={pages}
-        totalPages={totalPages}
-        onPageChange={setPages}
-      />
+        {/* Pagination — dùng lại ở bất kỳ đâu chỉ cần 3 props */}
+        <Pagination
+          page={pages}
+          totalPages={totalPages}
+          onPageChange={setPages}
+        />
+      </div>
     </div>
   );
 }
