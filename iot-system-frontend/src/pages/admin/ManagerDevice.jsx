@@ -148,8 +148,8 @@ export function ManagerDevice() {
       <h5 className="mb-3 fw-semibold parent">
         <div className="bg-white p-3 text-dark d-flex justify-content-between align-items-center shadow-sm border rounded-2">
           <div className="title">
-            Quản lý thiết bị IoT
             <span className="account-count-badge">
+              Quản lý thiết bị IoT
               <MdDevices />
               {devices.length}
             </span>

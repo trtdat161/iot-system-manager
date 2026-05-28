@@ -95,12 +95,15 @@ export function ManagerUser() {
     <div>
       <h5 className="mb-3 fw-semibold parent">
         <div className="bg-white p-3 text-dark d-flex justify-content-between align-items-center shadow-sm border rounded-2">
-          <div className="title">
-            {t("manage_users")}
-            <span className="account-count-badge">
-              <MdManageAccounts />
-              {accounts.length}
-            </span>
+          <div>
+            <h4>tổng người dùng: 100</h4>
+            <div className="title">
+              <span className="account-count-badge">
+                {t("manage_users")}
+                <MdManageAccounts />
+                {accounts.length}
+              </span>
+            </div>
           </div>
           {/* search */}
           <div className="search-filter-container">

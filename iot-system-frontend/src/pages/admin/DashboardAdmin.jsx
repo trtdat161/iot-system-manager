@@ -61,10 +61,7 @@ export function DashboardAdmin() {
             Live overview
           </span>
           <h1>Dashboard Admin</h1>
-          <p>
-            Tong quan he thong IoT voi du lieu mau. Cac vung so lieu nay co the
-            gan API sau ma khong can doi lai layout.
-          </p>
+          <p>Tong quan du lieu cua he thong IoT DTECH</p>
         </div>
 
         <div className="weather-card">
