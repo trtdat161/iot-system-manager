@@ -43,9 +43,19 @@ export function FrameLayout() {
                       Home
                     </button>
                   </div>
-
                   {/* right */}
-                  <LanguageSwitcher />
+                  <div className="d-flex align-items-center gap-3">
+                    {/* sau gắn thêm tấm hình */}
+                    <span>welcome admin: Tien Dat</span>
+                    <img
+                      src="path/to/admin-avatar.jpg"
+                      alt="Admin Avatar"
+                      className="rounded-circle"
+                      style={{ width: "40px", height: "40px" }}
+                    />
+
+                    <LanguageSwitcher />
+                  </div>
                 </div>
               </div>
             </div>
