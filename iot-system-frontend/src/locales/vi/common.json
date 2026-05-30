@@ -1,0 +1,7 @@
+{
+  "pagination": {
+    "previous": "« Truoc",
+    "page": "Trang {{page}} / {{totalPages}}",
+    "next": "Tiep »"
+  }
+}

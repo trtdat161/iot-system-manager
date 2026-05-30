@@ -9,84 +9,146 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import "../../css/admin/Dashboard.css";
-
-const summaryCards = [
-  {
-    label: "Nguoi dung hoat dong",
-    value: "20",
-    note: "+12% trong 7 ngay",
-    icon: <FaUserCheck />,
-    tone: "success",
-  },
-  {
-    label: "Nguoi dung bi khoa",
-    value: "10",
-    note: "Can kiem tra",
-    icon: <FaUserLock />,
-    tone: "warning",
-  },
-  {
-    label: "Thiet bi hoat dong",
-    value: "10",
-    note: "Online realtime",
-    icon: <FaMicrochip />,
-    tone: "cyan",
-  },
-  {
-    label: "Thiet bi offline",
-    value: "20",
-    note: "-4% so voi hom qua",
-    icon: <FaServer />,
-    tone: "danger",
-  },
-];
+import { DashboardSummary, Weather } from "../../api/admin/dashboardApi";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const deviceBars = [
-  { day: "T2", value: 44 },
-  { day: "T3", value: 62 },
-  { day: "T4", value: 54 },
-  { day: "T5", value: 78 },
-  { day: "T6", value: 68 },
-  { day: "T7", value: 88 },
-  { day: "CN", value: 74 },
+  { day: "monday", value: 44 },
+  { day: "tuesday", value: 62 },
+  { day: "wednesday", value: 54 },
+  { day: "thursday", value: 78 },
+  { day: "friday", value: 68 },
+  { day: "saturday", value: 88 },
+  { day: "sunday", value: 74 },
 ];
 
 export function DashboardAdmin() {
+  const { t } = useTranslation("admin_dashboard");
+  const [healthData, setHealthData] = useState("");
+  const [dataOverview, setDataOverview] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
+
+  const summaryCards = dataOverview
+    ? [
+        {
+          label: t("summary.active_users"),
+          value: dataOverview.userActive ?? 0,
+          note: t("summary.active_users_note"),
+          icon: <FaUserCheck />,
+          tone: "success",
+        },
+        {
+          label: t("summary.locked_users"),
+          value: dataOverview.userLock ?? 0,
+          note: t("summary.locked_users_note"),
+          icon: <FaUserLock />,
+          tone: "warning",
+        },
+        {
+          label: t("summary.online_devices"),
+          value: dataOverview.deviceOnline ?? 0,
+          note: t("summary.online_devices_note"),
+          icon: <FaMicrochip />,
+          tone: "cyan",
+        },
+        {
+          label: t("summary.offline_devices"),
+          value: dataOverview.deviceOffline ?? 0,
+          note: t("summary.offline_devices_note"),
+          icon: <FaServer />,
+          tone: "danger",
+        },
+      ]
+    : [];
+
+  useEffect(() => {
+    // data overview
+    const fetchSummary = async () => {
+      try {
+        const response = await DashboardSummary();
+        setHealthData(response.data ? "Stable" : "Unstable");
+        setDataOverview(response.data);
+      } catch (err) {
+        console.error("Loi khi goi API dashboard:", err.message);
+      }
+    };
+
+    // weather
+    const fetchWeather = async () => {
+      try {
+        const response = await Weather();
+        setWeatherData(response);
+        console.log("Weather API response:", response);
+      } catch (err) {
+        console.error("Loi khi goi API thoi tiet:", err.message);
+      }
+    };
+
+    // call functions
+    fetchSummary();
+    fetchWeather();
+  }, []);
+
+  if (!dataOverview)
+    return (
+      <p>
+        {t("errors.unavailable")} <br />
+        {t("errors.cannot_access")}
+      </p>
+    );
+
   return (
     <main className="admin-dashboard">
       <section className="dashboard-hero glass-panel">
         <div>
-          <span className="dashboard-kicker">
+          <div className="dashboard-kicker">
             <span className="live-dot"></span>
-            Live overview
-          </span>
-          <h1>Dashboard Admin</h1>
-          <p>Tong quan du lieu cua he thong IoT DTECH</p>
+            {/* Live overview */}
+            <strong className="fs-6">
+              <FaUsers size={19} />{" "}
+              {t("total_users", { count: dataOverview.accountTotal || 0 })}
+            </strong>
+          </div>
+          <h1>{t("title")}</h1>
+          <p>{t("subtitle")}</p>
         </div>
 
         <div className="weather-card">
           <FaCloudSun />
           <div>
-            <span>Thoi tiet</span>
-            <strong>29 deg C</strong>
-            <small>Ho Chi Minh - Cloudy</small>
+            <span>{t("weather")}</span>
+            {weatherData ? (
+              <>
+                <strong>{weatherData.main.temp.toFixed(1)}°C</strong>
+                <small>
+                  {weatherData.name} - {weatherData.weather[0].description}
+                </small>
+              </>
+            ) : (
+              <>
+                <strong>--°C</strong>
+                <small>{t("loading")}</small>
+              </>
+            )}
           </div>
         </div>
       </section>
 
-      <header className="overview-strip glass-panel">
+      {/* <header className="overview-strip glass-panel">
         <div className="overview-info">
           <span>
-            <FaUsers /> Tong so nguoi dung: <strong>100</strong>
+            <FaUsers /> Tong so nguoi dung:{" "}
+            <strong>{dataOverview.accountTotal || 0}</strong>
           </span>
           <span>
-            <FaMicrochip /> Tong so thiet bi: <strong>100</strong>
+            <FaMicrochip /> Tong so thiet bi: <strong>0</strong>
           </span>
         </div>
         <span className="overview-weather">
-          Thoi tiet hien dang dung fake data, sau nay goi API thoi tiet tai day.
+          {weatherData.weather[1].description}
         </span>
-      </header>
+      </header> */}
 
       <section className="dashboard-grid">
         {summaryCards.map((card) => (
@@ -108,22 +170,24 @@ export function DashboardAdmin() {
         <article className="chart-card glass-panel">
           <div className="section-heading">
             <div>
-              <span>7 ngay qua</span>
-              <h2>Thiet bi hoat dong</h2>
+              <span>{t("last_7_days")}</span>
+              <h2>{t("active_devices")}</h2>
             </div>
-            <button className="btn btn-sm dashboard-pill">Fake data</button>
+            <button className="btn btn-sm dashboard-pill">
+              {t("fake_data")}
+            </button>
           </div>
 
           <div
             className="bar-chart"
-            aria-label="Bieu do cot thiet bi hoat dong"
+            aria-label={t("active_devices_chart")}
           >
             {deviceBars.map((item) => (
               <div className="bar-item" key={item.day}>
                 <div className="bar-track">
                   <span style={{ height: `${item.value}%` }}></span>
                 </div>
-                <small>{item.day}</small>
+                <small>{t(`days.${item.day}`)}</small>
               </div>
             ))}
           </div>
@@ -133,30 +197,54 @@ export function DashboardAdmin() {
           <article className="donut-card glass-panel">
             <div className="section-heading compact">
               <div>
-                <span>User growth</span>
-                <h2>Nguoi dung moi</h2>
+                <span>{t("user_growth")}</span>
+                <h2>{t("new_users")}</h2>
               </div>
               <FaBolt />
             </div>
             <div className="donut-wrap">
-              <div className="donut-chart">
+              <div
+                className="donut-chart"
+                style={{
+                  background: (() => {
+                    const total = dataOverview.accountTotal || 1; // tránh chia 0
+                    const newU = dataOverview.countUserOneMonth ?? 0;
+                    const active = dataOverview.userActive ?? 0;
+                    const locked = dataOverview.userLock ?? 0;
+
+                    const newPct = (newU / total) * 100;
+                    const activePct = (active / total) * 100;
+                    const lockedPct = (locked / total) * 100;
+
+                    return `conic-gradient(
+            #06b6d4 0% ${newPct}%,
+            #22c55e ${newPct}% ${newPct + activePct}%,
+            #f59e0b ${newPct + activePct}% ${newPct + activePct + lockedPct}%,
+            #1e293b ${newPct + activePct + lockedPct}% 100%
+          )`;
+                  })(),
+                }}
+              >
                 <div>
-                  <strong>+34</strong>
-                  <span>7 ngay</span>
+                  <strong>{dataOverview.countUserOneMonth ?? 0}</strong>
+                  <span>{t("one_month")}</span>
                 </div>
               </div>
               <ul>
                 <li>
-                  <span className="legend-dot cyan"></span>Moi dang ky
-                  <strong>34</strong>
+                  <span className="legend-dot cyan"></span>
+                  {t("new_registrations")}
+                  <strong>{dataOverview.countUserOneMonth ?? 0}</strong>
                 </li>
                 <li>
-                  <span className="legend-dot green"></span>Da kich hoat
-                  <strong>28</strong>
+                  <span className="legend-dot green"></span>
+                  {t("activated")}
+                  <strong>{dataOverview.userActive ?? 0}</strong>
                 </li>
                 <li>
-                  <span className="legend-dot amber"></span>Cho duyet
-                  <strong>6</strong>
+                  <span className="legend-dot amber"></span>
+                  {t("locked")}
+                  <strong>{dataOverview.userLock ?? 0}</strong>
                 </li>
               </ul>
             </div>
@@ -165,9 +253,9 @@ export function DashboardAdmin() {
           <article className="status-card glass-panel">
             <FaShieldAlt />
             <div>
-              <span>System health</span>
-              <strong>Stable</strong>
-              <p>Server, user va device dang hien thi bang HTML fake data.</p>
+              <span>{t("system_health")}</span>
+              <strong>{t(`health.${healthData.toLowerCase()}`)}</strong>
+              <p>{t("owner")}</p>
             </div>
           </article>
         </aside>

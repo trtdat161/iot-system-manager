@@ -134,7 +134,7 @@ export function Register() {
                   type="text"
                   name="fullname"
                   className={`form-control ${errors.fullname ? "is-invalid" : ""}`}
-                  placeholder="your name"
+                  placeholder={t("placeholders.fullname")}
                   value={form.fullname}
                   onChange={handleChange}
                 />
@@ -153,7 +153,7 @@ export function Register() {
                   type="email"
                   name="email"
                   className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                  placeholder="your@email.com"
+                  placeholder={t("placeholders.email")}
                   value={form.email}
                   onChange={handleChange}
                 />
@@ -172,7 +172,7 @@ export function Register() {
                   type="password"
                   name="password"
                   className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                  placeholder="••••••••"
+                  placeholder={t("placeholders.password")}
                   value={form.password}
                   onChange={handleChange}
                 />

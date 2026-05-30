@@ -116,7 +116,7 @@ export function Login() {
                   type="email"
                   name="email"
                   className="form-control"
-                  placeholder="your@email.com"
+                  placeholder={t("placeholders.email")}
                   value={form.email}
                   onChange={handleChange}
                 />
@@ -135,7 +135,7 @@ export function Login() {
                   type="password"
                   name="password"
                   className="form-control"
-                  placeholder="••••••••"
+                  placeholder={t("placeholders.password")}
                   value={form.password}
                   onChange={handleChange}
                 />

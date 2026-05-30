@@ -6,6 +6,6 @@ namespace IoT_system.Services.DashboardAdmin
 {
     public interface DashboardAdminServices
     {
-        public Task<DashboardAdminResponseDtos> TotalDeviceAndUser();
+        public Task<DashboardAdminResponseDtos> DashboardAdmin();
     }
 }

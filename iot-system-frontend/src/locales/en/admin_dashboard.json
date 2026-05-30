@@ -1,0 +1,46 @@
+{
+  "summary": {
+    "active_users": "Active users",
+    "locked_users": "Locked users",
+    "online_devices": "Online devices",
+    "offline_devices": "Offline devices",
+    "active_users_note": "+12% in 7 days",
+    "locked_users_note": "Needs review",
+    "online_devices_note": "Realtime online",
+    "offline_devices_note": "-4% compared with yesterday"
+  },
+  "health": {
+    "stable": "Stable",
+    "unstable": "Unstable"
+  },
+  "errors": {
+    "unavailable": "Dashboard admin is unavailable!",
+    "cannot_access": "Cannot access dashboard admin..."
+  },
+  "total_users": "Total users: {{count}}",
+  "title": "Dashboard Admin",
+  "subtitle": "Data overview for the DTECH IoT system",
+  "weather": "Weather",
+  "loading": "Loading...",
+  "last_7_days": "Last 7 days",
+  "active_devices": "Active devices",
+  "fake_data": "Fake data",
+  "active_devices_chart": "Active devices bar chart",
+  "user_growth": "User growth",
+  "new_users": "New users",
+  "one_month": "1 Month",
+  "new_registrations": "New registrations",
+  "activated": "Activated",
+  "locked": "Locked",
+  "system_health": "System health",
+  "owner": "Tran Tien Dat - DTECH",
+  "days": {
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun"
+  }
+}

@@ -7,8 +7,6 @@ import { ManagerUser } from "../pages/admin/ManagerUser";
 import { DashboardUser } from "../pages/user/DashboardUser";
 import { LockAccount } from "../pages/admin/LockAccount";
 import { FrameLayout } from "../components/admin/FrameLayout";
-import { ManagerDevice } from "../pages/admin/ManagerDevice";
-import { EditDevice } from "../pages/admin/EditDevice";
 
 export function CreateRouter() {
   return (
@@ -25,8 +23,6 @@ export function CreateRouter() {
           <Route path="dashboard-admin" element={<DashboardAdmin />}></Route>
           <Route path="manager-user" element={<ManagerUser />}></Route>
           <Route path="lock-account/:id" element={<LockAccount />}></Route>
-          <Route path="manager-device" element={<ManagerDevice />}></Route>
-          <Route path="edit-device/:id" element={<EditDevice />}></Route>
         </Route>
 
         {/* user */}

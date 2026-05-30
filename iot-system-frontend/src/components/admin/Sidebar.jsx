@@ -30,7 +30,7 @@ const MENU_ITEMS = [
   {
     key: "devices",
     icon: <MdDevices size={18} />,
-    path: "/frame-layout/manager-device",
+    path: "/frame-layout/",
   },
   {
     key: "statistics",
@@ -51,7 +51,7 @@ const MENU_ITEMS = [
 
 export function Sidebar({ collapsed, setCollapsed }) {
   // nhận collapsed
-  const [error, setError] = useState("");
+  const [_error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation("sidebar");
@@ -61,10 +61,10 @@ export function Sidebar({ collapsed, setCollapsed }) {
   const LogoutAction = async () => {
     try {
       const response = await LogoutAccount();
-      response.data ? navigate("/") : setError("lỗi khi logout");
+      response.data ? navigate("/") : setError(t("logout_error"));
     } catch (err) {
       console.log("error:", err?.message || err);
-      setError("lỗi khi logout");
+      setError(t("logout_error"));
     }
   };
 
@@ -152,7 +152,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
                   letterSpacing: "0.5px",
                 }}
               >
-                ADMINISTRATOR
+                {t("administrator")}
               </p>
               <p
                 style={{

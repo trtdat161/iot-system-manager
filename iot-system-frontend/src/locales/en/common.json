@@ -1,0 +1,7 @@
+{
+  "pagination": {
+    "previous": "« Previous",
+    "page": "Page {{page}} / {{totalPages}}",
+    "next": "Next »"
+  }
+}

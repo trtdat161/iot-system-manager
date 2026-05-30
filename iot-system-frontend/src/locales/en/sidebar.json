@@ -1,0 +1,12 @@
+{
+  "administrator": "ADMINISTRATOR",
+  "full_access": "Full access",
+  "dashboard": "Dashboard",
+  "users": "Users",
+  "devices": "Devices",
+  "statistics": "Statistics",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "logout": "Logout",
+  "logout_error": "Logout failed"
+}

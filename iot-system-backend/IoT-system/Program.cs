@@ -4,6 +4,7 @@ using IoT_system.Configurations.mqtt;
 using IoT_system.Models;
 using IoT_system.Profiles;
 using IoT_system.Services.Accounts;
+using IoT_system.Services.DashboardAdmin;
 using IoT_system.Services.Devices;
 using IoT_system.Services.Languages;
 using Microsoft.AspNetCore.Localization;
@@ -39,6 +40,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);// gọi vào toàn
 builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
 builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
 builder.Services.AddScoped<DeviceServices, DeviceServicesImpl>();
+builder.Services.AddScoped<DashboardAdminServices, DashboardAdminServicesImpl>();
 // DI của mqtt IoT dùng Singleton vì chỉ cần 1 connection toàn app, giữ kết nối lâu dài
 builder.Services.AddSingleton<MqttClient>();
 

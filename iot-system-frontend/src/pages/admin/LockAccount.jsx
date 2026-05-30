@@ -9,7 +9,7 @@ import "../../css/admin/LockAccount.css";
 import { useTranslation } from "react-i18next";
 
 export function LockAccount() {
-  const { t, i18n } = useTranslation("admin_manager_user");
+  const { t } = useTranslation("admin_manager_user");
 
   const [user, setUser] = useState(null);
   const [reason, setReason] = useState("");
@@ -33,18 +33,18 @@ export function LockAccount() {
         if (foundUser) {
           setUser(foundUser);
         } else {
-          setError("User not found!");
+          setError(t("user_not_found"));
         }
       } catch (err) {
         console.error("Error fetching user:", err);
-        setError("Failed to load user information!");
+        setError(t("load_user_failed"));
       } finally {
         setIsLoadingUser(false);
       }
     };
 
     fetchUser();
-  }, [id]);
+  }, [id, t]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,25 +64,26 @@ export function LockAccount() {
         // nếu true thì gọi api khoá
         const response = await AdminLockAccount(id, reason);
         if (response.data) {
-          setSuccess("Account unlocked successfully!");
+          setSuccess(t("lock_account_success"));
           setTimeout(() => {
             navigate("/frame-layout/manager-user");
           }, 1500);
         } else {
-          setError("Failed to lock account!");
+          setError(t("lock_account_failed"));
         }
       } else {
         // néu false thì gọi api mở
         const response = await AdminUnlockAccount(id);
         if (response.data) {
+          setSuccess(t("unlock_account_success"));
           navigate("/frame-layout/manager-user");
         } else {
-          setError("Failed to unlock account!");
+          setError(t("unlock_account_failed"));
         }
       }
     } catch (err) {
       console.error("Lock error:", err);
-      setError(err.response?.data?.message || "Failed to lock account!");
+      setError(err.response?.data?.message || t("lock_account_failed"));
     } finally {
       setLoading(false);
     }
@@ -100,7 +101,7 @@ export function LockAccount() {
             <div style={{ textAlign: "center", padding: "2rem" }}>
               <div className="lock-loading"></div>
               <p style={{ marginTop: "1rem", color: "var(--lock-muted)" }}>
-                Loading user information...
+                {t("loading_user_information")}
               </p>
             </div>
           </div>
@@ -115,10 +116,15 @@ export function LockAccount() {
         <div className="lock-card">
           {/* Header */}
           <div className="lock-header">
-            <h1 className="lock-title">Lock Account</h1>
+            <h1 className="lock-title">
+              {user?.status === true
+                ? t("lock_account_title")
+                : t("unlock_account_title")}
+            </h1>
             <p className="lock-subtitle">
-              This action will permanently lock the user account. They will not
-              be able to login.
+              {user?.status === true
+                ? t("lock_account_subtitle")
+                : t("unlock_account_subtitle")}
             </p>
           </div>
 
@@ -132,17 +138,19 @@ export function LockAccount() {
           {user && (
             <div className="user-info-section">
               <div className="user-info-item">
-                <span className="user-info-label">Full Name</span>
+                <span className="user-info-label">{t("full_name")}</span>
                 <span className="user-info-value">
-                  {user.fullname || "N/A"}
+                  {user.fullname || t("not_available")}
                 </span>
               </div>
               <div className="user-info-item">
-                <span className="user-info-label">Email</span>
-                <span className="user-info-value">{user.email || "N/A"}</span>
+                <span className="user-info-label">{t("email")}</span>
+                <span className="user-info-value">
+                  {user.email || t("not_available")}
+                </span>
               </div>
               <div className="user-info-item">
-                <span className="user-info-label">Account ID</span>
+                <span className="user-info-label">{t("account_id")}</span>
                 <span className="user-info-value">{user.id}</span>
               </div>
             </div>
@@ -160,7 +168,11 @@ export function LockAccount() {
                   className="lock-form-textarea"
                   value={reason || user.note}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Enter the reason for locking this account (optional)"
+                  placeholder={
+                    user.status === true
+                      ? t("reason_lock_placeholder")
+                      : t("reason_unlock_placeholder")
+                  }
                   disabled={loading}
                 />
               </div>
@@ -206,10 +218,15 @@ export function LockAccount() {
         <div className="lock-modal-overlay">
           <div className="lock-modal-content">
             <div className="lock-modal-icon">🔒</div>
-            <h2 className="lock-modal-title">Confirm Lock Account</h2>
+            <h2 className="lock-modal-title">
+              {user.status === true
+                ? t("confirm_lock_account")
+                : t("confirm_unlock_account")}
+            </h2>
             <p className="lock-modal-message">
-              Are you sure you want to lock this account? This action cannot be
-              easily reversed.
+              {user.status === true
+                ? t("confirm_lock_message")
+                : t("confirm_unlock_message")}
             </p>
             {user && (
               <div className="lock-modal-username">
@@ -227,7 +244,7 @@ export function LockAccount() {
                 className="lock-modal-btn lock-modal-btn-cancel"
                 onClick={() => setShowConfirm(false)}
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </div>

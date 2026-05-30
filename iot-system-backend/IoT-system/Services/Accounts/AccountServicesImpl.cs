@@ -83,7 +83,7 @@ namespace IoT_system.Services.Accounts
                 Data = mapper.Map<List<AccountResponseDtos>>(accounts),
                 Page = page,
                 PageSize = pageSize,
-                TotalItems = totalItems
+                TotalItems = totalItems,
             };
         }
         // find by id

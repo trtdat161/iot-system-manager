@@ -2,6 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { useState } from "react";
 import { LanguageSwitcher } from "../switchLanguage/LanguageSwitch";
+import { useTranslation } from "react-i18next";
 
 // import icon
 import { FaHome } from "react-icons/fa";
@@ -9,6 +10,7 @@ import { FaHome } from "react-icons/fa";
 export function FrameLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation("frame_layout");
 
   // style content
   const styleFrame = {
@@ -32,7 +34,7 @@ export function FrameLayout() {
                 <div className="d-flex justify-content-between align-items-center">
                   {/* left */}
                   <div className="d-flex align-items-center gap-3">
-                    <span>Notification</span>
+                    <span>{t("notification")}</span>
 
                     {/* home button */}
                     <button
@@ -40,16 +42,16 @@ export function FrameLayout() {
                       onClick={() => navigate("/frame-layout/dashboard-admin")}
                     >
                       <FaHome />
-                      Home
+                      {t("home")}
                     </button>
                   </div>
                   {/* right */}
                   <div className="d-flex align-items-center gap-3">
                     {/* sau gắn thêm tấm hình */}
-                    <span>welcome admin: Tien Dat</span>
+                    <span>{t("welcome_admin")}</span>
                     <img
                       src="path/to/admin-avatar.jpg"
-                      alt="Admin Avatar"
+                      alt={t("admin_avatar_alt")}
                       className="rounded-circle"
                       style={{ width: "40px", height: "40px" }}
                     />

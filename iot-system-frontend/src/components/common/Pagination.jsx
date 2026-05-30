@@ -1,5 +1,9 @@
 // components/common/Pagination.jsx
+import { useTranslation } from "react-i18next";
+
 export function Pagination({ page, totalPages, onPageChange }) {
+  const { t } = useTranslation("common");
+
   if (totalPages <= 1) return null;
 
   return (
@@ -10,11 +14,11 @@ export function Pagination({ page, totalPages, onPageChange }) {
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
       >
-        « Previous
+        {t("pagination.previous")}
       </button>
 
       <span className="fw-bold fs-5 text-primary">
-        Page {page} / {totalPages}
+        {t("pagination.page", { page, totalPages })}
       </span>
       {/* nút tiếp theo */}
       <button
@@ -22,7 +26,7 @@ export function Pagination({ page, totalPages, onPageChange }) {
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
       >
-        Next »
+        {t("pagination.next")}
       </button>
     </div>
   );

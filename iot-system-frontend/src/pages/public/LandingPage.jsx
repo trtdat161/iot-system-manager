@@ -74,11 +74,11 @@ export function LandingPage() {
 
       {/* ── NAVBAR ── */}
       <header>
-        <nav className="dt-navbar" aria-label="Điều hướng chính">
+        <nav className="dt-navbar" aria-label="Main navigation">
           <div className="container">
             <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
               {/* Brand */}
-              <a href="#home" aria-label="DTECH trang chủ" className="dt-brand">
+              <a href="#home" aria-label="DTECH home" className="dt-brand">
                 DTECH
                 <span className="dt-blink dt-brand-dot" />
               </a>
@@ -89,13 +89,13 @@ export function LandingPage() {
                   className="dt-btn dt-btn-outline"
                   onClick={() => navigate("/login")}
                 >
-                  Đăng nhập
+                  Login
                 </button>
                 <button
                   className="dt-btn dt-btn-solid"
                   onClick={() => navigate("/register")}
                 >
-                  Đăng ký miễn phí
+                  Register free
                 </button>
               </div>
             </div>
@@ -108,7 +108,7 @@ export function LandingPage() {
         {/* ── HERO ── */}
         <section
           id="home"
-          aria-label="Giới thiệu DTECH"
+          aria-label="DTECH introduction"
           className="dt-hero-section"
         >
           <div className="container">
@@ -117,7 +117,7 @@ export function LandingPage() {
               <div className="col-lg-6">
                 <div className="dt-badge">
                   <span className="dt-badge-dot" />
-                  Dự án IoT cá nhân
+                  Personal IoT project
                 </div>
 
                 <h1 className="dt-hero-title">
@@ -126,25 +126,25 @@ export function LandingPage() {
                 </h1>
 
                 <p className="dt-hero-desc">
-                  Hệ thống quản lý thiết bị IoT cá nhân giúp bạn giám sát báo
-                  cháy, khí gas, nhiệt độ… một cách dễ dàng và nhận thông báo
-                  realtime qua dashboard & email.
+                  A personal IoT device management system that helps you monitor
+                  fire alerts, gas levels, temperature, and receive realtime
+                  notifications through the dashboard and email.
                 </p>
 
                 <div className="d-flex flex-wrap gap-3 mb-5">
                   <HeroBtn href="/register" variant="primary">
-                    ⊕ Tạo tài khoản miễn phí
+                    + Create free account
                   </HeroBtn>
                   <HeroBtn href="/login" variant="secondary">
-                    → Đăng nhập
+                    -&gt; Login
                   </HeroBtn>
                 </div>
 
                 <div className="dt-stats">
                   {[
                     { num: "100%", label: "Realtime" },
-                    { num: "24/7", label: "Giám sát" },
-                    { num: "SignalR", label: "Kết nối" },
+                    { num: "24/7", label: "Monitoring" },
+                    { num: "SignalR", label: "Connection" },
                   ].map(({ num, label }) => (
                     <div key={label} className="dt-stat">
                       <span className="dt-stat-num">{num}</span>
@@ -173,9 +173,9 @@ export function LandingPage() {
               <div className="col-lg-8">
                 <p className="dt-section-tag">personal project</p>
                 <h2 id="features-heading" className="dt-section-title">
-                  Quản lý IoT{" "}
+                  IoT management{" "}
                   <span className="dt-section-title-highlight">
-                    đơn giản & mạnh mẽ
+                    simple and powerful
                   </span>
                 </h2>
               </div>
@@ -185,28 +185,28 @@ export function LandingPage() {
               {[
                 {
                   icon: "📡",
-                  title: "Quản lý thiết bị IoT",
-                  desc: "Thêm, theo dõi module báo cháy, báo khí gas, cảm biến nhiệt độ… dễ dàng qua giao diện thân thiện.",
+                  title: "IoT device management",
+                  desc: "Add and monitor fire alarm modules, gas alarm modules, temperature sensors, and more through a friendly interface.",
                 },
                 {
                   icon: "🔔",
-                  title: "Thông báo thông minh",
-                  desc: "Nhận cảnh báo realtime khi khí gas vượt ngưỡng, nhiệt độ cao, mất kết nối sensor. Gửi email + thông báo đến khi bạn xác nhận.",
+                  title: "Smart notifications",
+                  desc: "Receive realtime alerts when gas levels exceed thresholds, temperature is high, or sensors disconnect. Send email and notifications until you acknowledge them.",
                 },
                 {
                   icon: "📊",
-                  title: "Biểu đồ & Lịch sử",
-                  desc: "Xem lịch sử thông báo, số lần thiết bị gửi alert, thống kê truy cập và biểu đồ dữ liệu cảm biến.",
+                  title: "Charts and history",
+                  desc: "View notification history, device alert counts, access statistics, and sensor data charts.",
                 },
                 {
                   icon: "👤",
-                  title: "Phân quyền rõ ràng",
-                  desc: "Admin quản lý user & thiết bị • User theo dõi dashboard cá nhân và đổi profile.",
+                  title: "Clear permissions",
+                  desc: "Admins manage users and devices. Users monitor their personal dashboard and update their profile.",
                 },
                 {
                   icon: "🤖",
-                  title: "AI hỗ trợ (tùy chọn)",
-                  desc: "Tích hợp LangChain + LangGraph để tự động xử lý và đưa ra cảnh báo thông minh hơn.",
+                  title: "AI assistance (optional)",
+                  desc: "Integrate LangChain and LangGraph to automate processing and provide smarter alerts.",
                 },
               ].map(({ icon, title, desc }, index) => (
                 <div key={index} className="col-md-6 col-lg-4">
@@ -231,14 +231,13 @@ export function LandingPage() {
                 DTECH<span className="dt-footer-brand-dot">.</span>
               </div>
               <p className="dt-footer-desc">
-                Dự án IoT cá nhân • Giám sát thông minh cho ngôi nhà & không
-                gian của bạn
+                Personal IoT project. Smart monitoring for your home and space.
               </p>
             </div>
 
             <div className="col-md-4 text-md-end">
               <p className="dt-footer-copy">
-                © {year} DTECH - Dự án cá nhân của Tiến Đạt
+                © {year} DTECH - A personal project by Tien Dat
               </p>
 
               {/* Liên hệ */}
@@ -292,7 +291,7 @@ function HeroBtn({ href, variant, children }) {
   );
 }
 
-/** Dashboard mockup cho dự án cá nhân */
+/** Dashboard mockup for the personal project */
 function DashboardMockup() {
   return (
     <div className="dt-dashboard" role="img" aria-label="Dashboard DTECH IoT">
@@ -309,33 +308,33 @@ function DashboardMockup() {
 
       <div className="dt-dashboard-body">
         <div className="dt-metric">
-          <div className="dt-metric-label">Khí Gas</div>
+          <div className="dt-metric-label">Gas</div>
           <div className="dt-metric-value" style={{ color: "#ff5f57" }}>
             0.85%
           </div>
-          <div className="dt-metric-change warning">Vượt ngưỡng nhẹ</div>
+          <div className="dt-metric-change warning">Slightly above threshold</div>
         </div>
         <div className="dt-metric">
-          <div className="dt-metric-label">Nhiệt độ</div>
+          <div className="dt-metric-label">Temperature</div>
           <div className="dt-metric-value">31.4°C</div>
-          <div className="dt-metric-change positive">▲ Cao hơn bình thường</div>
+          <div className="dt-metric-change positive">▲ Above normal</div>
         </div>
         <div className="dt-metric">
-          <div className="dt-metric-label">Thiết bị</div>
+          <div className="dt-metric-label">Devices</div>
           <div className="dt-metric-value">4 Online</div>
-          <div className="dt-metric-change positive">Tất cả hoạt động</div>
+          <div className="dt-metric-change positive">All systems active</div>
         </div>
 
         <div className="dt-devices mt-3">
-          <div className="dt-metric-label">Thiết bị gần đây</div>
+          <div className="dt-metric-label">Recent devices</div>
           <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Module Báo Khí Gas
+            <span className="dt-device-dot online" /> Gas Alarm Module
           </div>
           <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Cảm biến Nhiệt độ
+            <span className="dt-device-dot online" /> Temperature Sensor
           </div>
           <div className="dt-device-item">
-            <span className="dt-device-dot idle" /> Module Báo Cháy
+            <span className="dt-device-dot idle" /> Fire Alarm Module
           </div>
         </div>
       </div>

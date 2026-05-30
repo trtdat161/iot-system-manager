@@ -1,0 +1,46 @@
+{
+  "summary": {
+    "active_users": "Nguoi dung hoat dong",
+    "locked_users": "Nguoi dung bi khoa",
+    "online_devices": "Thiet bi hoat dong",
+    "offline_devices": "Thiet bi offline",
+    "active_users_note": "+12% trong 7 ngay",
+    "locked_users_note": "Can kiem tra",
+    "online_devices_note": "Online realtime",
+    "offline_devices_note": "-4% so voi hom qua"
+  },
+  "health": {
+    "stable": "On dinh",
+    "unstable": "Khong on dinh"
+  },
+  "errors": {
+    "unavailable": "Dashboard admin khong kha dung!",
+    "cannot_access": "Khong the truy cap dashboard admin..."
+  },
+  "total_users": "Tong so nguoi dung: {{count}}",
+  "title": "Dashboard Admin",
+  "subtitle": "Tong quan du lieu cua he thong IoT DTECH",
+  "weather": "Thoi tiet",
+  "loading": "Dang tai...",
+  "last_7_days": "7 ngay qua",
+  "active_devices": "Thiet bi hoat dong",
+  "fake_data": "Du lieu mau",
+  "active_devices_chart": "Bieu do cot thiet bi hoat dong",
+  "user_growth": "Tang truong nguoi dung",
+  "new_users": "Nguoi dung moi",
+  "one_month": "1 Thang",
+  "new_registrations": "Moi dang ky",
+  "activated": "Da kich hoat",
+  "locked": "Bi khoa",
+  "system_health": "Tinh trang he thong",
+  "owner": "Tran Tien Dat - DTECH",
+  "days": {
+    "monday": "T2",
+    "tuesday": "T3",
+    "wednesday": "T4",
+    "thursday": "T5",
+    "friday": "T6",
+    "saturday": "T7",
+    "sunday": "CN"
+  }
+}

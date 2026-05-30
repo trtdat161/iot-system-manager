@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import {
   DeleteAccount,
   GetAccounts,
@@ -25,23 +25,25 @@ import { MdManageAccounts } from "react-icons/md";
 import { Pagination } from "../../components/common/Pagination";
 
 export function ManagerUser() {
-  const [errorAccount, setErrorAccount] = useState("");
+  const [errorAccount, _setErrorAccount] = useState("");
   const [deleteUser, setDeleteUser] = useState(null); // null nhận object
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
 
   const [accounts, setAccounts] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const navigate = useNavigate();
   const [searchStatus, setSearchStatus] = useState(null);
   const [searchName, setSearchName] = useState("");
-  const { t, i18n } = useTranslation("admin_manager_user");
+  const { t } = useTranslation("admin_manager_user");
 
   const fetchAccounts = async (currentPage) => {
     try {
       const response = await GetAccounts(currentPage, PAGE_SIZE);
       const paged = response.data;
       // i18n.changeLanguage(localStorage.getItem("lang") || "vi-VN");
+      setTotalUsers(paged.totalItems ?? 0); // totalItems là của BE PagedResponseDtos
       setAccounts(Array.isArray(paged.data) ? paged.data : []);
       setTotalPages(paged.totalPages ?? 1); // totalPages là của BE PagedResponseDtos
     } catch (err) {
@@ -96,7 +98,15 @@ export function ManagerUser() {
       <h5 className="mb-3 fw-semibold parent">
         <div className="bg-white p-3 text-dark d-flex justify-content-between align-items-center shadow-sm border rounded-2">
           <div>
-            <h4>tổng người dùng: 100</h4>
+            <h4>
+              {t("total_user")}{" "}
+              <span
+                className="badge rounded-pill text-white"
+                style={{ backgroundColor: "#fd7e14" }}
+              >
+                {totalUsers}
+              </span>
+            </h4>
             <div className="title">
               <span className="account-count-badge">
                 {t("manage_users")}
