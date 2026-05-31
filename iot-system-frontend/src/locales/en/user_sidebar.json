@@ -1,0 +1,12 @@
+{
+  "user": "USER",
+  "device_access": "Device access",
+  "dashboard": "Dashboard",
+  "device_notifications": "Device notification history",
+  "help": "Help",
+  "profile": "Profile",
+  "logout": "Logout",
+  "logout_error": "Logout failed",
+  "expand": "Expand sidebar",
+  "collapse": "Collapse sidebar"
+}

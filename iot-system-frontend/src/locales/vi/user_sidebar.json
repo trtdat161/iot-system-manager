@@ -1,0 +1,12 @@
+{
+  "user": "NGUOI DUNG",
+  "device_access": "Quyen truy cap thiet bi",
+  "dashboard": "Bang dieu khien",
+  "device_notifications": "Lich su thong bao tu thiet bi",
+  "help": "Tro giup",
+  "profile": "Ho so",
+  "logout": "Dang xuat",
+  "logout_error": "Loi khi dang xuat",
+  "expand": "Mo rong sidebar",
+  "collapse": "Thu gon sidebar"
+}

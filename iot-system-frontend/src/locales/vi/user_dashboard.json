@@ -1,3 +1,21 @@
 {
-  "title": "Dashboard nguoi dung"
+  "title": "Bang dieu khien nguoi dung",
+  "notification": "Thong bao tu thiet bi",
+  "hello": "Xin chao: {{name}}",
+  "temperature": {
+    "label": "Nhiet do"
+  },
+  "connection": {
+    "status": "Ket noi thanh cong",
+    "note": "Thiet bi DTECH-01 dang online va san sang nhan du lieu cam bien.",
+    "connect": "Ket noi",
+    "disconnect": "Ngat ket noi"
+  },
+  "alert": {
+    "confirm": "OK, da doc"
+  },
+  "sensors": {
+    "gas_safe": "Nguong gas an toan",
+    "air_stable": "Khong khi on dinh"
+  }
 }

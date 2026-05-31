@@ -1,3 +1,21 @@
 {
-  "title": "User Dashboard"
+  "title": "User Dashboard",
+  "notification": "Device notification",
+  "hello": "Hello: {{name}}",
+  "temperature": {
+    "label": "Temperature"
+  },
+  "connection": {
+    "status": "Connect successful",
+    "note": "Device DTECH-01 is online and ready to receive sensor data.",
+    "connect": "Connect",
+    "disconnect": "Disconnect"
+  },
+  "alert": {
+    "confirm": "OK, marked as read"
+  },
+  "sensors": {
+    "gas_safe": "Gas threshold safe",
+    "air_stable": "Air condition stable"
+  }
 }
