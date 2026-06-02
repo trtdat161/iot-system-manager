@@ -60,7 +60,7 @@ export function Login() {
         if (role === "admin") {
           navigate("/frame-layout/dashboard-admin");
         } else {
-          navigate("/dashboard-user");
+          navigate("/user-frame-layout/dashboard-user");
         }
       }
       /*

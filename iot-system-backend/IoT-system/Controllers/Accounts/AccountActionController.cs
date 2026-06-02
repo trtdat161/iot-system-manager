@@ -84,5 +84,25 @@ namespace IoT_system.Controllers.Accounts
             var account = await accountServices.FindAccountById(id);
             return Ok(account);
         }
+
+        // xem profile mà ko cần truyền id vô tham số
+        [Authorize]// chỉ xác thực jwt còn lại role nào cũng đăng nhập đc
+        [Produces("application/json")]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()// ko truyền id dễ dàng gọi api xem info me
+        {
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await accountServices.FindAccountById(id);
+            return Ok(result);
+
+            /* -------- (TRÊN LÀ ĐANG GET INFO DÙNG THEO KIỂU KHI LÀM VIỆC VỚI JWT) ---------
+             * 
+             * User: là user hiện tại đang dăng nhập
+             * FindFirstValue: là lấy giá trị của 1 claim
+             * ClaimTypes.NameIdentifier: Là claim chứa ID người dùng
+             * ! là chắc chắn giá trị ko null 
+             * 
+             * TÓM LẠI: => (Lấy UserId từ JWT của người đang đăng nhập rồi chuyển thành kiểu int) */
+        }
     }
 }

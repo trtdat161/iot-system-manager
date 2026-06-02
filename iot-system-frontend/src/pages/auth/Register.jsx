@@ -91,15 +91,10 @@ export function Register() {
     try {
       const response = await RegisterAction(form); // thuộc tính data từ object response
       const user = response.data;
-      const { role } = response.data; // Lấy role từ response.data
-      console.log("user response:", user);
+      console.log("user response:", user.fullname);
       i18n.changeLanguage(user.languageCode); // languageCode là hàm mặc định của i18n
       localStorage.setItem("lang", user.languageCode);
-      if (role === "admin") {
-        navigate("/dashboard-admin");
-      } else {
-        navigate("/dashboard-user");
-      }
+      navigate("/user-frame-layout/dashboard-user");
     } catch (err) {
       console.log("error:", { form: err.message });
       setErrors({ form: t("errors.register_failed") });

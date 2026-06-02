@@ -54,7 +54,7 @@ namespace IoT_system.Configurations.mqtt
         // gửi message
         public async Task PublishAsync(string topic, string payload)
         {
-            if(mqttClient == null || mqttClient.IsConnected)
+            if(mqttClient == null || !mqttClient.IsConnected)
             {
                 throw new InvalidOperationException("MQTT not connected !");
             }

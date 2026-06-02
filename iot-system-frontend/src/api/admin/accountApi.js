@@ -23,3 +23,6 @@ export const AdminUnlockAccount = (id) =>
 // xoá account
 export const DeleteAccount = (id) =>
     axiosInstance.delete(`action/delete-account/${id}`);
+
+// get me
+export const AdminGetMe = () => axiosInstance.get("action/me");

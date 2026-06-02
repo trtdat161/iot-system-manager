@@ -1,21 +1,23 @@
-﻿using AutoMapper;
-using IoT_system.DTOS.Accounts;
-using IoT_system.DTOS.Common;
-using IoT_system.DTOS.Devices;
-using IoT_system.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using IoT_system.Configurations.mqtt;
 
 namespace IoT_system.Services.Devices
 {
     public class DeviceServicesImpl : DeviceServices
     {
-        private readonly DatabaseContext dbContext;
-        private readonly IMapper mapper;
+        private readonly MqttClient mqttClient;
 
-        public DeviceServicesImpl(DatabaseContext _dbContext, IMapper _mapper)
+        public DeviceServicesImpl(MqttClient _mqttClient)
         {
-            dbContext = _dbContext;
-            mapper = _mapper;
+            mqttClient = _mqttClient;
+        }
+
+        // ------ connect mqtt -------
+        public async Task ConnectDevice()
+        {
+            await mqttClient.ConnectAsync(
+                broker: "broker.hivemq.com",
+                port: 1883
+            );
         }
     }
 }

@@ -13,6 +13,11 @@ using System.Globalization;
 
 /* ======================================== BUILDER ==================================== */
 var builder = WebApplication.CreateBuilder(args);
+
+/* đăng ký mqtt services, MQTT client là luồng kết nối dài (persistent connection), 
+không tạo đi tạo lại cho mỗi request là lý do dùng AddSingleton */
+builder.Services.AddSingleton<MqttClient>();
+
 // add cors policy để sau này FE gọi được
 builder.Services.AddCors(options =>
 {

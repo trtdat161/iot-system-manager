@@ -1,16 +1,31 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "../switchLanguage/LanguageSwitch";
 import { useTranslation } from "react-i18next";
 
 // import icon
 import { FaHome } from "react-icons/fa";
+import { AdminGetMe } from "../../api/admin/accountApi";
 
 export function FrameLayout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [fullname, setFullname] = useState("");
   const navigate = useNavigate();
   const { t } = useTranslation("frame_layout");
+
+  const infoProfile = async () => {
+    try {
+      const response = await AdminGetMe();
+      setFullname(response.data.fullname);
+    } catch (err) {
+      console.log("error:", err?.message || err);
+    }
+  };
+
+  useEffect(() => {
+    infoProfile();
+  }, []);
 
   // style content
   const styleFrame = {
@@ -48,7 +63,9 @@ export function FrameLayout() {
                   {/* right */}
                   <div className="d-flex align-items-center gap-3">
                     {/* sau gắn thêm tấm hình */}
-                    <span>{t("welcome_admin")}</span>
+                    <span>
+                      {t("welcome_admin")} {fullname}
+                    </span>
                     <img
                       src="path/to/admin-avatar.jpg"
                       alt={t("admin_avatar_alt")}

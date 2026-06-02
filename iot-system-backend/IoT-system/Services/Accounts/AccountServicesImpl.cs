@@ -86,7 +86,7 @@ namespace IoT_system.Services.Accounts
                 TotalItems = totalItems,
             };
         }
-        // find by id
+        // find by id để get tài khoản và hello...
         public async Task<AccountResponseDtos> FindAccountById(int id)
         {
             if(id <= 0)// ko chấp nhận số âm or 0
