@@ -1,4 +1,5 @@
-﻿using IoT_system.Services.Accounts;
+﻿using IoT_system.DTOS.Accounts;
+using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -103,6 +104,17 @@ namespace IoT_system.Controllers.Accounts
              * ! là chắc chắn giá trị ko null 
              * 
              * TÓM LẠI: => (Lấy UserId từ JWT của người đang đăng nhập rồi chuyển thành kiểu int) */
+        }
+
+        // đôi profile
+        [Authorize]// chỉ xác thực jwt còn lại role nào cũng đăng nhập đc đổi đc
+        [Produces("application/json")]
+        [HttpPost("profile")]
+        public async Task<IActionResult> EditProfiles([FromBody] AccountEditedResonseDtos accountEdited)// ko truyền id dễ dàng gọi api xem info me
+        {
+            var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await accountServices.EditProfile(accountEdited, id);
+            return Ok(result);
         }
     }
 }

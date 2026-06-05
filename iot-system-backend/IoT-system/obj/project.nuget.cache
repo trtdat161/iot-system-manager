@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "aW5ADCFHEZU=",
+  "dgSpecHash": "UKydzKcAJ2M=",
   "success": true,
-  "projectFilePath": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+  "projectFilePath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -65,9 +65,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'AutoMapper' 12.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
-      "projectPath": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+      "projectPath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
       "warningLevel": 1,
-      "filePath": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+      "filePath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
       "libraryId": "AutoMapper",
       "targetGraphs": [
         "net10.0"

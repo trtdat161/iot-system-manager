@@ -3387,11 +3387,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+      "projectUniqueName": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
       "projectName": "IoT-system",
-      "projectPath": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+      "projectPath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\iot-system-manager\\iot-system-backend\\IoT-system\\obj\\",
+      "outputPath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

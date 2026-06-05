@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BCrypt.Net;
 using CaiderProject.Authen;
 using IoT_system.Configurations.jwt;
 
@@ -29,7 +30,7 @@ namespace IoT_system.Services.Accounts
             IHttpContextAccessor _httpContextAccessor,
             IOptions<JwtOptions> _options,// IOptions   
             IMapper _mapper
-            ) 
+            )
         {
             dbContext = _dbContext;
             jwtTokenServices = _jwtTokenServices;
@@ -66,7 +67,7 @@ namespace IoT_system.Services.Accounts
             {
                 page = 1;
             }
-            if (pageSize <= 0 || pageSize > 100){
+            if (pageSize <= 0 || pageSize > 100) {
                 pageSize = 10; // giới hạn max 100
             }
             // tolist nếu ko có record thì trả về [] nên ko cần check null
@@ -89,7 +90,7 @@ namespace IoT_system.Services.Accounts
         // find by id để get tài khoản và hello...
         public async Task<AccountResponseDtos> FindAccountById(int id)
         {
-            if(id <= 0)// ko chấp nhận số âm or 0
+            if (id <= 0)// ko chấp nhận số âm or 0
             {
                 throw new BadHttpRequestException("id invalid !");
             }
@@ -104,7 +105,7 @@ namespace IoT_system.Services.Accounts
         // khoá tk
         public async Task<AccountResponseDtos> LockAccountById(int id, string note)
         {
-            if(id <= 0)
+            if (id <= 0)
             {
                 throw new BadHttpRequestException("id invalid !");
             }
@@ -164,12 +165,12 @@ namespace IoT_system.Services.Accounts
         // xoá tài khoản(soft delete để sau còn lưu đc lịch sử của user đó, thống kê, thuộc thiết bị nào...)
         public async Task<bool> DeleteAccount(int id)
         {
-            if(id <= 0)
+            if (id <= 0)
             {
                 throw new BadHttpRequestException("id invalid !");
             }
             var account = await dbContext.Accounts.FindAsync(id);
-            if(account == null)
+            if (account == null)
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
@@ -180,140 +181,166 @@ namespace IoT_system.Services.Accounts
         // ------------------ register ------------------
         public async Task<AccountResponseDtos> Register(AccountRegisterDtos accountRegisterDtos)// dto parameter
         {
-                // fullname
-                if (string.IsNullOrWhiteSpace(accountRegisterDtos.Fullname))
-                {
-                    throw new BadHttpRequestException("Fullname is required");
-                }
+            // fullname
+            if (string.IsNullOrWhiteSpace(accountRegisterDtos.Fullname))
+            {
+                throw new BadHttpRequestException("Fullname is required");
+            }
 
-                // email
-                if (string.IsNullOrWhiteSpace(accountRegisterDtos.Email))
-                {
-                    throw new BadHttpRequestException("Email is required");
-                }
-                if (!Regex.IsMatch(accountRegisterDtos.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                {
-                    throw new BadHttpRequestException("Email is invalid");
-                }
-                if (await dbContext.Accounts.AnyAsync(acc => acc.Email == accountRegisterDtos.Email))// check email unique
-                {
-                    throw new BadHttpRequestException("Email already exists");
-                }
+            // email
+            if (string.IsNullOrWhiteSpace(accountRegisterDtos.Email))
+            {
+                throw new BadHttpRequestException("Email is required");
+            }
+            if (!Regex.IsMatch(accountRegisterDtos.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                throw new BadHttpRequestException("Email is invalid");
+            }
+            if (await dbContext.Accounts.AnyAsync(acc => acc.Email == accountRegisterDtos.Email))// check email unique
+            {
+                throw new BadHttpRequestException("Email already exists");
+            }
 
-                // password
-                if (string.IsNullOrWhiteSpace(accountRegisterDtos.Password))
-                {
-                    throw new BadHttpRequestException("Password is required");
-                }
-                if (!Regex.IsMatch(accountRegisterDtos.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
-                {
-                    throw new BadHttpRequestException("Password must be at least 6 characters with 1 uppercase, 1 lowercase and 1 number");
-                }
+            // password
+            if (string.IsNullOrWhiteSpace(accountRegisterDtos.Password))
+            {
+                throw new BadHttpRequestException("Password is required");
+            }
+            if (!Regex.IsMatch(accountRegisterDtos.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
+            {
+                throw new BadHttpRequestException("Password must be at least 6 characters with 1 uppercase, 1 lowercase and 1 number");
+            }
 
-                // cho user chọn ngôn ngữ khi đăng ký
-                if (!await dbContext.Languages.AnyAsync(l => l.Id == accountRegisterDtos.LanguageId))
-                {
-                    throw new BadHttpRequestException("Language is invalid");
-                }
+            // cho user chọn ngôn ngữ khi đăng ký
+            if (!await dbContext.Languages.AnyAsync(l => l.Id == accountRegisterDtos.LanguageId))
+            {
+                throw new BadHttpRequestException("Language is invalid");
+            }
 
-                // Map DTO -> 
-                accountRegisterDtos.Password = BCrypt.Net.BCrypt.HashPassword(accountRegisterDtos.Password);// hash rồi map
-                var account = mapper.Map<Account>(accountRegisterDtos);
-                // set override value default
-                account.Role = "user";
-                account.Status = true;
-                account.CreatedAt = DateTime.UtcNow;
+            // Map DTO -> 
+            accountRegisterDtos.Password = BCrypt.Net.BCrypt.HashPassword(accountRegisterDtos.Password);// hash rồi map
+            var account = mapper.Map<Account>(accountRegisterDtos);
+            // set override value default
+            account.Role = "user";
+            account.Status = true;
+            account.CreatedAt = DateTime.UtcNow;
 
-                // (save db)
-                dbContext.Accounts.Add(account);
-                await dbContext.SaveChangesAsync(); // insert thật vào db
+            // (save db)
+            dbContext.Accounts.Add(account);
+            await dbContext.SaveChangesAsync(); // insert thật vào db
 
-                // load lại account kèm Language vì sau insert navigation property chưa được load
-                await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //load thêm data Language cho account
+            // load lại account kèm Language vì sau insert navigation property chưa được load
+            await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //load thêm data Language cho account
 
-                GenerateJwt(account);
+            GenerateJwt(account);
 
-                // dùng account thật đã register map đến AccountResponseDtos trả về cho client
-                return mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
+            // dùng account thật đã register map đến AccountResponseDtos trả về cho client
+            return mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
         }
-            
+
 
         // ------------------ login ------------------
         public async Task<AccountLoginResponseDtos> Login(AccountLoginDtos accountLoginDtos)
         {
-                // email login
-                if (string.IsNullOrWhiteSpace(accountLoginDtos.Email))
-                {
-                    throw new BadHttpRequestException("Email is required");
-                }
-                if (!Regex.IsMatch(accountLoginDtos.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                {
-                    throw new BadHttpRequestException("Email is invalid");
-                }// ko check email đã tồn tại vì nếu làm vậy sẽ ko bao h login đc
+            // email login
+            if (string.IsNullOrWhiteSpace(accountLoginDtos.Email))
+            {
+                throw new BadHttpRequestException("Email is required");
+            }
+            if (!Regex.IsMatch(accountLoginDtos.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                throw new BadHttpRequestException("Email is invalid");
+            }// ko check email đã tồn tại vì nếu làm vậy sẽ ko bao h login đc
 
 
-                // password
-                if (string.IsNullOrWhiteSpace(accountLoginDtos.Password))
-                {
-                    throw new BadHttpRequestException("Password is required");
-                }// ko check Regex vì nếu lỡ đủ patern nhưng sai pass thì cũng đi luôn nên chỉ check password rỗng
+            // password
+            if (string.IsNullOrWhiteSpace(accountLoginDtos.Password))
+            {
+                throw new BadHttpRequestException("Password is required");
+            }// ko check Regex vì nếu lỡ đủ patern nhưng sai pass thì cũng đi luôn nên chỉ check password rỗng
 
 
-                // ------- check tồn tại tk trước -------
-                var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
-                if (account == null) 
-                {
-                    throw new BadHttpRequestException("Email or password is incorrect");
-                }
-                // ------- rồi mới check status -------
-                if (!account.Status)
-                {
+            // ------- check tồn tại tk trước -------
+            var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
+            if (account == null)
+            {
+                throw new BadHttpRequestException("Email or password is incorrect");
+            }
+            // ------- rồi mới check status -------
+            if (!account.Status)
+            {
                 throw new BadHttpRequestException("ACCOUNT_LOCKED"); // FE dùng key này để check
-                }
-                bool isValid = BCrypt.Net.BCrypt.Verify(accountLoginDtos.Password, account.Password);
-                if (!isValid)
-                {
-                    throw new BadHttpRequestException("Email or password is incorrect");
-                }
+            }
+            bool isValid = BCrypt.Net.BCrypt.Verify(accountLoginDtos.Password, account.Password);
+            if (!isValid)
+            {
+                throw new BadHttpRequestException("Email or password is incorrect");
+            }
 
-                // -> nếu ok chạy đc đến đây thì thực hiện tiếp
-                GenerateJwt(account);
+            // -> nếu ok chạy đc đến đây thì thực hiện tiếp
+            GenerateJwt(account);
 
-                // done
-                return new AccountLoginResponseDtos
-                {
-                    Message = "LOGIN_SUCCESS",
-                    LanguageCode = account.Language.Code,
-                    Role = account.Role // trả về để biết role nào rồi phân quyền
-                };
+            // done
+            return new AccountLoginResponseDtos
+            {
+                Message = "LOGIN_SUCCESS",
+                LanguageCode = account.Language.Code,
+                Role = account.Role // trả về để biết role nào rồi phân quyền
+            };
         }
-            
+
 
         // logout 
         public AccountLogoutResponseDtos Logout()
         {
-                httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
-                {
-                    /*
-                     do SameSiteMode.None
-                     => nên phải khai báo lại SameSiteMode.None là:
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.None,
-
-                    => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
-                     */
+            httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
+            {
+                /*
+                 do SameSiteMode.None
+                 => nên phải khai báo lại SameSiteMode.None là:
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,  // <- bắt buộc phải có
-                    Path = "/"// trỏ vào cookie đó
-                });
-                return new AccountLogoutResponseDtos
-                {
-                    Message = "LOGOUT_SUCCESS"
-                };
-            }
+                    SameSite = SameSiteMode.None,
 
+                => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
+                 */
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,  // <- bắt buộc phải có
+                Path = "/"// trỏ vào cookie đó
+            });
+            return new AccountLogoutResponseDtos
+            {
+                Message = "LOGOUT_SUCCESS"
+            };
+        }
+
+        /* ------------ edit profile ------------ */
+        public async Task<AccountResponseDtos> EditProfile(AccountEditedResonseDtos accountEdit, int id)
+        {
+            var account = await dbContext.Accounts.FindAsync(id);// account model thật
+
+            if (account == null)
+            {
+                throw new BadHttpRequestException("not found account!");
+            }
+            if (await dbContext.Accounts.AnyAsync(acc => acc.Email == accountEdit.Email && acc.Id != id))// check xem email hiện tại có chưa nếu có rồi thì bá, và chech nếu trùng id đã có tức là id hiện tại thì cho qua chứ nếu báo cả id thì sẽ ko bao h sửa đc profile
+            {
+                throw new BadHttpRequestException("Email already exists!");
+            }
+            
+            // sau khi check mail thì mới gán
+            account.Fullname = accountEdit.Fullname;
+            account.Email = accountEdit.Email;
+            account.LanguageId = accountEdit.LanguageId;
+            if (!string.IsNullOrWhiteSpace(accountEdit.Password))// nếu có password thì mới hash và đổi
+            {
+                account.Password = BCrypt.Net.BCrypt.HashPassword(accountEdit.Password);
+            }
+            
+            await dbContext.SaveChangesAsync();
+            return mapper.Map<AccountResponseDtos>(account);
+        } 
     }
 }
 /*
