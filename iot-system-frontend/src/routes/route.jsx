@@ -11,6 +11,7 @@ import { FrameLayoutUser } from "../components/user/FrameLayout";
 import { DeviceNotificationHistory } from "../pages/user/DeviceNotificationHistory";
 import { Help } from "../pages/user/Help";
 import { Profile } from "../pages/user/Profile";
+import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 
 export function CreateRouter() {
   return (
@@ -27,6 +28,7 @@ export function CreateRouter() {
           <Route path="dashboard-admin" element={<DashboardAdmin />}></Route>
           <Route path="manager-user" element={<ManagerUser />}></Route>
           <Route path="lock-account/:id" element={<LockAccount />}></Route>
+          <Route path="profile" element={<ProfileAdmin />}></Route>
         </Route>
 
         {/* user */}

@@ -5,7 +5,7 @@ import {
   FaUsers,
   FaMicrochip,
   FaChartBar,
-  FaCog,
+  FaUserCircle,
   FaSignOutAlt,
   FaBars,
   FaTimes,
@@ -33,19 +33,14 @@ const MENU_ITEMS = [
     path: "/frame-layout/",
   },
   {
-    key: "statistics",
-    icon: <FaChartBar size={16} />,
-    path: "/frame-layout/",
-  },
-  {
     key: "notifications",
     icon: <FaBell size={16} />,
     path: "/frame-layout/",
   },
   {
-    key: "settings",
-    icon: <FaCog size={16} />,
-    path: "/frame-layout/",
+    key: "profile",
+    icon: <FaUserCircle size={16} />,
+    path: "/frame-layout/profile",
   },
 ];
 
