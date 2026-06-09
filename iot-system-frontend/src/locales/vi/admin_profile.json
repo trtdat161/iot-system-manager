@@ -1,0 +1,48 @@
+{
+  "heading": {
+    "account_details": "Chi tiet tai khoan",
+    "profile_information": "Thong tin ho so"
+  },
+  "summary": {
+    "current_access": "Quyen hien tai",
+    "created_at": "Ngay tao"
+  },
+  "fields": {
+    "fullname": "Ho va ten",
+    "email": "Email",
+    "password": "Mat khau",
+    "language": "Ngon ngu"
+  },
+  "languages": {
+    "vietnamese": "Tieng Viet",
+    "english": "Tieng Anh"
+  },
+  "status": {
+    "active": "Dang hoat dong",
+    "inactive": "Khong hoat dong"
+  },
+  "roles": {
+    "admin": "Quan tri vien",
+    "no_data": "Khong co du lieu"
+  },
+  "actions": {
+    "save": "Luu",
+    "show_password": "Hien mat khau",
+    "hide_password": "An mat khau"
+  },
+  "messages": {
+    "update_success": "Cap nhat ho so thanh cong"
+  },
+  "errors": {
+    "fullname_required": "Vui long nhap ho va ten",
+    "email_required": "Vui long nhap email",
+    "email_invalid": "Email khong hop le",
+    "password_min": "Mat khau phai co it nhat 6 ky tu",
+    "password_lowercase": "Mat khau phai co it nhat 1 chu thuong",
+    "password_uppercase": "Mat khau phai co it nhat 1 chu hoa",
+    "password_number": "Mat khau phai co it nhat 1 chu so",
+    "update_failed": "Cap nhat that bai!",
+    "load_failed": "Khong the tai ho so. Vui long thu lai sau.",
+    "profile_unavailable": "Khong co du lieu ho so."
+  }
+}

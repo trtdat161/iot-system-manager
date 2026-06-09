@@ -29,10 +29,10 @@ export function Register() {
     e.target.name  = "languageId"
     e.target.value = "2"
     */
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   useEffect(() => {

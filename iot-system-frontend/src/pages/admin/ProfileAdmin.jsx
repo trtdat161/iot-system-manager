@@ -1,161 +1,284 @@
 import {
   FaEnvelope,
-  FaFingerprint,
+  FaEye,
+  FaEyeSlash,
   FaGlobe,
   FaIdBadge,
   FaKey,
   FaShieldAlt,
   FaUserCircle,
-  FaUserTag,
 } from "react-icons/fa";
 import "../../css/admin/Dashboard.css";
 import "../../css/admin/ProfileAdmin.css";
-import { GetAdminProfile } from "../../api/admin/profileApi";
+import {
+  GetAdminProfile,
+  UpdateAdminProfile,
+} from "../../api/admin/profileApi";
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
+
+const languageCodeById = {
+  1: "vi-VN",
+  2: "en-US",
+};
 
 export function ProfileAdmin() {
-  const [profile, setProfile] = useState(null);
-  const [error, setError] = useState("");
+  const { t, i18n } = useTranslation("admin_profile");
+  // const [profile, setProfile] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [load, setLoad] = useState("");
+  const [done, setDone] = useState("");
+  const [originalForm, setOriginalForm] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    languageId: 0,
+    role: null,
+    status: null,
+    createdAt: "",
+  });
 
-  // array fields
-  const adminProfile = {
-    fullname: profile?.fullname || "Admin Name",
-    email: profile?.email || "admin@dtech.vn",
-    password: profile?.password || "********",
-    status: profile?.status ? "Active" : "Inactive",
-    role: profile?.role || "Administrator",
-    language: profile?.languageCode || "English",
-    createdAt: profile?.createdAt || "2026-05-30 22:15",
-    updatedAt: profile?.updatedAt || "no data",
-  };
+  /*
+  cách xịn hơn cho nút nhấn disable
+  JSON.stringify chuyển object thành chuỗi để so sánh
+
+  form là user đang nhập / originalForm là từ server
+  nếu 2 object này mà như nhau thì isChanged = false -> button disabled
+  */
+  const isChanged = JSON.stringify(form) !== JSON.stringify(originalForm); // 2 này phải giống nhau về từng field... thì mới so sánh đc
 
   const profileFields = [
     {
       id: "fullname",
-      label: "Fullname",
-      value: adminProfile.fullname,
+      label: t("fields.fullname"),
+      value: form.fullname,
       type: "text",
       icon: <FaUserCircle />,
       tone: "cyan",
-      readOnly: false,
     },
     {
       id: "email",
-      label: "Email",
-      value: adminProfile.email,
+      label: t("fields.email"),
+      value: form.email,
       type: "email",
       icon: <FaEnvelope />,
       tone: "blue",
-      readOnly: false,
     },
     {
       id: "password",
-      label: "Password",
-      value: adminProfile.password,
+      label: t("fields.password"),
+      value: form.password,
       type: "password",
       icon: <FaKey />,
       tone: "amber",
-      readOnly: false,
     },
     {
-      id: "language",
-      label: "Language",
-      value: adminProfile.language,
+      id: "languageId",
+      label: t("fields.language"),
+      value: form.languageId,
       // ---- lặp qua ngôn ngữ ----
       inputType: "select",
       options: [
-        { value: "en", label: "English" },
-        { value: "vi", label: "Vietnamese" },
+        { value: 1, label: t("languages.vietnamese") },
+        { value: 2, label: t("languages.english") },
       ],
       type: "text",
       icon: <FaGlobe />,
       tone: "amber",
-      readOnly: false,
-    },
-    {
-      id: "status",
-      label: "Status",
-      value: adminProfile.status,
-      type: "text",
-      icon: <FaShieldAlt />,
-      tone: "green",
-      readOnly: true,
-    },
-    {
-      id: "role",
-      label: "Role",
-      value: adminProfile.role,
-      type: "text",
-      icon: <FaUserTag />,
-      tone: "cyan",
-      readOnly: true,
-    },
-    {
-      id: "createdAt",
-      label: "Created At",
-      value: adminProfile.createdAt,
-      type: "text",
-      icon: <FaIdBadge />,
-      tone: "blue",
-      readOnly: true,
-    },
-    {
-      id: "updatedAt",
-      label: "Updated At",
-      value: adminProfile.updatedAt,
-      type: "text",
-      icon: <FaIdBadge />,
-      tone: "green",
-      readOnly: true,
     },
   ];
-  // gọi api profile
-  const fetchProfile = async () => {
+
+  // handle change form lấy giá trị từ input và cập nhật vào state form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "languageId" ? Number(value) : value,
+    }));
+  };
+
+  // validate
+  const validate = () => {
+    const newErrors = {};
+
+    if (!form.fullname.trim()) {
+      newErrors.fullname = t("errors.fullname_required"); // trỏ đến tên key trong file translation.json
+    }
+
+    if (!form.email.trim()) {
+      newErrors.email = t("errors.email_required");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = t("errors.email_invalid");
+    }
+
+    // nếu có password thì mới validate
+    if (form.password.trim() !== "") {
+      if (form.password.length < 6) {
+        newErrors.password = t("errors.password_min");
+      } else if (!/(?=.*[a-z])/.test(form.password)) {
+        newErrors.password = t("errors.password_lowercase");
+      } else if (!/(?=.*[A-Z])/.test(form.password)) {
+        newErrors.password = t("errors.password_uppercase");
+      } else if (!/(?=.*\d)/.test(form.password)) {
+        newErrors.password = t("errors.password_number");
+      }
+    }
+
+    setErrors(newErrors); // set lỗi nếu có
+    return Object.keys(newErrors).length === 0; // trả về boolean, nếu newErrors = {}; thì là true
+  };
+
+  // gọi api update profile
+  const updateProfile = async (e) => {
+    e.preventDefault();
+    // check lại nếu hàm validate trả về false thì return lun
+    if (!validate()) {
+      return;
+    }
     try {
-      const response = await GetAdminProfile();
-      console.log("Admin profile response:", response.data);
-      setProfile(response.data);
-      // Xử lý response ở đây
+      // lọc password trước khi gửi
+      const payload = {
+        fullname: form.fullname,
+        email: form.email,
+        languageId: Number(form.languageId),
+      };
+      // chi thêm pass nếu người dùng có nhập
+      if (form.password.trim() !== "") {
+        payload.password = form.password;
+      }
+
+      const response = await UpdateAdminProfile(payload);
+      if (!response?.data) {
+        setErrors({ form: t("errors.update_failed") });
+        return;
+      }
+
+      console.log("Profile updated successfully:", response.data);
+      // setProfile(response.data);
+      setShowPassword(false);
+      const nextForm = {
+        ...form,
+        fullname: response.data.fullname,
+        email: response.data.email,
+        password: "", // put lên rồi thì lear tiếp, đảm bảo ko show pass trên UI
+        languageId: Number(response.data.languageId ?? form.languageId),
+        role: response.data.role ?? form.role,
+        status: response.data.status ?? form.status,
+        createdAt: response.data.createdAt
+          ? dayjs(response.data.createdAt).format("DD/MM/YYYY")
+          : form.createdAt,
+      };
+      setForm(nextForm);
+      setOriginalForm(nextForm);
+
+      const nextLanguage =
+        response.data.languageCode ?? languageCodeById[nextForm.languageId];
+      if (nextLanguage) {
+        await i18n.changeLanguage(nextLanguage);
+        localStorage.setItem("lang", nextLanguage);
+      }
+
+      setDone(i18n.t("admin_profile:messages.update_success"));
+      // sau khi set done thì đợi 2s set về chuỗi rỗng
+      setTimeout(() => {
+        setDone("");
+      }, 2000);
     } catch (error) {
-      console.error("Error fetching profile:", error);
-      setError("Failed to load profile. Please try again later.");
+      console.error("Error updating profile:", error);
+      setErrors({ form: t("errors.update_failed") });
     }
   };
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    let isMounted = true;
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
+    GetAdminProfile()
+      .then((response) => {
+        if (!isMounted) {
+          return;
+        }
 
-  if (!profile) {
-    return <div className="loading-message">Loading profile...</div>;
-  }
+        if (!response?.data) {
+          setLoad(i18n.t("admin_profile:errors.profile_unavailable"));
+          return;
+        }
+
+        console.log("Admin profile response:", response.data);
+        // formData chung gọi 1 lần tránh lặp code
+        const formData = {
+          fullname: response.data.fullname,
+          email: response.data.email,
+          password: "",
+          languageId: Number(response.data.languageId),
+          role: response.data.role,
+          status: response.data.status,
+          createdAt: response.data.createdAt
+            ? dayjs(response.data.createdAt).format("DD/MM/YYYY")
+            : "",
+        };
+
+        setForm(formData);
+        setOriginalForm(formData);
+      })
+      .catch((error) => {
+        if (!isMounted) {
+          return;
+        }
+
+        console.error("Error fetching profile:", error);
+        setLoad(i18n.t("admin_profile:errors.load_failed"));
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [i18n]);
 
   return (
     <main className="admin-dashboard admin-profile">
+      {load ? (
+        <span className="alert mb-4 text-center bg-danger">{load}</span>
+      ) : (
+        ""
+      )}
+      {done ? (
+        <span className="alert mb-4 text-center bg-success">{done}</span>
+      ) : (
+        ""
+      )}
       <section className="profile-card glass-panel">
         <aside className="profile-summary">
-          <div className="profile-avatar">
+          {/* <div className="profile-avatar">
             <FaIdBadge />
-          </div>
+          </div> */}
 
           <div className="profile-summary-content">
             <span className="profile-badge">
               <span className="live-dot"></span>
-              {adminProfile.status}
+              {form.status ? t("status.active") : t("status.inactive")}
             </span>
-            <h1>{adminProfile.fullname}</h1>
-            <p>{adminProfile.email}</p>
+            <h1>{form.fullname}</h1>
+            <p>{form.email}</p>
           </div>
 
           <div className="profile-access">
             <FaShieldAlt />
             <div>
-              <span>Current access</span>
-              <strong>{adminProfile.role}</strong>
+              <span>{t("summary.current_access")}</span>
+              <strong>
+                {form.role ? t("roles.admin") : t("roles.no_data")}
+              </strong>
+            </div>
+          </div>
+
+          <div className="profile-access">
+            <FaIdBadge />
+            <div>
+              <span>{t("summary.created_at")}</span>
+              <strong>{form.createdAt}</strong>
             </div>
           </div>
         </aside>
@@ -163,16 +286,15 @@ export function ProfileAdmin() {
         <section className="profile-form-panel">
           <div className="profile-form-heading">
             <div>
-              <span>Account details</span>
-              <h2>Profile information</h2>
+              <span>{t("heading.account_details")}</span>
+              <h2>{t("heading.profile_information")}</h2>
             </div>
-            <button className="profile-edit-button" type="submit">
-              Edit profile
-            </button>
+            {/* ---------- gọi đến profileForm trong id của form ---------- */}
           </div>
 
           <div className="profile-fields">
-            <form className="profile-form">
+            {/* ---------- dùng id để button có thể ko cần trong form mà vẫn submit được ---------- */}
+            <form className="profile-form" onSubmit={updateProfile}>
               {profileFields.map((field) => (
                 <div className={`profile-field ${field.tone}`} key={field.id}>
                   {/* ----- nhãn ----- */}
@@ -180,35 +302,75 @@ export function ProfileAdmin() {
                     <span className="profile-field-icon">{field.icon}</span>
                     {field.label}
                   </label>
-
                   {/* ------- input tuỳ chọn có thể là select hoặc input -------- */}
                   {field.inputType === "select" ? (
                     <select
-                      id={field.id}
                       name={field.id}
-                      defaultValue={field.value || ""}
-                      className={`profile-field-input ${field.readOnly ? "read-only" : ""}`}
-                      readOnly={field.readOnly}
+                      value={form[field.id] ?? ""}
+                      onChange={handleChange}
                     >
                       {field.options.map((option) => (
-                        <option key={option.value} value={option.value}>
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          className=" text-center"
+                        >
                           {option.label}
                         </option>
                       ))}
                     </select>
                   ) : (
-                    <input
-                      type={field.type}
-                      id={field.id}
-                      name={field.id}
-                      defaultValue={field.value || ""}
-                      className={`profile-field-input ${field.readOnly ? "read-only" : ""}`}
-                      readOnly={field.readOnly}
-                    />
+                    <div
+                      className={
+                        field.id === "password"
+                          ? "profile-password-control"
+                          : "profile-input-control"
+                      }
+                    >
+                      <input
+                        type={
+                          field.id === "password" && showPassword
+                            ? "text"
+                            : field.type
+                        }
+                        id={field.id}
+                        name={field.id}
+                        value={form[field.id] || ""}
+                        onChange={handleChange}
+                      />
+                      {field.id === "password" && (
+                        <button
+                          type="button"
+                          className="profile-password-toggle"
+                          aria-label={
+                            showPassword
+                              ? t("actions.hide_password")
+                              : t("actions.show_password")
+                          }
+                          onClick={() => setShowPassword((prev) => !prev)}
+                        >
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  {/* field.id chính là đag trỏ đến name, bung profileFields ra sẽ thấy */}
+                  {errors[field.id] && (
+                    <span className="text-danger">{errors[field.id]}</span>
                   )}
                 </div>
               ))}
+              <button
+                className="profile-edit-button"
+                type="submit"
+                disabled={!isChanged}
+              >
+                {t("actions.save")}
+              </button>
             </form>
+            {errors.form && (
+              <span className="text-danger text-center">{errors.form}</span>
+            )}
           </div>
         </section>
       </section>
