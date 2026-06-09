@@ -1,0 +1,48 @@
+{
+  "heading": {
+    "account_details": "Account details",
+    "profile_information": "Profile information"
+  },
+  "summary": {
+    "current_access": "Current access",
+    "created_at": "Created at"
+  },
+  "fields": {
+    "fullname": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "language": "Language"
+  },
+  "languages": {
+    "vietnamese": "Vietnamese",
+    "english": "English"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "roles": {
+    "user": "User",
+    "no_data": "No data"
+  },
+  "actions": {
+    "save": "Save",
+    "show_password": "Show password",
+    "hide_password": "Hide password"
+  },
+  "messages": {
+    "update_success": "Profile updated successfully"
+  },
+  "errors": {
+    "fullname_required": "Please enter your full name",
+    "email_required": "Please enter your email",
+    "email_invalid": "Invalid email",
+    "password_min": "Password must be at least 6 characters",
+    "password_lowercase": "Password must contain at least 1 lowercase letter",
+    "password_uppercase": "Password must contain at least 1 uppercase letter",
+    "password_number": "Password must contain at least 1 number",
+    "update_failed": "Update failed!",
+    "load_failed": "Failed to load profile. Please try again later.",
+    "profile_unavailable": "Profile data is unavailable."
+  }
+}

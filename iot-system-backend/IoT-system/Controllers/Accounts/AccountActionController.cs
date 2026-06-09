@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace IoT_system.Controllers.Accounts
 {
+    [ApiController] // đánh dấu controller này là 1 API, bật các tính năng hỗ trợ AP
     [Route("api/action")]
     public class AccountActionController : ControllerBase
     {
@@ -30,7 +31,7 @@ namespace IoT_system.Controllers.Accounts
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
         [HttpPost("account-lock/{id}")]
-        public async Task<IActionResult> LockAccount(int id, [FromQuery] string note)
+        public async Task<IActionResult> LockAccount(int id, [FromQuery] string? note)
         {
             var result = await accountServices.LockAccountById(id, note);
             return Ok(result);

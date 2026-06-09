@@ -129,10 +129,10 @@ export function LockAccount() {
           </div>
 
           {/* Error Message */}
-          {error && <div className="lock-error">{error}</div>}
+          {error && <div className="lock-error mb-3">{error}</div>}
 
           {/* Success Message */}
-          {success && <div className="lock-success">{success}</div>}
+          {success && <div className="lock-success mb-3">{success}</div>}
 
           {/* User Info Section */}
           {user && (

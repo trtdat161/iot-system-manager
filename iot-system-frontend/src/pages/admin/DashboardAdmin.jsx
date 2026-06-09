@@ -28,6 +28,8 @@ export function DashboardAdmin() {
   const [healthData, setHealthData] = useState("");
   const [dataOverview, setDataOverview] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(true); // thêm
+  const [error, setError] = useState(false);
 
   const summaryCards = dataOverview
     ? [
@@ -71,6 +73,9 @@ export function DashboardAdmin() {
         setDataOverview(response.data);
       } catch (err) {
         console.error("Loi khi goi API dashboard:", err.message);
+        setError(true);
+      } finally {
+        setLoading(false); // dù lỗi hay ok đều tắt loading
       }
     };
 
@@ -90,16 +95,20 @@ export function DashboardAdmin() {
     fetchWeather();
   }, []);
 
-  if (!dataOverview)
-    return (
-      <p>
-        {t("errors.unavailable")} <br />
-        {t("errors.cannot_access")}
-      </p>
-    );
-
   return (
     <main className="admin-dashboard">
+      {/* loading ban đầu là true nên sẽ luôn chạy */}
+      {loading && (
+        <p className="alert alert-info text-center">{t("loading")}</p>
+      )}
+
+      {/* error banner — vẫn render dashboard bên dưới */}
+      {!loading && error && (
+        <p className="alert alert-warning text-center">
+          {t("errors.unavailable")} <br />
+          {t("errors.cannot_access")}
+        </p>
+      )}
       <section className="dashboard-hero glass-panel">
         <div>
           <div className="dashboard-kicker">
@@ -107,7 +116,7 @@ export function DashboardAdmin() {
             {/* Live overview */}
             <strong className="fs-6">
               <FaUsers size={19} />{" "}
-              {t("total_users", { count: dataOverview.accountTotal || 0 })}
+              {t("total_users", { count: dataOverview?.accountTotal || 0 })}
             </strong>
           </div>
           <h1>{t("title")}</h1>
@@ -134,22 +143,6 @@ export function DashboardAdmin() {
           </div>
         </div>
       </section>
-
-      {/* <header className="overview-strip glass-panel">
-        <div className="overview-info">
-          <span>
-            <FaUsers /> Tong so nguoi dung:{" "}
-            <strong>{dataOverview.accountTotal || 0}</strong>
-          </span>
-          <span>
-            <FaMicrochip /> Tong so thiet bi: <strong>0</strong>
-          </span>
-        </div>
-        <span className="overview-weather">
-          {weatherData.weather[1].description}
-        </span>
-      </header> */}
-
       <section className="dashboard-grid">
         {summaryCards.map((card) => (
           <article
@@ -165,7 +158,6 @@ export function DashboardAdmin() {
           </article>
         ))}
       </section>
-
       <section className="dashboard-content">
         <article className="chart-card glass-panel">
           <div className="section-heading">
@@ -178,10 +170,7 @@ export function DashboardAdmin() {
             </button>
           </div>
 
-          <div
-            className="bar-chart"
-            aria-label={t("active_devices_chart")}
-          >
+          <div className="bar-chart" aria-label={t("active_devices_chart")}>
             {deviceBars.map((item) => (
               <div className="bar-item" key={item.day}>
                 <div className="bar-track">
@@ -206,27 +195,31 @@ export function DashboardAdmin() {
               <div
                 className="donut-chart"
                 style={{
-                  background: (() => {
-                    const total = dataOverview.accountTotal || 1; // tránh chia 0
-                    const newU = dataOverview.countUserOneMonth ?? 0;
-                    const active = dataOverview.userActive ?? 0;
-                    const locked = dataOverview.userLock ?? 0;
+                  background: dataOverview
+                    ? (() => {
+                        const newU = dataOverview.countUserOneMonth ?? 0;
+                        const active = dataOverview.userActive ?? 0;
+                        const locked = dataOverview.userLock ?? 0;
 
-                    const newPct = (newU / total) * 100;
-                    const activePct = (active / total) * 100;
-                    const lockedPct = (locked / total) * 100;
+                        // Tính tổng 3 nhóm này để vẽ tỷ lệ rõ ràng hơn
+                        const totalShown = newU + active + locked || 1;
 
-                    return `conic-gradient(
+                        const newPct = (newU / totalShown) * 100;
+                        const activePct = (active / totalShown) * 100;
+                        const lockedPct = (locked / totalShown) * 100;
+
+                        return `conic-gradient(
             #06b6d4 0% ${newPct}%,
             #22c55e ${newPct}% ${newPct + activePct}%,
-            #f59e0b ${newPct + activePct}% ${newPct + activePct + lockedPct}%,
+            #facc15 ${newPct + activePct}% ${newPct + activePct + lockedPct}%,
             #1e293b ${newPct + activePct + lockedPct}% 100%
           )`;
-                  })(),
+                      })()
+                    : "#1e293b",
                 }}
               >
                 <div>
-                  <strong>{dataOverview.countUserOneMonth ?? 0}</strong>
+                  <strong>{dataOverview?.countUserOneMonth ?? 0}</strong>
                   <span>{t("one_month")}</span>
                 </div>
               </div>
@@ -234,17 +227,17 @@ export function DashboardAdmin() {
                 <li>
                   <span className="legend-dot cyan"></span>
                   {t("new_registrations")}
-                  <strong>{dataOverview.countUserOneMonth ?? 0}</strong>
+                  <strong>{dataOverview?.countUserOneMonth ?? 0}</strong>
                 </li>
                 <li>
                   <span className="legend-dot green"></span>
                   {t("activated")}
-                  <strong>{dataOverview.userActive ?? 0}</strong>
+                  <strong>{dataOverview?.userActive ?? 0}</strong>
                 </li>
                 <li>
                   <span className="legend-dot amber"></span>
                   {t("locked")}
-                  <strong>{dataOverview.userLock ?? 0}</strong>
+                  <strong>{dataOverview?.userLock ?? 0}</strong>
                 </li>
               </ul>
             </div>

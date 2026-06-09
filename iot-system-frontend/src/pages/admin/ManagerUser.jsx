@@ -172,7 +172,6 @@ export function ManagerUser() {
           </div>
         </div>
       </h5>
-      {/* demo in tạm */}
       {errorAccount && <span className="text-danger">{errorAccount}</span>}
       <div className="table-wrapper-fixed">
         <div className="table-responsive">
@@ -268,7 +267,10 @@ export function ManagerUser() {
                     <td>
                       {/* nếu role là admin thì xử lý sẽ có nút edit thay vì khoá và xoá */}
                       {account.role === "admin" ? (
-                        <button className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1">
+                        <button
+                          className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1"
+                          onClick={() => navigate("/frame-layout/profile")}
+                        >
                           <FaEdit size={12} />
                           <span>{t("edit_account_admin")}</span>
                         </button>

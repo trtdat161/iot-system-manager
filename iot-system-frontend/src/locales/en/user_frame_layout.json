@@ -1,6 +1,6 @@
 {
-    "notification": "Notification",
-    "home": "Home",
-    "welcome_user": "Welcome user:",
-    "user_avatar_alt": "User avatar"
+  "notification": "Notification",
+  "home": "Home",
+  "welcome_user": "Welcome:",
+  "user_avatar_alt": "User avatar"
 }

@@ -1,6 +1,6 @@
 {
-    "notification": "Thong bao",
-    "home": "Trang chu",
-    "welcome_user": "Chao mung user:",
-    "user_avatar_alt": "Anh dai dien nguoi dung"
+  "notification": "Thong bao",
+  "home": "Trang chu",
+  "welcome_user": "Chao mung:",
+  "user_avatar_alt": "Anh dai dien nguoi dung"
 }

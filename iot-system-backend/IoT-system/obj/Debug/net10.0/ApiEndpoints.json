@@ -1,5 +1,142 @@
 [
   {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "GetAccounts",
+    "RelativePath": "api/action/account-list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "LockAccount",
+    "RelativePath": "api/action/account-lock/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "note",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "UnlockAccount",
+    "RelativePath": "api/action/account-unlock/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "RemoveAccount",
+    "RelativePath": "api/action/delete-account/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "FindAccountById",
+    "RelativePath": "api/action/find-account-by-id/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "GetMe",
+    "RelativePath": "api/action/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "EditProfiles",
+    "RelativePath": "api/action/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountEdited",
+        "Type": "IoT_system.DTOS.Accounts.AccountEditedResonseDtos",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "SeachAccount",
+    "RelativePath": "api/action/search-account",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "AccountAuthController",
     "Method": "LoginAccount",
     "RelativePath": "api/auth/login",

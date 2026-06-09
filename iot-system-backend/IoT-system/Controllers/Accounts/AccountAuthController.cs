@@ -3,7 +3,7 @@ using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
+[ApiController]// đánh dấu controller này là 1 API, bật các tính năng hỗ trợ AP
 [Route("api/auth")]
 public class AccountAuthController : ControllerBase
 {

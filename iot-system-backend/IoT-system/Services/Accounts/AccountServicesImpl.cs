@@ -48,7 +48,7 @@ namespace IoT_system.Services.Accounts
                 HttpOnly = true,// true js không được đọc cookie này
                 Secure = true, // Cookie chỉ được gửi qua HTTPS, không gửi qua HTTP
                 SameSite = SameSiteMode.None, //Cookie được phép gửi cross-origin (khác domain/port)
-                Expires = DateTimeOffset.UtcNow.AddMinutes(options.DurationInMinutes),// lấy time là 15 trùng vs bên kia
+                Expires = DateTimeOffset.UtcNow.AddMinutes(options.DurationInMinutes),// lấy time là 20 trùng vs bên kia
                 Path = "/"
             });
             /*
@@ -103,7 +103,7 @@ namespace IoT_system.Services.Accounts
             return mapper.Map<AccountResponseDtos>(account);
         }
         // khoá tk
-        public async Task<AccountResponseDtos> LockAccountById(int id, string note)
+        public async Task<AccountResponseDtos> LockAccountById(int id, string? note)
         {
             if (id <= 0)
             {
@@ -115,7 +115,10 @@ namespace IoT_system.Services.Accounts
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
             account.Status = false;
-            account.Note = note;
+            if (!string.IsNullOrWhiteSpace(note))// phủ định lại tức nếu có giá trị
+            {
+                account.Note = note;
+            }
             await dbContext.SaveChangesAsync(); // lưu thay đổi sau khí khoá
             return mapper.Map<AccountResponseDtos>(account);
         }
@@ -261,7 +264,8 @@ namespace IoT_system.Services.Accounts
 
 
             // ------- check tồn tại tk trước -------
-            var account = await dbContext.Accounts.FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
+            var account = await dbContext.Accounts.Include(a => a.Language) // load luôn language
+                                                  .FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
             if (account == null)
             {
                 throw new BadHttpRequestException("Email or password is incorrect");
@@ -302,7 +306,7 @@ namespace IoT_system.Services.Accounts
                     Secure = true,
                     SameSite = SameSiteMode.None,
 
-                => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
+                 => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
                  */
                 HttpOnly = true,
                 Secure = true,

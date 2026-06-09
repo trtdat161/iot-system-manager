@@ -10,7 +10,7 @@ import { FrameLayout } from "../components/admin/FrameLayout";
 import { FrameLayoutUser } from "../components/user/FrameLayout";
 import { DeviceNotificationHistory } from "../pages/user/DeviceNotificationHistory";
 import { Help } from "../pages/user/Help";
-import { Profile } from "../pages/user/Profile";
+import { ProfileUser } from "../pages/user/ProfileUser";
 import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 
 export function CreateRouter() {
@@ -47,7 +47,7 @@ export function CreateRouter() {
             element={<DeviceNotificationHistory />}
           ></Route>
           <Route path="help" element={<Help />}></Route>
-          <Route path="profile" element={<Profile />}></Route>
+          <Route path="profile" element={<ProfileUser />}></Route>
         </Route>
 
         {/*  */}
