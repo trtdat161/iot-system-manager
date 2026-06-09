@@ -11,6 +11,7 @@
         public string Email { get; set; } = null!;
         public string? Note { get; set; }// null
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public bool Status { get; set; }
         public int LanguageId { get; set; }
         public string LanguageCode { get; set; } = null!;
