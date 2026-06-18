@@ -7,6 +7,7 @@ using IoT_system.Services.Accounts;
 using IoT_system.Services.DashboardAdmin;
 using IoT_system.Services.Devices;
 using IoT_system.Services.Languages;
+using IoT_system.Services.Mqtt;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -44,7 +45,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddJwtAuthentication(builder.Configuration);// gọi vào toàn bộ các cấu hình trong JwtServicesExtensions
 builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
 builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
-builder.Services.AddScoped<DeviceServices, DeviceServicesImpl>();
+builder.Services.AddScoped<DeviceServices, DeviceServiceImpl>();
 builder.Services.AddScoped<DashboardAdminServices, DashboardAdminServicesImpl>();
 // DI của mqtt IoT dùng Singleton vì chỉ cần 1 connection toàn app, giữ kết nối lâu dài
 builder.Services.AddSingleton<MqttClient>();
@@ -54,9 +55,13 @@ builder.Services.AddSingleton<MqttClient>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 /* ======================================== APP ==================================== */
 
+builder.Services.AddSingleton<MqttClient>();
+builder.Services.AddHostedService<IotMqttIngestService>();
 var app = builder.Build();
 // enable cors
 app.UseCors("ReactApp");
+var mqtt = app.Services.GetRequiredService<MqttClient>();
+await mqtt.ConnectAsync("broker.hivemq.com", 1883);
 
 /* midleware */
 app.UseExceptionMiddleware();

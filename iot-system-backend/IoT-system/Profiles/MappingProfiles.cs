@@ -27,7 +27,6 @@ namespace IoT_system.Profiles
 
             // ------- device -------
             CreateMap<Device, DeviceResponseDtos>();
-            CreateMap<DeviceCreateDtos, Device>();
             CreateMap<DeviceUpdateDtos, Device>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
         }

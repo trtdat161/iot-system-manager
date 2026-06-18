@@ -25,13 +25,15 @@ public partial class DatabaseContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DAT-CODE;Database=IoTsystem;User Id=sa;Password=123;Encrypt=False;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=DAT-CODE;Database=IoTSystem;User Id=sa;Password=123;Encrypt=False;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
             entity.ToTable("Account");
+
+            entity.HasIndex(e => e.Email, "IX_Account").IsUnique();
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -73,8 +75,11 @@ public partial class DatabaseContext : DbContext
 
             entity.ToTable("Device");
 
+            entity.HasIndex(e => e.MacAddress, "UQ_Device_MacAddress").IsUnique();
+
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.MacAddress).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(250);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });

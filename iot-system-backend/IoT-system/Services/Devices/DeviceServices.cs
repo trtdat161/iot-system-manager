@@ -2,6 +2,7 @@
 {
     public interface DeviceServices
     {
-        Task ConnectDevice();
+        Task<List<object>> GetPendingDevices();
+        Task<bool> ClaimDevice(int deviceId, int userId);
     }
 }

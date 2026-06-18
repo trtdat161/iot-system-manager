@@ -1,33 +1,42 @@
-﻿using IoT_system.Configurations.mqtt;
-using IoT_system.DTOS.Devices;
-using IoT_system.Services.Devices;
+﻿using IoT_system.Services.Devices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IoT_system.Controllers.Devices
 {
     [Route("api/device")]
     public class DeviceControllers : ControllerBase
     {
-        private readonly DeviceServices deviceServices;
+        private readonly DeviceServices deviceService;
 
-        public DeviceControllers(DeviceServices _deviceServices)
+        public DeviceControllers(DeviceServices _deviceService)
         {
-            deviceServices = _deviceServices;
+            deviceService = _deviceService;
         }
 
-        [Authorize(Roles = "user")]
+        [HttpGet("pending")]
         [Produces("application/json")]
-        [HttpPost("connect-device")]
-        public async Task<IActionResult> ConnectDevice()
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Pending()
         {
-            await deviceServices.ConnectDevice();
-            return Ok(new
-            {
-                status = "MQTT_CONNECTED"
-            });
+            var data = await deviceService.GetPendingDevices();
+            return Ok(data);
         }
 
+        [HttpPost("claim")]
+        [Produces("application/json")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Claim([FromBody] int deviceId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var ok = await deviceService.ClaimDevice(deviceId, userId);
+
+            if (!ok)
+                return NotFound();
+
+            return Ok(new { message = "claimed" });
+        }
     }
 }
