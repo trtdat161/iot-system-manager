@@ -5,6 +5,7 @@ using MQTTnet.Protocol;
 
 namespace IoT_system.Configurations.mqtt
 {
+    // file này là cấu hình các tk user gửi lệnh điều on off device, chỉ để GỬI ĐI, không lắng nghe gì 
     public class MqttClient
     {
         private IManagedMqttClient _client;
@@ -49,8 +50,10 @@ namespace IoT_system.Configurations.mqtt
 
         public async Task PublishAsync(string topic, string payload)
         {
-            if (!IsConnected)
-                throw new InvalidOperationException("MQTT not connected");
+            if (_client == null)
+            {
+                throw new InvalidOperationException("MQTT client chưa được khởi tạo, kiểm tra lại Program.cs đã gọi ConnectAsync chưa");
+            }
 
             var msg = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
