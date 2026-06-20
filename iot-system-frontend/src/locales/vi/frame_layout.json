@@ -1,9 +1,9 @@
 {
-    "notification": "Thong bao",
-    "home": "Trang chu",
-    "user": "Nguoi dung",
-    "devices": "Thiet bi",
-    "profile": "Ho so",
-    "welcome_admin": "Chao mung:",
-    "admin_avatar_alt": "Anh dai dien admin"
+  "notification": "Thong bao",
+  "home": "Trang chu",
+  "user": "Nguoi dung",
+  "devices": "Thiet bi",
+  "profile": "Ho so",
+  "welcome_admin": "Chao mung quan tri vien:",
+  "admin_avatar_alt": "Anh dai dien admin"
 }

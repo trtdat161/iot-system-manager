@@ -5,6 +5,7 @@
   "device_notifications": "Device notification history",
   "help": "Help",
   "profile": "Profile",
+  "waiting_for_connection": "Waiting for connection",
   "logout": "Logout",
   "logout_error": "Logout failed",
   "expand": "Expand sidebar",

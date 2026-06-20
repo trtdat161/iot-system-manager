@@ -1,11 +1,12 @@
 {
-    "administrator": "ADMINISTRATOR",
-    "full_access": "Full access",
-    "dashboard": "Dashboard",
-    "users": "Users",
-    "devices": "Devices",
-    "notifications": "Notifications",
-    "profile": "Profile",
-    "logout": "Logout",
-    "logout_error": "Logout failed"
+  "administrator": "ADMINISTRATOR",
+  "full_access": "Full access",
+  "dashboard": "Dashboard",
+  "users": "Users",
+  "devices": "Devices",
+  "notifications": "Notifications",
+  "waiting_connection": "Waiting connection",
+  "profile": "Profile",
+  "logout": "Logout",
+  "logout_error": "Logout failed"
 }

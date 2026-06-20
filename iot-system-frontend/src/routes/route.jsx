@@ -12,6 +12,7 @@ import { DeviceNotificationHistory } from "../pages/user/DeviceNotificationHisto
 import { Help } from "../pages/user/Help";
 import { ProfileUser } from "../pages/user/ProfileUser";
 import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
+import { WaitingConnection } from "../pages/user/WaitingConnection";
 
 export function CreateRouter() {
   return (
@@ -48,6 +49,10 @@ export function CreateRouter() {
           ></Route>
           <Route path="help" element={<Help />}></Route>
           <Route path="profile" element={<ProfileUser />}></Route>
+          <Route
+            path="waiting-connection"
+            element={<WaitingConnection />}
+          ></Route>
         </Route>
 
         {/*  */}

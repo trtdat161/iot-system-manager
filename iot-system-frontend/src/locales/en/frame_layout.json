@@ -1,9 +1,9 @@
 {
-    "notification": "Notification",
-    "home": "Home",
-    "user": "Users",
-    "devices": "Devices",
-    "profile": "Profile",
-    "welcome_admin": "Welcome:",
-    "admin_avatar_alt": "Admin avatar"
+  "notification": "Notification",
+  "home": "Home",
+  "user": "Users",
+  "devices": "Devices",
+  "profile": "Profile",
+  "welcome_admin": "Welcome admin:",
+  "admin_avatar_alt": "Admin avatar"
 }

@@ -4,7 +4,6 @@ import { FaBell, FaHome, FaUserCircle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "../switchLanguage/LanguageSwitch";
 import { Sidebar } from "./Sidebar";
-import "../../css/user/Layout.css";
 import { UserGetMe } from "../../api/user/accountApi";
 
 export function FrameLayoutUser() {

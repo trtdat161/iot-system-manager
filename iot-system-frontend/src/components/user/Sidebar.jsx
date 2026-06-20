@@ -35,6 +35,11 @@ const MENU_ITEMS = [
     icon: <FaUser size={16} />,
     path: "/user-frame-layout/profile",
   },
+  {
+    key: "waiting_for_connection",
+    icon: <FaMicrochip size={16} />,
+    path: "/user-frame-layout/waiting-connection",
+  },
 ];
 
 export function Sidebar({ collapsed, setCollapsed }) {

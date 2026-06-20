@@ -1,11 +1,12 @@
 {
-    "administrator": "QUAN TRI VIEN",
-    "full_access": "Toan quyen truy cap",
-    "dashboard": "Bang dieu khien",
-    "users": "Nguoi dung",
-    "devices": "Thiet bi",
-    "notifications": "Thong bao",
-    "profile": "Ho so",
-    "logout": "Dang xuat",
-    "logout_error": "Loi khi dang xuat"
+  "administrator": "QUAN TRI VIEN",
+  "full_access": "Toan quyen truy cap",
+  "dashboard": "Bang dieu khien",
+  "users": "Nguoi dung",
+  "devices": "Thiet bi",
+  "notifications": "Thong bao",
+  "waiting_connection": "Cho ket noi",
+  "profile": "Ho so",
+  "logout": "Dang xuat",
+  "logout_error": "Loi khi dang xuat"
 }

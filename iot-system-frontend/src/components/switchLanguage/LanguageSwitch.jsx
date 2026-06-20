@@ -1,27 +1,22 @@
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import "../../css/LanguageSwitcher.css";
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   const changeLanguage = (lang) => {
-    i18n.changeLanguage(lang); // load file JSON tương ứng giúp đổi ngôn ngữ ngay lập tức, re-render toàn app
-    localStorage.setItem("lang", lang); // lưu lại để lần sau vào vẫn nhớ
+    i18n.changeLanguage(lang);
+    localStorage.setItem("lang", lang);
   };
 
   return (
-    <div className="flex gap-2">
-      <button
-        onClick={() => changeLanguage("vi-VN")}
-        className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors"
-      >
+    <div className="lang-switcher">
+      <button onClick={() => changeLanguage("vi-VN")}>
         <Globe size={18} />
         VI
       </button>
-      <button
-        onClick={() => changeLanguage("en-US")}
-        className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors"
-      >
+      <button onClick={() => changeLanguage("en-US")}>
         <Globe size={18} />
         EN
       </button>

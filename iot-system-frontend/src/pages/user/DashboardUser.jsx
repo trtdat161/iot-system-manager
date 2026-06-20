@@ -13,11 +13,14 @@ import "../../css/user/Dashboard.css";
 export function DashboardUser() {
   const { t } = useTranslation("user_dashboard");
 
+  const connectDevice = async () => {};
+
   return (
     <main className="user-dashboard">
       <div className="user-dashboard-top user-glass-panel">
         <div>
           <span className="user-live-status">
+            {/* xử lý real-time */}
             <span className="user-live-dot"></span>
             {t("connection.status")}
           </span>
@@ -34,6 +37,7 @@ export function DashboardUser() {
       </div>
 
       <section className="user-device-panel user-glass-panel">
+        {/* xử lý connect */}
         <div className="user-connect-box">
           <FaCheckCircle />
           <span>{t("connection.status")}</span>

@@ -17,5 +17,15 @@
   "sensors": {
     "gas_safe": "Nguong gas an toan",
     "air_stable": "Khong khi on dinh"
+  },
+  "waiting_connection": {
+    "title": "Cho ket noi",
+    "subtitle": "Thiet bi dang cho ket noi",
+    "model": "Model",
+    "mac_address": "Dia chi MAC",
+    "status": "Trang thai",
+    "connect_btn": "Ket noi",
+    "pending": "Cho ket noi",
+    "no_devices": "Khong co thiet bi nao dang cho ket noi"
   }
 }

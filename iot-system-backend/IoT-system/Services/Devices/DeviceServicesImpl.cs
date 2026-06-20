@@ -6,16 +6,16 @@ namespace IoT_system.Services.Devices
 {
     public class DeviceServiceImpl : DeviceServices
     {
-        private readonly DatabaseContext _db;
-        private readonly MqttClient _mqtt;
-        public DeviceServiceImpl(DatabaseContext db, MqttClient mqtt)
+        private readonly DatabaseContext db;
+        private readonly MqttClient mqtt;
+        public DeviceServiceImpl(DatabaseContext _db, MqttClient _mqtt)
         {
-            _db = db;
-            _mqtt = mqtt;
+            db = _db;
+            mqtt = _mqtt;
         }
         public async Task<List<PendingDeviceDto>> GetPendingDevices()
         {
-            return await _db.Devices
+            return await db.Devices
                 .Where(x => !x.IsClaimed)
                 .Select(x => new PendingDeviceDto
                 {
@@ -26,17 +26,23 @@ namespace IoT_system.Services.Devices
         }
         public async Task<bool> ClaimDevice(int deviceId, int userId)
         {
-            var device = await _db.Devices.FirstOrDefaultAsync(x => x.Id == deviceId);
-            if (device == null) return false;
+            var device = await db.Devices.FirstOrDefaultAsync(x => x.Id == deviceId);
+            if (device == null)
+            {
+                return false;
+            }
 
-            var user = await _db.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null) return false;
+            var user = await db.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                return false;
+            }
 
             user.DeviceId = device.Id;
-            device.IsClaimed = true;
+            device.IsClaimed = true;// set lại = true khi đã connect thiết bị
 
-            await _db.SaveChangesAsync();
-            await _mqtt.PublishAsync(
+            await db.SaveChangesAsync();
+            await mqtt.PublishAsync(
                 $"devices/{device.MacAddress}/command",
                 "claimed"
             );

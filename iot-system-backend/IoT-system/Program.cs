@@ -15,9 +15,6 @@ using System.Globalization;
 /* ======================================== BUILDER ==================================== */
 var builder = WebApplication.CreateBuilder(args);
 
-/* đăng ký mqtt services, MQTT client là luồng kết nối dài (persistent connection), 
-không tạo đi tạo lại cho mỗi request là lý do dùng AddSingleton */
-builder.Services.AddSingleton<MqttClient>();
 
 // add cors policy để sau này FE gọi được
 builder.Services.AddCors(options =>
@@ -47,16 +44,16 @@ builder.Services.AddScoped<AccountServices, AccountServicesImpl>();
 builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
 builder.Services.AddScoped<DeviceServices, DeviceServiceImpl>();
 builder.Services.AddScoped<DashboardAdminServices, DashboardAdminServicesImpl>();
+// ===== MQTT IoT =====
 // DI của mqtt IoT dùng Singleton vì chỉ cần 1 connection toàn app, giữ kết nối lâu dài
 builder.Services.AddSingleton<MqttClient>();
+builder.Services.AddHostedService<IotMqttIngestService>();// BackgroundService lắng nghe dữ liệu MQTT từ thiết bị.
 
 
 // khai báo DTO
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 /* ======================================== APP ==================================== */
 
-builder.Services.AddSingleton<MqttClient>();
-builder.Services.AddHostedService<IotMqttIngestService>();
 var app = builder.Build();
 // enable cors
 app.UseCors("ReactApp");

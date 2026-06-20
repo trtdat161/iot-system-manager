@@ -17,5 +17,15 @@
   "sensors": {
     "gas_safe": "Gas threshold safe",
     "air_stable": "Air condition stable"
+  },
+  "waiting_connection": {
+    "title": "Waiting for Connection",
+    "subtitle": "Devices pending connection",
+    "model": "Model",
+    "mac_address": "MAC Address",
+    "status": "Status",
+    "connect_btn": "Connect",
+    "pending": "Pending",
+    "no_devices": "No devices waiting for connection"
   }
 }

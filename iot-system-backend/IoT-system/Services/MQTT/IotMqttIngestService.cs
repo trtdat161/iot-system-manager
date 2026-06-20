@@ -15,25 +15,22 @@ namespace IoT_system.Services.Mqtt
      */
     public class IotMqttIngestService : BackgroundService // BackgroundService (là cái chạy ngầm song song giúp cho hệ thống chạy mãi, để luôn lắng nghe user request điều khiển thiết bị hoặc esp gửi data lên)
     {
-        private readonly MqttClient mqtt;// MqttClient = bộ não giao tiếp MQTT được đóng gói lại
         private readonly IServiceScopeFactory scopeFactory;// Tạo “mini DI container” tạm thời để lấy service scoped hợp lệ
         private readonly ILogger<IotMqttIngestService> logger;
         /* 
-         * ILogger kiểu nó sẽ theo dõi toàn app Dùng để biết:
+         * ILogger kiểu nó sẽ theo dõi toàn app, Dùng để biết:
          * có bao nhiêu message MQTT
          * data gửi lên có đúng không
          * hệ thống có đang sống không
          * ILogger -> Khi hệ thống crash, không phải đoán — log sẽ nói rõ lỗi gì.
          */
 
-        private IMqttClient _client;
+        private IMqttClient client;
 
         public IotMqttIngestService(
-            MqttClient _mqtt,
             IServiceScopeFactory _scopeFactory,
             ILogger<IotMqttIngestService> _logger)
         {
-            mqtt = _mqtt;
             scopeFactory = _scopeFactory;
             logger = _logger;
         }
@@ -42,7 +39,7 @@ namespace IoT_system.Services.Mqtt
         {
             // khởi tạo mqtt client, đóng vai trò như “xưởng sản xuất” để tạo ra các thành phần MQTT
             var factory = new MqttFactory();
-            _client = factory.CreateMqttClient();
+            client = factory.CreateMqttClient();
 
             var options = new MqttClientOptionsBuilder()
                 .WithTcpServer("broker.hivemq.com", 1883)// đăng ký vào địa chỉ máy chủ, broker public
@@ -50,18 +47,18 @@ namespace IoT_system.Services.Mqtt
                 .Build();
 
             // ConnectedAsync => khi client connect ok thì chạy code trong này
-            _client.ConnectedAsync += async e =>
+            client.ConnectedAsync += async e =>
             {
                 /* đăng ký thành công tự động subscrice topic */
-                await _client.SubscribeAsync("devices/announce");
-                await _client.SubscribeAsync("devices/+/data");
+                await client.SubscribeAsync("devices/announce");
+                await client.SubscribeAsync("devices/+/data");
 
                 logger.LogInformation("Subscribed topics");
             };
 
-            _client.ApplicationMessageReceivedAsync += HandleMessage;// Khi MQTT Client nhận được một message từ Broker thì gọi HandleMessage (tức khi nhận đc data từ esp thì chạy).
+            client.ApplicationMessageReceivedAsync += HandleMessage;// Khi MQTT Client nhận được một message từ Broker thì gọi HandleMessage (tức khi nhận đc data từ esp thì chạy).
 
-            await _client.ConnectAsync(options, stoppingToken);// Thiết lập kết nối TCP + MQTT session với broker, hiểu như là đag đăng nhập vào broker
+            await client.ConnectAsync(options, stoppingToken);// Thiết lập kết nối TCP + MQTT session với broker, hiểu như là đag đăng nhập vào broker
 
             /* xử lý dừng ở while tức là cho hệ thống chay liên tục để đảm bảo puslish,..
              * và stoppingToken hay vì kiểu nếu sau bị dừng cho biên bản, môi trường deloy,... khiến app bị dừng thì
@@ -105,6 +102,7 @@ namespace IoT_system.Services.Mqtt
 
         private async Task HandleAnnounce(DatabaseContext db, string payload)
         {
+            // DTO AnnouncePayload
             var data = JsonSerializer.Deserialize<AnnouncePayload>(payload);// JSON -> Object
             if (data == null) return;
 
@@ -135,13 +133,13 @@ namespace IoT_system.Services.Mqtt
         private async Task HandleSensorData(DatabaseContext db, string topic, string payload)
         {
             var parts = topic.Split('/');
-            var mac = parts[1];
+            var mac = parts[1];// phần tử thứ 2 là MAC Address
 
             var device = await db.Devices.FirstOrDefaultAsync(x => x.MacAddress == mac);
             if (device == null) return;
 
             device.LastSeenAt = DateTime.UtcNow;// thiết bị vừa onl
-
+            // DTO SensorPayload
             var sensor = JsonSerializer.Deserialize<SensorPayload>(payload);
             if (sensor == null) return;
 

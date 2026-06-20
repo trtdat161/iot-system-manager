@@ -71,6 +71,7 @@ export function ProfileUser() {
       type: "password",
       icon: <FaKey />,
       tone: "amber",
+      content: t("new_password"),
     },
     {
       id: "languageId",
@@ -236,16 +237,8 @@ export function ProfileUser() {
 
   return (
     <main className="user-dashboard user-profile">
-      {load ? (
-        <span className="alert mb-4 text-center bg-danger">{load}</span>
-      ) : (
-        ""
-      )}
-      {done ? (
-        <span className="alert mb-4 text-center bg-success">{done}</span>
-      ) : (
-        ""
-      )}
+      {load ? <span className="alert  text-center bg-danger">{load}</span> : ""}
+      {done ? <span className="alert text-center bg-success">{done}</span> : ""}
       <section className="profile-card glass-panel">
         <aside className="profile-summary">
           {/* <div className="profile-avatar">
@@ -334,6 +327,7 @@ export function ProfileUser() {
                         name={field.id}
                         value={form[field.id] || ""}
                         onChange={handleChange}
+                        placeholder={field.content}
                       />
                       {field.id === "password" && (
                         <button

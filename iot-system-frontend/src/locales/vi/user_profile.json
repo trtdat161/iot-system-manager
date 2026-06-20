@@ -25,6 +25,7 @@
     "user": "Nguoi dung",
     "no_data": "Khong co du lieu"
   },
+  "new_password": "Mat khau moi",
   "actions": {
     "save": "Luu",
     "show_password": "Hien mat khau",
