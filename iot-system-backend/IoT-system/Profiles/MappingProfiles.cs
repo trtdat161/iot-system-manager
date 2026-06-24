@@ -32,3 +32,4 @@ namespace IoT_system.Profiles
         }
     }
 }
+/* -------- AutoMapper chỉ cần khi mày chuyển đổi qua lại giữa 2 object có nhiều field -------- */

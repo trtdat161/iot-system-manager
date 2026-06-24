@@ -321,10 +321,10 @@ D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\n
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.development.json
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\swae.build.ex.cache
-D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT-system.csproj.Up2Date
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT-system.dll
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\refint\IoT-system.dll
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT-system.pdb
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\IoT-system.genruntimeconfig.cache
 D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\ref\IoT-system.dll
+D:\personal project\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

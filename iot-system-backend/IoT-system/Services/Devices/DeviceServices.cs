@@ -5,7 +5,7 @@ namespace IoT_system.Services.Devices
 {
     public interface DeviceServices
     {
-        Task<List<PendingDeviceDto>> GetPendingDevices();
-        Task<bool> ClaimDevice(int deviceId, int userId);
+        public Task<List<PendingDeviceDto>> GetPendingDevices(int userId);
+        public Task<bool> ClaimDevice(int deviceId, int userId);
     }
 }

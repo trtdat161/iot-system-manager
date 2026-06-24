@@ -112,6 +112,7 @@ namespace IoT_system.Services.Mqtt
             db.Devices.Add(new Device
             {
                 MacAddress = data.Mac,
+                Name = $"Device_{data.Mac}",
                 IsClaimed = false, // thiết bị tự gán là false, sau user connect thì mới là true 
                 CreatedAt = DateTime.UtcNow
             });
@@ -133,47 +134,63 @@ namespace IoT_system.Services.Mqtt
         private async Task HandleSensorData(DatabaseContext db, string topic, string payload)
         {
             var parts = topic.Split('/');
-            var mac = parts[1];// phần tử thứ 2 là MAC Address
+            var mac = parts[1];
 
-            var device = await db.Devices.FirstOrDefaultAsync(x => x.MacAddress == mac);
-            if (device == null) return;
+            var device = await db.Devices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.MacAddress == mac);
 
-            device.LastSeenAt = DateTime.UtcNow;// thiết bị vừa onl
-            // DTO SensorPayload
+            if (device == null)
+            {
+                logger.LogWarning("[SENSOR] Không tìm thấy device MAC: {Mac}", mac);
+                return;
+            }
+
+            // Update LastSeenAt trực tiếp, không qua tracked object
+            await db.Devices
+                .Where(x => x.Id == device.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, DateTime.UtcNow));
+
             var sensor = JsonSerializer.Deserialize<SensorPayload>(payload);
-            if (sensor == null) return;
+            if (sensor == null)
+            {
+                logger.LogWarning("[SENSOR] Deserialize thất bại payload: {Payload}", payload);
+                return;
+            }
+
+            logger.LogInformation("[SENSOR] MAC={Mac} type={Type} gas={Gas} alert={Alert}",
+                mac, sensor.Type, sensor.Gas, sensor.Alert);
 
             if (sensor.Alert)
             {
-                var users = await db.Accounts
-                    .Where(x => x.DeviceId == device.Id)
+                var userIds = await db.Accounts
+                    .Where(a => a.DeviceId == device.Id && a.DeletedAt == null)
+                    .Select(a => a.Id)
                     .ToListAsync();
-                // lặp qua user của thiết bị đó và gửi cảnh báo
-                foreach (var u in users)
+
+                logger.LogInformation("[SENSOR] Số user sẽ nhận notification: {Count}", userIds.Count);
+
+                var message = BuildMessage(sensor);
+                var now = DateTime.UtcNow;
+
+                foreach (var userId in userIds)
                 {
-                    db.Notifications.Add(new Notification
-                    {
-                        DeviceId = device.Id,
-                        UserId = u.Id,
-                        Message = BuildMessage(sensor),
-                        Type = sensor.Type,
-                        IsRead = false,
-                        CreatedAt = DateTime.UtcNow
-                    });
+                    await db.Database.ExecuteSqlRawAsync(
+                        "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
+                        device.Id, userId, message, sensor.Type, false, now
+                    );
                 }
             }
-
-            await db.SaveChangesAsync();
         }
-
-        // hàm tạo nội dung thông báo
+        
         private string BuildMessage(SensorPayload s)
         {
             return s.Type switch
             {
-                "gas" => $"Gas nguy hiểm: {s.Gas}",
-                "temp_high" => $"Nhiệt độ cao: {s.Temperature}",
-                "temp_low" => $"Nhiệt độ thấp: {s.Temperature}",
+                "gas" => $"Phát hiện khí gas! Giá trị: {s.Gas}",
+                "gas_danger" => $"NGUY HIỂM! Khí gas vượt ngưỡng: {s.Gas}",
+                "temp_high" => $"Nhiệt độ cao: {s.Temperature}°C",
+                "temp_low" => $"Nhiệt độ thấp: {s.Temperature}°C",
                 _ => "Cảnh báo thiết bị"
             };
         }

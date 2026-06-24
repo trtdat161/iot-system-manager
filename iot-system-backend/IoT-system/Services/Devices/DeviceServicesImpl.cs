@@ -13,10 +13,12 @@ namespace IoT_system.Services.Devices
             db = _db;
             mqtt = _mqtt;
         }
-        public async Task<List<PendingDeviceDto>> GetPendingDevices()
+        public async Task<List<PendingDeviceDto>> GetPendingDevices(int userId)
         {
             return await db.Devices
-                .Where(x => !x.IsClaimed)
+                .AsNoTracking()
+                .Where(x => x.DeletedAt == null && x.Accounts.All(a => a.Id != userId))
+                // device mà user này chưa join
                 .Select(x => new PendingDeviceDto
                 {
                     Id = x.Id,
@@ -24,28 +26,39 @@ namespace IoT_system.Services.Devices
                 })
                 .ToListAsync();
         }
+
         public async Task<bool> ClaimDevice(int deviceId, int userId)
         {
             var device = await db.Devices.FirstOrDefaultAsync(x => x.Id == deviceId);
-            if (device == null)
-            {
-                return false;
-            }
+            if (device == null) return false;
 
             var user = await db.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
+            if (user == null) return false;
+
+            // User này đã join device này rồi
+            if (user.DeviceId == deviceId) return false;
+
+            user.DeviceId = deviceId;
+
+            // Chỉ publish MQTT lần đầu tiên có người claim
+            if (!device.IsClaimed)
             {
-                return false;
+                device.IsClaimed = true;
+                await mqtt.PublishAsync(
+                    $"devices/{device.MacAddress}/command",
+                    "claimed", 
+                    retained: true
+                );
+
+                await Task.Delay(500);
+                await mqtt.PublishAsync(
+                    $"devices/{device.MacAddress}/command",
+                    "", 
+                    retained: true
+                ); // xóa retained
             }
 
-            user.DeviceId = device.Id;
-            device.IsClaimed = true;// set lại = true khi đã connect thiết bị
-
             await db.SaveChangesAsync();
-            await mqtt.PublishAsync(
-                $"devices/{device.MacAddress}/command",
-                "claimed"
-            );
             return true;
         }
     }

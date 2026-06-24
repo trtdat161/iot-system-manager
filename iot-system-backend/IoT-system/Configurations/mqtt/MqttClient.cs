@@ -60,7 +60,7 @@ namespace IoT_system.Configurations.mqtt
             logger.LogInformation("MQTT starting...");
         }
 
-        public async Task PublishAsync(string topic, string payload)
+        public async Task PublishAsync(string topic, string payload, bool retained = false)
         {
             if (client == null)
             {
@@ -71,6 +71,7 @@ namespace IoT_system.Configurations.mqtt
                 .WithTopic(topic)
                 .WithPayload(payload)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                .WithRetainFlag(retained)
                 .Build();
 
             await client.EnqueueAsync(msg);

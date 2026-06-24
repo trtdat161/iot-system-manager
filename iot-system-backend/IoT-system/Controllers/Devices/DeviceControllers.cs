@@ -20,14 +20,15 @@ namespace IoT_system.Controllers.Devices
         [Authorize(Roles = "user")]
         public async Task<IActionResult> Pending()
         {
-            var data = await deviceService.GetPendingDevices();
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var data = await deviceService.GetPendingDevices(userId);
             return Ok(data);
         }
 
-        [HttpPost("claim")]
+        [HttpPost("claim/{deviceId}")]
         [Produces("application/json")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> Claim([FromBody] int deviceId)
+        public async Task<IActionResult> Claim(int deviceId)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
