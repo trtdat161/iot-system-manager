@@ -27,7 +27,7 @@ namespace IoT_system.Controllers.Accounts
              return Ok(result);
         }
 
-        // khoả tk
+        // khoá tk
         [Authorize(Roles = "admin")]// do sánh với alaims role trong token ... đã đc cấu hình lấy từ db
         [Produces("application/json")]// BE trả json
         [HttpPost("account-lock/{id}")]

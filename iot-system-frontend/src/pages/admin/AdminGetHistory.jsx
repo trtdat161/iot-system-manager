@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { UserGetHistory } from "../../api/user/notification";
+import { adminGetHistory } from "../../api/admin/notification";
 import {
   FaBell,
   FaClock,
@@ -11,9 +11,12 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
+import { Pagination } from "../../components/common/Pagination";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
-export function DeviceNotificationHistory() {
-  const { t } = useTranslation("user_notification_history");
+export function AdminGetHistory() {
+  const { t } = useTranslation("admin_notification_history");
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
@@ -23,11 +26,13 @@ export function DeviceNotificationHistory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   const fetchNotifications = async (currentPage) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await UserGetHistory(currentPage, PAGE_SIZE);
+      const response = await adminGetHistory(currentPage, PAGE_SIZE);
       const paged = response.data;
       setTotalNotifications(paged.totalItems ?? 0);
       setNotifications(Array.isArray(paged.data) ? paged.data : []);
@@ -45,38 +50,8 @@ export function DeviceNotificationHistory() {
     fetchNotifications(pages);
   }, [pages]);
 
-  const getNotificationIcon = (type) => {
-    switch (type?.toLowerCase()) {
-      case "success":
-        return <FaCheckCircle className="notification-icon success" />;
-      case "warning":
-        return <FaExclamationTriangle className="notification-icon warning" />;
-      case "error":
-      case "danger":
-        return <FaTimesCircle className="notification-icon danger" />;
-      default:
-        return <FaInfoCircle className="notification-icon info" />;
-    }
-  };
-
-  const formatTime = (timestamp) => {
-    if (!timestamp) return "--:--";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
-
   return (
-    <main className="user-notification-history">
+    <main className="admin-notification-history">
       <div className="notification-glass-panel">
         {/* Header */}
         <div className="notification-history-header">
@@ -152,61 +127,46 @@ export function DeviceNotificationHistory() {
                 >
                   <div className="notification-content">
                     <div className="notification-header">
-                      {getNotificationIcon(notification.type)}
-                      <div>
+                      {/* <div>
                         <h3 className="notification-title">
                           {notification.title}
                         </h3>
                         <p className="notification-device">
                           🔧 {notification.deviceName || "Unknown Device"}
                         </p>
-                      </div>
+                      </div> */}
                     </div>
                     <p className="notification-message">
                       {notification.message}
                     </p>
                     <div className="notification-metadata">
-                      <span>📍 {notification.deviceId || "N/A"}</span>
+                      <span>📍 {notification.type || "N/A"}</span>
                       <span>•</span>
-                      <span>{notification.status || "Pending"}</span>
+                      <span>{notification.isread || "Pending"}</span>
                     </div>
                   </div>
                   <div className="notification-time">
                     <div className="time-badge">
                       <FaClock size={11} style={{ marginRight: "4px" }} />
-                      {formatTime(
-                        notification.timestamp || notification.createdAt,
-                      )}
+                      <span>
+                        {dayjs(notification.createdAt).format(
+                          "DD/MM/YYYY HH:mm:ss",
+                        ) || "Pending"}
+                      </span>
                     </div>
+                    <button className="ms-2 btn btn-success">detail</button>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="notification-pagination-container">
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPages(Math.max(1, pages - 1))}
-                  disabled={pages === 1}
-                >
-                  ← {t("prev")}
-                </button>
-                <span className="pagination-info">
-                  {t("page", { page: pages, total: totalPages })}
-                </span>
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPages(Math.min(totalPages, pages + 1))}
-                  disabled={pages === totalPages}
-                >
-                  {t("next")} →
-                </button>
-              </div>
-            )}
           </>
         )}
+        {/* Pagination — dùng lại ở bất kỳ đâu chỉ cần 3 props */}
+        <Pagination
+          page={pages}
+          totalPages={totalPages}
+          onPageChange={setPages}
+        />
       </div>
     </main>
   );

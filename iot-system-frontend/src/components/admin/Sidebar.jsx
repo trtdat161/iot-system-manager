@@ -33,9 +33,9 @@ const MENU_ITEMS = [
     path: "/frame-layout/",
   },
   {
-    key: "notifications",
+    key: "notifications", // lịch sử thiết bị gửi thông báo lên
     icon: <FaBell size={16} />,
-    path: "/frame-layout/",
+    path: "/frame-layout/admin-history",
   },
   {
     key: "profile",

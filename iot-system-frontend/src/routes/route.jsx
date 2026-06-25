@@ -13,6 +13,7 @@ import { Help } from "../pages/user/Help";
 import { ProfileUser } from "../pages/user/ProfileUser";
 import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 import { WaitingConnection } from "../pages/user/WaitingConnection";
+import { AdminGetHistory } from "../pages/admin/AdminGetHistory";
 
 export function CreateRouter() {
   return (
@@ -24,15 +25,16 @@ export function CreateRouter() {
 
         {/* outlet sidebar admin */}
         {/* thằng outlet có / rồi nên mấy thằng con ko cần / nữa */}
-        {/* admin */}
+        {/* =============== admin =============== */}
         <Route path="/frame-layout" element={<FrameLayout />}>
           <Route path="dashboard-admin" element={<DashboardAdmin />}></Route>
           <Route path="manager-user" element={<ManagerUser />}></Route>
           <Route path="lock-account/:id" element={<LockAccount />}></Route>
           <Route path="profile" element={<ProfileAdmin />}></Route>
+          <Route path="admin-history" element={<AdminGetHistory />}></Route>
         </Route>
 
-        {/* user */}
+        {/* =============== user =============== */}
         <Route
           path="/dashboard-user"
           element={<Navigate to="/user-frame-layout/dashboard-user" replace />}
@@ -44,7 +46,7 @@ export function CreateRouter() {
           ></Route>
           <Route path="dashboard-user" element={<DashboardUser />}></Route>
           <Route
-            path="device-notifications"
+            path="device-notifications" // user xem thông báo đồng thời là xem lịch sử thiết bị gửi thông báo luôn
             element={<DeviceNotificationHistory />}
           ></Route>
           <Route path="help" element={<Help />}></Route>

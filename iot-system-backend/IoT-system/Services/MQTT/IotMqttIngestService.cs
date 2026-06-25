@@ -161,7 +161,10 @@ namespace IoT_system.Services.Mqtt
             logger.LogInformation("[SENSOR] MAC={Mac} type={Type} gas={Gas} alert={Alert}",
                 mac, sensor.Type, sensor.Gas, sensor.Alert);
 
-            if (sensor.Alert)
+            // code mới thêm DHT11
+            bool hasDhtAlert = sensor.TempAlert || sensor.HumidLowAlert || sensor.HumidHighAlert;
+
+            if (sensor.Alert || hasDhtAlert)
             {
                 var userIds = await db.Accounts
                     .Where(a => a.DeviceId == device.Id && a.DeletedAt == null)
@@ -182,15 +185,18 @@ namespace IoT_system.Services.Mqtt
                 }
             }
         }
-        
+
         private string BuildMessage(SensorPayload s)
         {
             return s.Type switch
             {
+                // GAS
                 "gas" => $"Phát hiện khí gas! Giá trị: {s.Gas}",
-                "gas_danger" => $"NGUY HIỂM! Khí gas vượt ngưỡng: {s.Gas}",
-                "temp_high" => $"Nhiệt độ cao: {s.Temperature}°C",
-                "temp_low" => $"Nhiệt độ thấp: {s.Temperature}°C",
+                "gas_danger" => $"NGUY HIỂM! Khí gas vượt mức cho phép hãy kiểm tra!: {s.Gas}",
+                // DHT11
+                _ when s.TempAlert => $"Trời nóng quá {s.Temperature}°C, hãy đi bơi nào, chăm sóc bản thân nhé!",
+                _ when s.HumidLowAlert => $"Độ ẩm chỉ {s.Humidity}%, không khí khô lắm rồi!",
+                _ when s.HumidHighAlert => $"Độ ẩm lên tới {s.Humidity}%, ẩm ướt khó chịu ghê!",
                 _ => "Cảnh báo thiết bị"
             };
         }

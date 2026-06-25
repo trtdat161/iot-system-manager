@@ -23,6 +23,10 @@ import vi_user_sidebar from "./locales/vi/user_sidebar.json";
 import en_user_sidebar from "./locales/en/user_sidebar.json";
 import vi_user_frame_layout from "./locales/vi/user_frame_layout.json";
 import en_user_frame_layout from "./locales/en/user_frame_layout.json";
+import vi_admin_notification_history from "./locales/vi/admin_notification_history.json";
+import en_admin_notification_history from "./locales/en/admin_notification_history.json";
+import vi_user_notification_history from "./locales/vi/user_notification_history.json";
+import en_user_notification_history from "./locales/en/user_notification_history.json";
 
 i18next.use(initReactI18next).init({
   // file này sẽ đc gọi ở main.jsx một lần khi app start
@@ -40,6 +44,8 @@ i18next.use(initReactI18next).init({
       user_dashboard: vi_user_dashboard,
       user_sidebar: vi_user_sidebar,
       user_frame_layout: vi_user_frame_layout,
+      admin_notification_history: vi_admin_notification_history,
+      user_notification_history: vi_user_notification_history,
     },
     "en-US": {
       register_login: en_register_login,
@@ -53,6 +59,8 @@ i18next.use(initReactI18next).init({
       user_dashboard: en_user_dashboard,
       user_sidebar: en_user_sidebar,
       user_frame_layout: en_user_frame_layout,
+      admin_notification_history: en_admin_notification_history,
+      user_notification_history: en_user_notification_history,
     },
   },
   lng: localStorage.getItem("lang") || "en-US",

@@ -1,0 +1,10 @@
+{
+  "title": "Lịch Sử Thông Báo Thiết Bị",
+  "total": "Tổng Thông Báo",
+  "loading": "Đang tải thông báo...",
+  "empty": "Chưa có thông báo nào",
+  "empty_desc": "Bạn chưa nhận được thông báo nào từ các thiết bị.",
+  "prev": "Trước",
+  "next": "Tiếp Theo",
+  "page": "Trang {{page}} / {{total}}"
+}

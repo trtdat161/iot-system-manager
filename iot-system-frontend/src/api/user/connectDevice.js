@@ -4,4 +4,5 @@ import { axiosInstance } from "../axiosInstance";
 export const DeviceDepending = () => axiosInstance.get("device/pending");
 
 // connect với device
-export const connectDevice = () => axiosInstance.post("device/claim");
+export const ConnectDevice = (deviceId) =>
+  axiosInstance.post(`device/claim/${deviceId}`);

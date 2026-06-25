@@ -2,6 +2,7 @@
 using IoT_system.DTOS.Accounts;
 using IoT_system.DTOS.Devices;
 using IoT_system.DTOS.Languages;
+using IoT_system.DTOS.Notification;
 using IoT_system.Models;
 
 namespace IoT_system.Profiles
@@ -29,6 +30,11 @@ namespace IoT_system.Profiles
             CreateMap<Device, DeviceResponseDtos>();
             CreateMap<DeviceUpdateDtos, Device>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            // ------- notification -------
+            CreateMap<Notification, NotificationAdminResponseDtos>(); // admin xem đc hết lịch sử của user nào
+            CreateMap<Notification, NotificationUserResponseDtos>(); // user chỉ xem đc lịch sử của họ
+
         }
     }
 }

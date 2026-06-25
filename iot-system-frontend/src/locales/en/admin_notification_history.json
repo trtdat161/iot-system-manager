@@ -1,0 +1,10 @@
+{
+  "title": "Device Notification History",
+  "total": "Total Notifications",
+  "loading": "Loading notifications...",
+  "empty": "No notifications yet",
+  "empty_desc": "You haven't received any notifications from devices.",
+  "prev": "Previous",
+  "next": "Next",
+  "page": "Page {{page}} / {{total}}"
+}

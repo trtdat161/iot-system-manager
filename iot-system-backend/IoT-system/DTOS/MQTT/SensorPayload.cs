@@ -19,5 +19,13 @@ namespace IoT_system.DTOS.MQTT
 
         [JsonPropertyName("alert")]
         public bool Alert { get; set; }
+
+        //thêm 3 field này do DHT11
+        [JsonPropertyName("tempAlert")]
+        public bool TempAlert { get; set; }
+        [JsonPropertyName("humidLowAlert")]
+        public bool HumidLowAlert { get; set; }
+        [JsonPropertyName("humidHighAlert")]
+        public bool HumidHighAlert { get; set; }
     }
 }
