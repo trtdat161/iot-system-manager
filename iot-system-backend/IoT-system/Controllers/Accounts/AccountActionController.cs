@@ -74,7 +74,7 @@ namespace IoT_system.Controllers.Accounts
         [HttpGet("find-account-by-id/{id}")]
         public async Task<IActionResult> FindAccountById(int id)
         {
-            var currentUser = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var currentUser = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);// jwt ng đang đăng nhập
             var isAdmin = User.IsInRole("admin");
 
             // chỉ user xem đc chính mình

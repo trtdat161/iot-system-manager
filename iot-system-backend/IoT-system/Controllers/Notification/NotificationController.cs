@@ -36,5 +36,14 @@ namespace IoT_system.Controllers.Notification
             return Ok(result);
         }
 
+        // thông báo chi tiết
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("history-detail/{id}")]
+        public async Task<IActionResult> GetHistoryDetail(int id)
+        {
+            var result = await notificationServices.HistoryDetail(id);
+            return Ok(result);
+        }
     }
 }

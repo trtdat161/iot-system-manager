@@ -19,7 +19,7 @@ export function FrameLayout() {
     { to: "/frame-layout/dashboard-admin", label: t("home") },
     { to: "/frame-layout/manager-user", label: t("user") },
     { to: "/frame-layout/manager-devices", label: t("devices") },
-    { to: "/frame-layout/", label: t("notification") },
+    { to: "/frame-layout/admin-history", label: t("notification") },
   ];
 
   const isActiveBreadcrumb = (crumb) => {

@@ -142,7 +142,7 @@ export function AdminGetHistory() {
                     <div className="notification-metadata">
                       <span>📍 {notification.type || "N/A"}</span>
                       <span>•</span>
-                      <span>{notification.isread || "Pending"}</span>
+                      <span>{notification.IsRead ? "Yes" : "No"}</span>
                     </div>
                   </div>
                   <div className="notification-time">
@@ -154,7 +154,16 @@ export function AdminGetHistory() {
                         ) || "Pending"}
                       </span>
                     </div>
-                    <button className="ms-2 btn btn-success">detail</button>
+                    <button
+                      className="ms-2 btn btn-success"
+                      onClick={() =>
+                        navigate(
+                          `/frame-layout/history-detail/${notification.id}`,
+                        )
+                      }
+                    >
+                      detail
+                    </button>
                   </div>
                 </div>
               ))}

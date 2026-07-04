@@ -14,6 +14,7 @@ import { ProfileUser } from "../pages/user/ProfileUser";
 import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 import { WaitingConnection } from "../pages/user/WaitingConnection";
 import { AdminGetHistory } from "../pages/admin/AdminGetHistory";
+import { HistoryDetail } from "../pages/admin/HistoryDetail";
 
 export function CreateRouter() {
   return (
@@ -32,6 +33,7 @@ export function CreateRouter() {
           <Route path="lock-account/:id" element={<LockAccount />}></Route>
           <Route path="profile" element={<ProfileAdmin />}></Route>
           <Route path="admin-history" element={<AdminGetHistory />}></Route>
+          <Route path="history-detail/:id" element={<HistoryDetail />}></Route>
         </Route>
 
         {/* =============== user =============== */}

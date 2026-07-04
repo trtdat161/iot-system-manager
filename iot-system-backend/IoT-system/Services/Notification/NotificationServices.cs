@@ -6,7 +6,7 @@ namespace IoT_system.Services.Notification
     public interface NotificationServices
     {
         public Task<PagedResponseDtos<NotificationAdminResponseDtos>> HistoryForAdmin(int page, int pageSize);
-
+        public Task<NotificationDetailResponseDtos> HistoryDetail(int id);
         public Task<PagedResponseDtos<NotificationUserResponseDtos>> HistoryForUser(int userId, int page, int pageSize);
     }
 }

@@ -34,6 +34,8 @@ namespace IoT_system.Profiles
             // ------- notification -------
             CreateMap<Notification, NotificationAdminResponseDtos>(); // admin xem đc hết lịch sử của user nào
             CreateMap<Notification, NotificationUserResponseDtos>(); // user chỉ xem đc lịch sử của họ
+            CreateMap<Notification, NotificationDetailResponseDtos>(); // admin xem lịch sử chi tiết thông báo gửi cho các user nào
+
 
         }
     }
