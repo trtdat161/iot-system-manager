@@ -80,12 +80,66 @@ namespace IoT_system.Services.Notification
         // xem chi tiết thông báo này gủi đến bao nhiêu user
         public async Task<NotificationDetailResponseDtos> HistoryDetail(int id)
         {
-            var notificationDetail = await dbContext.Notifications.Where(n => n.Id == id)
-                                                                  .Include(n => n.User)// include load luôn bảng liên quan
-                                                                  .AsNoTracking()
-                                                                  .FirstOrDefaultAsync();
-            return mapper.Map<NotificationDetailResponseDtos>(notificationDetail);
-        }
+            var notification = await dbContext.Notifications
+                .AsNoTracking()
+                .FirstOrDefaultAsync(n => n.Id == id);
 
+            if (notification == null){
+                throw new KeyNotFoundException($"not found notification id = {id}");
+            }
+
+            var recipients = await dbContext.Notifications
+                .Where(n => n.DeviceId == notification.DeviceId
+                         && n.Message == notification.Message
+                         && n.Type == notification.Type
+                         && n.CreatedAt == notification.CreatedAt)
+                .Include(n => n.User)
+                .AsNoTracking()
+                .Select(n => new NotificationRecipientDto
+                {
+                    NotificationId = n.Id,
+                    Fullname = n.User.Fullname,
+                    IsRead = n.IsRead,
+                    UserId = n.UserId
+                })
+                .ToListAsync();
+
+            var result = mapper.Map<NotificationDetailResponseDtos>(notification);
+            result.Users = recipients;
+            return result;
+        }
     }
 }
+
+/*
+ public async Task<NotificationDetailResponseDtos> HistoryDetail(int id)
+{
+    var notification = await dbContext.Notifications
+        .AsNoTracking()
+        .FirstOrDefaultAsync(n => n.Id == id);
+
+    if (notification == null)
+        throw new KeyNotFoundException($"Không tìm thấy notification id = {id}");
+
+    // Nhóm theo cùng 1 đợt cảnh báo: cùng thiết bị, cùng nội dung, cùng thời điểm bắn
+    var recipients = await dbContext.Notifications
+        .Where(n => n.DeviceId == notification.DeviceId
+                 && n.Message == notification.Message
+                 && n.Type == notification.Type
+                 && n.CreatedAt == notification.CreatedAt)
+        .Include(n => n.User)
+        .AsNoTracking()
+        .Select(n => new NotificationRecipientDto
+        {
+            NotificationId = n.Id,
+            UserId = n.UserId,
+            Fullname = n.User.Fullname,
+            IsRead = n.IsRead
+        })
+        .ToListAsync();
+
+    var result = mapper.Map<NotificationDetailResponseDtos>(notification);
+    result.Users = recipients;
+    return result;
+}
+ */

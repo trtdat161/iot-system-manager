@@ -96,7 +96,7 @@ namespace IoT_system.Services.Mqtt
             catch (Exception ex)
             {
                 // Log kèm topic để biết thiết bị nào gửi message gây lỗi, dễ debug ngoài thực tế.
-                logger.LogError(ex, "Lỗi xử lý MQTT message từ topic {Topic}", topic);
+                logger.LogError(ex, "Error handling MQTT messages from topic {Topic}", topic);
             }
         }
 
@@ -127,7 +127,7 @@ namespace IoT_system.Services.Mqtt
                 // -> 2 request cùng pass qua check "exists == null" trước khi insert kịp commit.
                 // Nếu cột MacAddress có unique constraint ở DB, đây sẽ là tuyến phòng thủ cuối,
                 // record trùng bị DB từ chối thay vì tạo ra 2 device cho cùng 1 thiết bị vật lý.
-                logger.LogWarning("Device {Mac} đã được insert bởi message khác, bỏ qua", data.Mac);
+                logger.LogWarning("Device {Mac} This message has already been inserted by another message, ignore it.", data.Mac);
             }
         }
 
@@ -142,7 +142,7 @@ namespace IoT_system.Services.Mqtt
 
             if (device == null)
             {
-                logger.LogWarning("[SENSOR] Không tìm thấy device MAC: {Mac}", mac);
+                logger.LogWarning("[SENSOR] not found device MAC: {Mac}", mac);
                 return;
             }
 
@@ -171,7 +171,7 @@ namespace IoT_system.Services.Mqtt
                     .Select(a => a.Id)
                     .ToListAsync();
 
-                logger.LogInformation("[SENSOR] Số user sẽ nhận notification: {Count}", userIds.Count);
+                logger.LogInformation("[SENSOR] Number of users will receive notification: {Count}", userIds.Count);
 
                 var message = BuildMessage(sensor);
                 var now = DateTime.UtcNow;
@@ -191,13 +191,13 @@ namespace IoT_system.Services.Mqtt
             return s.Type switch
             {
                 // GAS
-                "gas" => $"Phát hiện khí gas! Giá trị: {s.Gas}",
-                "gas_danger" => $"NGUY HIỂM! Khí gas vượt mức cho phép hãy kiểm tra!: {s.Gas}",
+                "gas" => $"gas! value: {s.Gas}",
+                "gas_danger" => $"Warning! Gas level exceeded! : { s.Gas}",
                 // DHT11
-                _ when s.TempAlert => $"Trời nóng quá {s.Temperature}°C, hãy đi bơi nào, chăm sóc bản thân nhé!",
-                _ when s.HumidLowAlert => $"Độ ẩm chỉ {s.Humidity}%, không khí khô lắm rồi!",
-                _ when s.HumidHighAlert => $"Độ ẩm lên tới {s.Humidity}%, ẩm ướt khó chịu ghê!",
-                _ => "Cảnh báo thiết bị"
+                _ when s.TempAlert => $"hot air ! :{s.Temperature}°C",
+                _ when s.HumidLowAlert => $"dry air ! :{s.Humidity}%",
+                _ when s.HumidHighAlert => $"damp ! :{s.Humidity}%",
+                _ => "device warning"
             };
         }
     }
