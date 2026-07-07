@@ -1,5 +1,8 @@
 ﻿using IoT_system.DTOS.MQTT;
+using IoT_system.Helper;
+using IoT_system.Hubs;
 using IoT_system.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MQTTnet;
 using MQTTnet.Client;
@@ -17,6 +20,8 @@ namespace IoT_system.Services.Mqtt
     {
         private readonly IServiceScopeFactory scopeFactory;// Tạo “mini DI container” tạm thời để lấy service scoped hợp lệ
         private readonly ILogger<IotMqttIngestService> logger;
+        private readonly IHubContext<NotificationHub> hubContext;// hub for realtime
+
         /* 
          * ILogger kiểu nó sẽ theo dõi toàn app, Dùng để biết:
          * có bao nhiêu message MQTT
@@ -29,10 +34,13 @@ namespace IoT_system.Services.Mqtt
 
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
-            ILogger<IotMqttIngestService> _logger)
+            ILogger<IotMqttIngestService> _logger,
+            IHubContext<NotificationHub> _hubContext)
+
         {
             scopeFactory = _scopeFactory;
             logger = _logger;
+            hubContext = _hubContext;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -114,7 +122,8 @@ namespace IoT_system.Services.Mqtt
                 MacAddress = data.Mac,
                 Name = $"Device_{data.Mac}",
                 IsClaimed = false, // thiết bị tự gán là false, sau user connect thì mới là true 
-                CreatedAt = DateTime.UtcNow
+                //CreatedAt = DateTime.UtcNow
+                CreatedAt = TimeHelper.VnNow()// fix giờ
             });
 
             try
@@ -149,12 +158,12 @@ namespace IoT_system.Services.Mqtt
             // Update LastSeenAt trực tiếp, không qua tracked object
             await db.Devices
                 .Where(x => x.Id == device.Id)
-                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, DateTime.UtcNow));
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, TimeHelper.VnNow()));
 
             var sensor = JsonSerializer.Deserialize<SensorPayload>(payload);
             if (sensor == null)
             {
-                logger.LogWarning("[SENSOR] Deserialize thất bại payload: {Payload}", payload);
+                logger.LogWarning("[SENSOR] Deserialize failed payload: {Payload}", payload);
                 return;
             }
 
@@ -162,6 +171,43 @@ namespace IoT_system.Services.Mqtt
                 mac, sensor.Type, sensor.Gas, sensor.Alert);
 
             // code mới thêm DHT11
+            //bool hasDhtAlert = sensor.TempAlert || sensor.HumidLowAlert || sensor.HumidHighAlert;
+
+            //if (sensor.Alert || hasDhtAlert)
+            //{
+            //    var userIds = await db.Accounts
+            //        .Where(a => a.DeviceId == device.Id && a.DeletedAt == null)
+            //        .Select(a => a.Id)
+            //        .ToListAsync();
+
+            //    logger.LogInformation("[SENSOR] Number of users will receive notification: {Count}", userIds.Count);
+
+            //    var message = BuildMessage(sensor);
+            //    var now = TimeHelper.VnNow();
+
+            //    foreach (var userId in userIds)
+            //    {
+            //        await db.Database.ExecuteSqlRawAsync(
+            //            "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
+            //            device.Id, userId, message, sensor.Type, false, now
+            //        );
+            //    }
+            //}
+
+            // ============ 1. LUÔN BẮN TRẠNG THÁI HIỆN TẠI - MỖI LẦN ESP GỬI LÊN ============
+            // Không cần check Alert hay không, cứ có data mới là bắn để UI luôn "sống"
+            await hubContext.Clients.Group(mac).SendAsync("ReceiveSensorData", new
+            {
+                Mac = mac,
+                DeviceId = device.Id,
+                Type = sensor.Type,          // "gas" hoặc "dht11" tùy loại payload gửi lên
+                Gas = sensor.Gas,
+                Temperature = sensor.Temperature,
+                Humidity = sensor.Humidity,
+                Timestamp = TimeHelper.VnNow()
+            });
+
+            // ============ 2. CHỈ BẮN CẢNH BÁO KHI VƯỢT NGƯỠNG ============
             bool hasDhtAlert = sensor.TempAlert || sensor.HumidLowAlert || sensor.HumidHighAlert;
 
             if (sensor.Alert || hasDhtAlert)
@@ -171,10 +217,8 @@ namespace IoT_system.Services.Mqtt
                     .Select(a => a.Id)
                     .ToListAsync();
 
-                logger.LogInformation("[SENSOR] Number of users will receive notification: {Count}", userIds.Count);
-
                 var message = BuildMessage(sensor);
-                var now = DateTime.UtcNow;
+                var now = TimeHelper.VnNow();
 
                 foreach (var userId in userIds)
                 {
@@ -183,6 +227,16 @@ namespace IoT_system.Services.Mqtt
                         device.Id, userId, message, sensor.Type, false, now
                     );
                 }
+
+                // Bắn realtime cảnh báo riêng, khác event với data thường
+                await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
+                {
+                    Mac = mac,
+                    DeviceId = device.Id,
+                    Message = message,
+                    Type = sensor.Type,
+                    CreatedAt = now
+                });
             }
         }
 

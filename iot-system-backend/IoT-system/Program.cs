@@ -1,6 +1,7 @@
 ﻿using IoT_system.Configurations.jwt;
 using IoT_system.Configurations.midleware;
 using IoT_system.Configurations.mqtt;
+using IoT_system.Hubs;
 using IoT_system.Models;
 using IoT_system.Profiles;
 using IoT_system.Services.Accounts;
@@ -57,9 +58,14 @@ builder.Services.AddHostedService<IotMqttIngestService>();// BackgroundService l
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 /* ======================================== APP ==================================== */
 
+// add signalr
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 // enable cors
 app.UseCors("ReactApp");
+// gọi hub realtime
+app.MapHub<NotificationHub>("/hubs/notification"); // /hubs/notification => URL (endpoint) để client kết nối tới Hub
 var mqtt = app.Services.GetRequiredService<MqttClient>();
 await mqtt.ConnectAsync("broker.hivemq.com", 1883);
 

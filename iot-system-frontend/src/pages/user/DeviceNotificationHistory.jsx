@@ -8,9 +8,10 @@ import {
   FaCheckCircle,
   FaInfoCircle,
   FaTimesCircle,
-  FaSpinner,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
+import { Pagination } from "../../components/common/Pagination";
+import dayjs from "dayjs";
 
 export function DeviceNotificationHistory() {
   const { t } = useTranslation("user_notification_history");
@@ -46,33 +47,29 @@ export function DeviceNotificationHistory() {
   }, [pages]);
 
   const getNotificationIcon = (type) => {
-    switch (type?.toLowerCase()) {
+    switch (type) {
       case "success":
         return <FaCheckCircle className="notification-icon success" />;
       case "warning":
         return <FaExclamationTriangle className="notification-icon warning" />;
       case "error":
-      case "danger":
         return <FaTimesCircle className="notification-icon danger" />;
       default:
         return <FaInfoCircle className="notification-icon info" />;
     }
   };
 
-  const formatTime = (timestamp) => {
-    if (!timestamp) return "--:--";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
+  const getAccentColor = (type) => {
+    switch (type) {
+      case "success":
+        return "#22c55e";
+      case "warning":
+        return "#fbbf24";
+      case "error":
+        return "#fb7185";
+      default:
+        return "#38bdf8";
+    }
   };
 
   return (
@@ -132,81 +129,60 @@ export function DeviceNotificationHistory() {
 
         {/* Notification List */}
         {!loading && notifications.length > 0 && (
-          <>
-            <div style={{ maxHeight: "600px", overflowY: "auto" }}>
-              {notifications.map((notification, index) => (
+          <div className="notification-list">
+            {notifications.map((notification) => {
+              const type = notification.type || "info";
+              const sentAt = notification.timestamp || notification.createdAt;
+
+              return (
                 <div
-                  key={index}
-                  className={`notification-item`}
-                  style={{
-                    borderLeft: `3px solid ${
-                      notification.type === "success"
-                        ? "#22c55e"
-                        : notification.type === "warning"
-                          ? "#fbbf24"
-                          : notification.type === "error"
-                            ? "#fb7185"
-                            : "#38bdf8"
-                    }`,
-                  }}
+                  key={notification.id}
+                  className="notification-item"
+                  style={{ borderLeft: `4px solid ${getAccentColor(type)}` }}
                 >
-                  <div className="notification-content">
-                    <div className="notification-header">
-                      {getNotificationIcon(notification.type)}
+                  <div className="notification-item-icon">
+                    {getNotificationIcon(type)}
+                  </div>
+                  <div className="notification-item-content">
+                    <div className="notification-item-header">
                       <div>
-                        <h3 className="notification-title">
-                          {notification.title}
-                        </h3>
-                        <p className="notification-device">
-                          🔧 {notification.deviceName || "Unknown Device"}
+                        <p className="notification-item-title">
+                          {notification.title || t("title")}
+                        </p>
+                        <p className="notification-item-subtitle">
+                          {notification.deviceName || "System"}
                         </p>
                       </div>
+                      <div className="notification-time">
+                        <div className="time-badge">
+                          <FaClock size={11} style={{ marginRight: "4px" }} />
+                          <span>
+                            {sentAt
+                              ? dayjs(sentAt).format("DD/MM/YYYY HH:mm:ss")
+                              : "Pending"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="notification-message">
+                    <p className="notification-item-message">
                       {notification.message}
                     </p>
                     <div className="notification-metadata">
-                      <span>📍 {notification.deviceId || "N/A"}</span>
-                      <span>•</span>
-                      <span>{notification.status || "Pending"}</span>
-                    </div>
-                  </div>
-                  <div className="notification-time">
-                    <div className="time-badge">
-                      <FaClock size={11} style={{ marginRight: "4px" }} />
-                      {formatTime(
-                        notification.timestamp || notification.createdAt,
-                      )}
+                      <span className="notification-type-chip">{type}</span>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="notification-pagination-container">
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPages(Math.max(1, pages - 1))}
-                  disabled={pages === 1}
-                >
-                  ← {t("prev")}
-                </button>
-                <span className="pagination-info">
-                  {t("page", { page: pages, total: totalPages })}
-                </span>
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPages(Math.min(totalPages, pages + 1))}
-                  disabled={pages === totalPages}
-                >
-                  {t("next")} →
-                </button>
-              </div>
-            )}
-          </>
+              );
+            })}
+          </div>
         )}
+
+        {/* Pagination Controls */}
+        <Pagination
+          page={pages}
+          totalPages={totalPages}
+          onPageChange={setPages}
+        />
       </div>
     </main>
   );

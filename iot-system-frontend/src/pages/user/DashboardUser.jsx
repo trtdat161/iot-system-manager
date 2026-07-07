@@ -8,10 +8,45 @@ import {
   FaThermometerHalf,
   FaTint,
 } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { UseDeviceSignalR } from "../../hooks/UseDeviceSignalR";
 import "../../css/user/Dashboard.css";
 
-export function DashboardUser() {
+export function DashboardUser({ mac }) {
   const { t } = useTranslation("user_dashboard");
+  const connection = useDeviceSignalR(mac);
+
+  // State riêng cho trạng thái hiện tại - luôn bị ghi đè bởi data mới nhất
+  const [sensorData, setSensorData] = useState({
+    gas: null,
+    temperature: null,
+    humidity: null,
+    timestamp: null,
+  });
+  //State riêng cho danh sách cảnh báo - cộng dồn, không ghi đè
+  const [alerts, setAlerts] = useState([]);
+  useEffect(() => {
+    if (!connection) return;
+
+    connection.on("ReceiveSensorData", (data) => {
+      setSensorData({
+        gas: data.gas,
+        temperature: data.temperature,
+        humidity: data.humidity,
+        timestamp: data.timestamp,
+      });
+    });
+
+    connection.on("ReceiveAlert", (data) => {
+      setAlerts((prev) => [data, ...prev].slice(0, 20)); // giữ tối đa 20 cảnh báo gần nhất, tránh phình state
+    });
+
+    // Cleanup bắt buộc, tránh đăng ký listener trùng khi effect chạy lại
+    return () => {
+      connection.off("ReceiveSensorData");
+      connection.off("ReceiveAlert");
+    };
+  }, [connection]);
 
   const connectDevice = async () => {};
 
@@ -34,6 +69,24 @@ export function DashboardUser() {
             <strong>30.4C</strong>
           </div>
         </div>
+      </div>
+      {/* test realtime */}
+      <div className="test-realtime">
+        <h2>Trạng thái thiết bị {mac}</h2>
+
+        <div className="sensor-grid">
+          <div>🌡️ Nhiệt độ: {sensorData.temperature ?? "--"}°C</div>
+          <div>💧 Độ ẩm: {sensorData.humidity ?? "--"}%</div>
+          <div>💨 Gas (MQ2): {sensorData.gas ?? "--"}</div>
+          <div>Cập nhật lúc: {sensorData.timestamp ?? "--"}</div>
+        </div>
+
+        <h3>Cảnh báo gần đây</h3>
+        {alerts.map((a, idx) => (
+          <div key={idx} style={{ color: "red" }}>
+            [{a.type}] {a.message} — {a.createdAt}
+          </div>
+        ))}
       </div>
 
       <section className="user-device-panel user-glass-panel">
