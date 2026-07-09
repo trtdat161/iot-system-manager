@@ -46,6 +46,19 @@ export function FrameLayout() {
     infoProfile();
   }, []);
 
+  useEffect(() => {
+    const syncSidebarWithViewport = () => {
+      if (window.innerWidth <= 767) {
+        setCollapsed(true);
+      }
+    };
+
+    syncSidebarWithViewport();
+    window.addEventListener("resize", syncSidebarWithViewport);
+
+    return () => window.removeEventListener("resize", syncSidebarWithViewport);
+  }, [setCollapsed]);
+
   // style content
   const styleFrame = {
     marginLeft: collapsed ? "7px" : "162px",
@@ -65,9 +78,9 @@ export function FrameLayout() {
           <div className="row">
             <div className="col-md-12">
               <div className="bg-dark text-white rounded p-2">
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                   {/* left */}
-                  <div className="d-flex align-items-center gap-3">
+                  <div className="d-flex align-items-center gap-3 flex-wrap">
                     <FaBell
                       style={{ color: "#f87171", width: 20, height: 20 }}
                       aria-label={t("notification")}
@@ -148,7 +161,7 @@ export function FrameLayout() {
                     {/* break cum */}
                   </div>
                   {/* right */}
-                  <div className="d-flex align-items-center gap-3">
+                  <div className="d-flex align-items-center gap-3 flex-wrap">
                     <span>
                       {t("welcome_admin")} {fullname}
                     </span>

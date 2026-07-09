@@ -1,14 +1,19 @@
 import { useEffect } from "react";
-import "../../css/LandingPage.css";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "../../css/LandingPage.css";
 
 export function LandingPage() {
   const year = new Date().getFullYear();
   const navigate = useNavigate();
+  const { t } = useTranslation("landing_page");
+  const stats = t("stats", { returnObjects: true });
+  const features = t("features.items", { returnObjects: true });
 
   useEffect(() => {
     const container = document.getElementById("dtech-particles");
     if (!container) return;
+
     for (let i = 0; i < 18; i++) {
       const dot = document.createElement("div");
       dot.className = "dtech-dot";
@@ -22,6 +27,7 @@ export function LandingPage() {
       ].join(";");
       container.appendChild(dot);
     }
+
     return () => {
       container.innerHTML = "";
     };
@@ -29,7 +35,6 @@ export function LandingPage() {
 
   return (
     <>
-      {/* ── CIRCUIT BG ── */}
       <div className="dt-circuit-bg" aria-hidden="true">
         <svg
           viewBox="0 0 1400 800"
@@ -69,33 +74,29 @@ export function LandingPage() {
         </svg>
       </div>
 
-      {/* ── PARTICLES ── */}
       <div className="dt-particles" id="dtech-particles" aria-hidden="true" />
 
-      {/* ── NAVBAR ── */}
       <header>
-        <nav className="dt-navbar" aria-label="Main navigation">
+        <nav className="dt-navbar" aria-label={t("nav.aria")}>
           <div className="container">
             <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-              {/* Brand */}
-              <a href="#home" aria-label="DTECH home" className="dt-brand">
+              <a href="#home" aria-label={t("nav.home_aria")} className="dt-brand">
                 DTECH
                 <span className="dt-blink dt-brand-dot" />
               </a>
 
-              {/* CTA buttons */}
               <div className="d-flex align-items-center gap-2">
                 <button
                   className="dt-btn dt-btn-outline"
                   onClick={() => navigate("/login")}
                 >
-                  Login
+                  {t("nav.login")}
                 </button>
                 <button
                   className="dt-btn dt-btn-solid"
                   onClick={() => navigate("/register")}
                 >
-                  Register free
+                  {t("nav.register")}
                 </button>
               </div>
             </div>
@@ -103,49 +104,38 @@ export function LandingPage() {
         </nav>
       </header>
 
-      {/* MAIN CONTENT */}
       <main>
-        {/* ── HERO ── */}
         <section
           id="home"
-          aria-label="DTECH introduction"
+          aria-label={t("hero.aria")}
           className="dt-hero-section"
         >
           <div className="container">
             <div className="row align-items-center">
-              {/* LEFT */}
               <div className="col-lg-6">
                 <div className="dt-badge">
                   <span className="dt-badge-dot" />
-                  Personal IoT project
+                  {t("hero.badge")}
                 </div>
 
                 <h1 className="dt-hero-title">
                   <span className="dt-hero-title-main">DTECH</span>
-                  <span className="dt-hero-title-sub">Manager IoT</span>
+                  <span className="dt-hero-title-sub">{t("hero.subtitle")}</span>
                 </h1>
 
-                <p className="dt-hero-desc">
-                  A personal IoT device management system that helps you monitor
-                  fire alerts, gas levels, temperature, and receive realtime
-                  notifications through the dashboard and email.
-                </p>
+                <p className="dt-hero-desc">{t("hero.description")}</p>
 
                 <div className="d-flex flex-wrap gap-3 mb-5">
                   <HeroBtn href="/register" variant="primary">
-                    + Create free account
+                    {t("hero.create_account")}
                   </HeroBtn>
                   <HeroBtn href="/login" variant="secondary">
-                    -&gt; Login
+                    {t("hero.login")}
                   </HeroBtn>
                 </div>
 
                 <div className="dt-stats">
-                  {[
-                    { num: "100%", label: "Realtime" },
-                    { num: "24/7", label: "Monitoring" },
-                    { num: "SignalR", label: "Connection" },
-                  ].map(({ num, label }) => (
+                  {stats.map(({ num, label }) => (
                     <div key={label} className="dt-stat">
                       <span className="dt-stat-num">{num}</span>
                       <span className="dt-stat-label">{label}</span>
@@ -154,15 +144,13 @@ export function LandingPage() {
                 </div>
               </div>
 
-              {/* RIGHT: Dashboard mockup */}
               <div className="col-lg-6 mt-5 mt-lg-0">
-                <DashboardMockup />
+                <DashboardMockup t={t} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── FEATURES ── */}
         <section
           id="features"
           aria-labelledby="features-heading"
@@ -171,45 +159,19 @@ export function LandingPage() {
           <div className="container">
             <div className="row mb-5">
               <div className="col-lg-8">
-                <p className="dt-section-tag">personal project</p>
+                <p className="dt-section-tag">{t("features.tag")}</p>
                 <h2 id="features-heading" className="dt-section-title">
-                  IoT management{" "}
+                  {t("features.title")}{" "}
                   <span className="dt-section-title-highlight">
-                    simple and powerful
+                    {t("features.highlight")}
                   </span>
                 </h2>
               </div>
             </div>
 
             <div className="row g-4">
-              {[
-                {
-                  icon: "📡",
-                  title: "IoT device management",
-                  desc: "Add and monitor fire alarm modules, gas alarm modules, temperature sensors, and more through a friendly interface.",
-                },
-                {
-                  icon: "🔔",
-                  title: "Smart notifications",
-                  desc: "Receive realtime alerts when gas levels exceed thresholds, temperature is high, or sensors disconnect. Send email and notifications until you acknowledge them.",
-                },
-                {
-                  icon: "📊",
-                  title: "Charts and history",
-                  desc: "View notification history, device alert counts, access statistics, and sensor data charts.",
-                },
-                {
-                  icon: "👤",
-                  title: "Clear permissions",
-                  desc: "Admins manage users and devices. Users monitor their personal dashboard and update their profile.",
-                },
-                {
-                  icon: "🤖",
-                  title: "AI assistance (optional)",
-                  desc: "Integrate LangChain and LangGraph to automate processing and provide smarter alerts.",
-                },
-              ].map(({ icon, title, desc }, index) => (
-                <div key={index} className="col-md-6 col-lg-4">
+              {features.map(({ icon, title, desc }) => (
+                <div key={title} className="col-md-6 col-lg-4">
                   <article className="dt-feature-card">
                     <div className="dt-feature-icon">{icon}</div>
                     <h3 className="dt-feature-title">{title}</h3>
@@ -222,7 +184,6 @@ export function LandingPage() {
         </section>
       </main>
 
-      {/* FOOTER */}
       <footer className="dt-footer">
         <div className="container">
           <div className="row align-items-center">
@@ -230,17 +191,12 @@ export function LandingPage() {
               <div className="dt-footer-brand">
                 DTECH<span className="dt-footer-brand-dot">.</span>
               </div>
-              <p className="dt-footer-desc">
-                Personal IoT project. Smart monitoring for your home and space.
-              </p>
+              <p className="dt-footer-desc">{t("footer.description")}</p>
             </div>
 
             <div className="col-md-4 text-md-end">
-              <p className="dt-footer-copy">
-                © {year} DTECH - A personal project by Tien Dat
-              </p>
+              <p className="dt-footer-copy">{t("footer.copy", { year })}</p>
 
-              {/* Liên hệ */}
               <div className="d-flex flex-column flex-sm-row justify-content-md-end gap-3 gap-sm-4 text-muted small">
                 <a
                   href="tel:0374757256"
@@ -265,19 +221,6 @@ export function LandingPage() {
   );
 }
 
-/* ==================== SUB-COMPONENTS ==================== */
-
-function NavBtn({ href, variant, children }) {
-  const isOutline = variant === "outline";
-  const className = isOutline ? "dt-btn dt-btn-outline" : "dt-btn dt-btn-solid";
-
-  return (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  );
-}
-
 function HeroBtn({ href, variant, children }) {
   const isPrimary = variant === "primary";
   const className = isPrimary
@@ -291,16 +234,15 @@ function HeroBtn({ href, variant, children }) {
   );
 }
 
-/** Dashboard mockup for the personal project */
-function DashboardMockup() {
+function DashboardMockup({ t }) {
   return (
-    <div className="dt-dashboard" role="img" aria-label="Dashboard DTECH IoT">
+    <div className="dt-dashboard" role="img" aria-label={t("mockup.aria")}>
       <div className="dt-dashboard-header">
-        {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+        {["#ff5f57", "#febc2e", "#28c840"].map((color) => (
           <span
-            key={c}
+            key={color}
             className="dt-dashboard-dot"
-            style={{ background: c }}
+            style={{ background: color }}
           />
         ))}
         <span className="dt-dashboard-title">DTECH IoT Dashboard</span>
@@ -308,33 +250,38 @@ function DashboardMockup() {
 
       <div className="dt-dashboard-body">
         <div className="dt-metric">
-          <div className="dt-metric-label">Gas</div>
+          <div className="dt-metric-label">{t("mockup.gas")}</div>
           <div className="dt-metric-value" style={{ color: "#ff5f57" }}>
             0.85%
           </div>
-          <div className="dt-metric-change warning">Slightly above threshold</div>
+          <div className="dt-metric-change warning">{t("mockup.gas_note")}</div>
         </div>
         <div className="dt-metric">
-          <div className="dt-metric-label">Temperature</div>
-          <div className="dt-metric-value">31.4°C</div>
-          <div className="dt-metric-change positive">▲ Above normal</div>
+          <div className="dt-metric-label">{t("mockup.temperature")}</div>
+          <div className="dt-metric-value">31.4 C</div>
+          <div className="dt-metric-change positive">
+            {t("mockup.temperature_note")}
+          </div>
         </div>
         <div className="dt-metric">
-          <div className="dt-metric-label">Devices</div>
-          <div className="dt-metric-value">4 Online</div>
-          <div className="dt-metric-change positive">All systems active</div>
+          <div className="dt-metric-label">{t("mockup.devices")}</div>
+          <div className="dt-metric-value">{t("mockup.devices_value")}</div>
+          <div className="dt-metric-change positive">
+            {t("mockup.devices_note")}
+          </div>
         </div>
 
         <div className="dt-devices mt-3">
-          <div className="dt-metric-label">Recent devices</div>
+          <div className="dt-metric-label">{t("mockup.recent_devices")}</div>
           <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Gas Alarm Module
+            <span className="dt-device-dot online" /> {t("mockup.gas_module")}
           </div>
           <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Temperature Sensor
+            <span className="dt-device-dot online" />{" "}
+            {t("mockup.temperature_sensor")}
           </div>
           <div className="dt-device-item">
-            <span className="dt-device-dot idle" /> Fire Alarm Module
+            <span className="dt-device-dot idle" /> {t("mockup.fire_module")}
           </div>
         </div>
       </div>

@@ -9,12 +9,14 @@ import {
   FaTint,
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { UseDeviceSignalR } from "../../hooks/UseDeviceSignalR";
 import "../../css/user/Dashboard.css";
+import { useDeviceSignalR } from "../../hooks/useDeviceSignalR";
 
 export function DashboardUser({ mac }) {
   const { t } = useTranslation("user_dashboard");
-  const connection = useDeviceSignalR(mac);
+  // const connection = useDeviceSignalR(mac);
+  const testMac = "E098060E87C0"; // TẠM thời, thay bằng MAC thật của ESP em đang có trong DB
+  const connection = useDeviceSignalR(testMac);
 
   // State riêng cho trạng thái hiện tại - luôn bị ghi đè bởi data mới nhất
   const [sensorData, setSensorData] = useState({

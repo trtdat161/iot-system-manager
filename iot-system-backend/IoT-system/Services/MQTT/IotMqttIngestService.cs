@@ -119,7 +119,7 @@ namespace IoT_system.Services.Mqtt
 
             db.Devices.Add(new Device
             {
-                MacAddress = data.Mac,
+                MacAddress = data.Mac.ToUpperInvariant(), // chuẩn hóa ngay từ lúc lưu DB
                 Name = $"Device_{data.Mac}",
                 IsClaimed = false, // thiết bị tự gán là false, sau user connect thì mới là true 
                 //CreatedAt = DateTime.UtcNow
@@ -143,7 +143,7 @@ namespace IoT_system.Services.Mqtt
         private async Task HandleSensorData(DatabaseContext db, string topic, string payload)
         {
             var parts = topic.Split('/');
-            var mac = parts[1];
+            var mac = parts[1].ToUpperInvariant(); // chuẩn hóa ngay từ đầu, dùng biến này xuyên suốt hàm;
 
             var device = await db.Devices
                 .AsNoTracking()

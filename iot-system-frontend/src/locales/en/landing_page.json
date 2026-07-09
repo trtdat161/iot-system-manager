@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "aria": "Main navigation",
+    "home_aria": "DTECH home",
+    "login": "Login",
+    "register": "Register free"
+  },
+  "hero": {
+    "aria": "DTECH introduction",
+    "badge": "Personal IoT project",
+    "subtitle": "Manager IoT",
+    "description": "A personal IoT device management system that helps you monitor fire alerts, gas levels, temperature, and receive realtime notifications through the dashboard and email.",
+    "create_account": "+ Create free account",
+    "login": "-> Login"
+  },
+  "stats": [
+    { "num": "100%", "label": "Realtime" },
+    { "num": "24/7", "label": "Monitoring" },
+    { "num": "SignalR", "label": "Connection" }
+  ],
+  "features": {
+    "tag": "personal project",
+    "title": "IoT management",
+    "highlight": "simple and powerful",
+    "items": [
+      {
+        "icon": "IoT",
+        "title": "IoT device management",
+        "desc": "Add and monitor fire alarm modules, gas alarm modules, temperature sensors, and more through a friendly interface."
+      },
+      {
+        "icon": "Alert",
+        "title": "Smart notifications",
+        "desc": "Receive realtime alerts when gas levels exceed thresholds, temperature is high, or sensors disconnect. Send email and notifications until you acknowledge them."
+      },
+      {
+        "icon": "Chart",
+        "title": "Charts and history",
+        "desc": "View notification history, device alert counts, access statistics, and sensor data charts."
+      },
+      {
+        "icon": "Role",
+        "title": "Clear permissions",
+        "desc": "Admins manage users and devices. Users monitor their personal dashboard and update their profile."
+      },
+      {
+        "icon": "AI",
+        "title": "AI assistance (optional)",
+        "desc": "Integrate LangChain and LangGraph to automate processing and provide smarter alerts."
+      }
+    ]
+  },
+  "footer": {
+    "description": "Personal IoT project. Smart monitoring for your home and space.",
+    "copy": "Copyright {{year}} DTECH - A personal project by Tien Dat"
+  },
+  "mockup": {
+    "aria": "Dashboard DTECH IoT",
+    "gas": "Gas",
+    "gas_note": "Slightly above threshold",
+    "temperature": "Temperature",
+    "temperature_note": "Above normal",
+    "devices": "Devices",
+    "devices_value": "4 Online",
+    "devices_note": "All systems active",
+    "recent_devices": "Recent devices",
+    "gas_module": "Gas Alarm Module",
+    "temperature_sensor": "Temperature Sensor",
+    "fire_module": "Fire Alarm Module"
+  }
+}

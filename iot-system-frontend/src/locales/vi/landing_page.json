@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "aria": "Dieu huong chinh",
+    "home_aria": "Trang chu DTECH",
+    "login": "Dang nhap",
+    "register": "Dang ky mien phi"
+  },
+  "hero": {
+    "aria": "Gioi thieu DTECH",
+    "badge": "Du an IoT ca nhan",
+    "subtitle": "Quan ly IoT",
+    "description": "He thong quan ly thiet bi IoT ca nhan giup ban theo doi canh bao chay, khi gas, nhiet do va nhan thong bao thoi gian thuc qua dashboard va email.",
+    "create_account": "+ Tao tai khoan mien phi",
+    "login": "-> Dang nhap"
+  },
+  "stats": [
+    { "num": "100%", "label": "Thoi gian thuc" },
+    { "num": "24/7", "label": "Giam sat" },
+    { "num": "SignalR", "label": "Ket noi" }
+  ],
+  "features": {
+    "tag": "du an ca nhan",
+    "title": "Quan ly IoT",
+    "highlight": "don gian va manh me",
+    "items": [
+      {
+        "icon": "IoT",
+        "title": "Quan ly thiet bi IoT",
+        "desc": "Them va theo doi module bao chay, module bao gas, cam bien nhiet do va nhieu thiet bi khac qua giao dien than thien."
+      },
+      {
+        "icon": "Alert",
+        "title": "Thong bao thong minh",
+        "desc": "Nhan canh bao thoi gian thuc khi muc gas vuot nguong, nhiet do cao hoac cam bien mat ket noi. He thong gui email va thong bao cho den khi ban xac nhan."
+      },
+      {
+        "icon": "Chart",
+        "title": "Bieu do va lich su",
+        "desc": "Xem lich su thong bao, so lan canh bao cua thiet bi, thong ke truy cap va bieu do du lieu cam bien."
+      },
+      {
+        "icon": "Role",
+        "title": "Phan quyen ro rang",
+        "desc": "Admin quan ly nguoi dung va thiet bi. User theo doi dashboard ca nhan va cap nhat ho so."
+      },
+      {
+        "icon": "AI",
+        "title": "Ho tro AI tuy chon",
+        "desc": "Tich hop LangChain va LangGraph de tu dong hoa xu ly va cung cap canh bao thong minh hon."
+      }
+    ]
+  },
+  "footer": {
+    "description": "Du an IoT ca nhan. Giam sat thong minh cho nha va khong gian cua ban.",
+    "copy": "Ban quyen {{year}} DTECH - Du an ca nhan cua Tien Dat"
+  },
+  "mockup": {
+    "aria": "Dashboard DTECH IoT",
+    "gas": "Gas",
+    "gas_note": "Vuot nguong nhe",
+    "temperature": "Nhiet do",
+    "temperature_note": "Cao hon binh thuong",
+    "devices": "Thiet bi",
+    "devices_value": "4 dang online",
+    "devices_note": "Tat ca he thong dang hoat dong",
+    "recent_devices": "Thiet bi gan day",
+    "gas_module": "Module bao gas",
+    "temperature_sensor": "Cam bien nhiet do",
+    "fire_module": "Module bao chay"
+  }
+}

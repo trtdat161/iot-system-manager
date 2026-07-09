@@ -1,6 +1,9 @@
 {
   "notification": "Thong bao",
   "home": "Trang chu",
+  "help": "Ho tro",
+  "profile": "Ho so",
+  "waiting_connection": "Cho ket noi",
   "welcome_user": "Chao mung:",
   "user_avatar_alt": "Anh dai dien nguoi dung"
 }

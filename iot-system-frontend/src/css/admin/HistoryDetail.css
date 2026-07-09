@@ -59,6 +59,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
+  min-width: 0;
 }
 
 .history-detail-header {
@@ -74,6 +75,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .history-detail-icon {
@@ -92,12 +94,14 @@
   font-size: 24px;
   font-weight: 600;
   color: #f8fbff;
+  overflow-wrap: anywhere;
 }
 
 .history-detail-subtitle {
   margin: 4px 0 0;
   font-size: 13px;
   color: rgba(232, 241, 251, 0.7);
+  overflow-wrap: anywhere;
 }
 
 .history-detail-back-btn {
@@ -161,6 +165,7 @@
   font-size: 16px;
   line-height: 1.7;
   color: #f4f8ff;
+  overflow-wrap: anywhere;
 }
 
 .history-detail-meta-grid {
@@ -239,6 +244,7 @@
   font-size: 14px;
   font-weight: 600;
   color: #f3f7ff;
+  overflow-wrap: anywhere;
 }
 
 .history-detail-user-status {
@@ -296,6 +302,10 @@
 }
 
 @media (max-width: 768px) {
+  .history-detail-page {
+    padding: 12px;
+  }
+
   .history-detail-shell {
     padding: 18px;
   }
@@ -306,5 +316,22 @@
 
   .history-detail-card {
     padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-detail-shell {
+    padding: 14px;
+  }
+
+  .history-detail-title-group,
+  .history-detail-user-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-detail-back-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -1,0 +1,17 @@
+{
+  "title": "Chi tiet thong bao",
+  "subtitle": "Xem day du noi dung su kien va trang thai nguoi nhan.",
+  "back": "Quay lai",
+  "loading": "Dang tai chi tiet...",
+  "notification": "Thong bao",
+  "status": "Trang thai",
+  "read": "Da doc",
+  "unread": "Chua doc",
+  "recipients": "Nguoi nhan",
+  "recipient_list": "Danh sach nguoi nhan",
+  "empty_recipients": "Khong co du lieu nguoi nhan.",
+  "errors": {
+    "not_found": "Khong tim thay chi tiet lich su",
+    "load_failed": "Khong the tai chi tiet thong bao"
+  }
+}

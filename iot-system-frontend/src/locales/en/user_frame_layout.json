@@ -1,6 +1,9 @@
 {
   "notification": "Notification",
   "home": "Home",
+  "help": "Help",
+  "profile": "Profile",
+  "waiting_connection": "Waiting connection",
   "welcome_user": "Welcome:",
   "user_avatar_alt": "User avatar"
 }

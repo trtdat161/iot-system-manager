@@ -1,0 +1,17 @@
+{
+  "title": "Notification detail",
+  "subtitle": "Review the full content of this event and recipient status.",
+  "back": "Back",
+  "loading": "Loading details...",
+  "notification": "Notification",
+  "status": "Status",
+  "read": "Read",
+  "unread": "Unread",
+  "recipients": "Recipients",
+  "recipient_list": "Recipient list",
+  "empty_recipients": "No recipient data available.",
+  "errors": {
+    "not_found": "History detail not found",
+    "load_failed": "Unable to load notification details"
+  }
+}

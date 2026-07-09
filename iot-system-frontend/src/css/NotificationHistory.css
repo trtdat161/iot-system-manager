@@ -100,6 +100,7 @@
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
   padding: 20px;
+  min-width: 0;
 }
 
 /* History Header */
@@ -118,6 +119,7 @@
   color: inherit;
   margin: 0;
   letter-spacing: 0.5px;
+  overflow-wrap: anywhere;
 }
 
 .notification-history-stats {
@@ -164,6 +166,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   transition: all 0.3s ease;
+  min-width: 0;
 }
 
 .notification-item:hover {
@@ -248,12 +251,14 @@
   color: #f8fbff;
   margin: 0;
   font-size: 15px;
+  overflow-wrap: anywhere;
 }
 
 .notification-item-subtitle {
   font-size: 12px;
   color: #94a8bd;
   margin: 2px 0 0;
+  overflow-wrap: anywhere;
 }
 
 .notification-message,
@@ -262,6 +267,7 @@
   color: rgba(232, 241, 251, 0.75);
   margin: 0;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .notification-metadata {
@@ -453,6 +459,7 @@
 
   .notification-time {
     justify-content: flex-start;
+    min-width: 0;
   }
 
   .notification-history-header {
@@ -481,6 +488,7 @@
   }
 
   .notification-item {
+    grid-template-columns: 1fr;
     gap: 10px;
     padding: 12px;
   }
@@ -501,5 +509,13 @@
   .pagination-btn {
     padding: 6px 10px;
     font-size: 12px;
+  }
+
+  .notification-pagination-container {
+    flex-wrap: wrap;
+  }
+
+  .time-badge {
+    white-space: normal;
   }
 }

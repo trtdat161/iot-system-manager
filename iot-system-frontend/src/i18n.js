@@ -27,6 +27,10 @@ import vi_admin_notification_history from "./locales/vi/admin_notification_histo
 import en_admin_notification_history from "./locales/en/admin_notification_history.json";
 import vi_user_notification_history from "./locales/vi/user_notification_history.json";
 import en_user_notification_history from "./locales/en/user_notification_history.json";
+import vi_landing_page from "./locales/vi/landing_page.json";
+import en_landing_page from "./locales/en/landing_page.json";
+import vi_admin_history_detail from "./locales/vi/admin_history_detail.json";
+import en_admin_history_detail from "./locales/en/admin_history_detail.json";
 
 i18next.use(initReactI18next).init({
   // file này sẽ đc gọi ở main.jsx một lần khi app start
@@ -46,6 +50,8 @@ i18next.use(initReactI18next).init({
       user_frame_layout: vi_user_frame_layout,
       admin_notification_history: vi_admin_notification_history,
       user_notification_history: vi_user_notification_history,
+      landing_page: vi_landing_page,
+      admin_history_detail: vi_admin_history_detail,
     },
     "en-US": {
       register_login: en_register_login,
@@ -61,6 +67,8 @@ i18next.use(initReactI18next).init({
       user_frame_layout: en_user_frame_layout,
       admin_notification_history: en_admin_notification_history,
       user_notification_history: en_user_notification_history,
+      landing_page: en_landing_page,
+      admin_history_detail: en_admin_history_detail,
     },
   },
   lng: localStorage.getItem("lang") || "en-US",

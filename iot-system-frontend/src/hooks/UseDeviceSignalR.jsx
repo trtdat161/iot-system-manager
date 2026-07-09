@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-export function UseDeviceSignalR(mac) {
+export function useDeviceSignalR(mac) {
   const [connection, setConnection] = useState(null);
+  console.log("useDeviceSignalR called with mac:", mac); // thêm dòng này
 
   useEffect(() => {
-    if (!mac) return; // chưa chọn thiết bị thì chưa cần connect
+    if (!mac) return;
+    const normalizedMac = mac.toUpperCase(); // chuẩn hóa 1 lần, dùng xuyên suốt effect
 
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl("https://your-api.com/hubs/notification")
-      .withAutomaticReconnect() // ESP + mạng dễ rớt, bắt buộc có
+      .withUrl("https://localhost:7115/hubs/notification") // thay đúng port BE thật của em
+      .withAutomaticReconnect()
       .build();
 
-    // Khi reconnect lại sau khi mất mạng, phải join lại group,
-    // vì SignalR không tự nhớ group cũ sau khi connection bị đứt và tạo lại
     conn.onreconnected(() => {
-      conn.invoke("JoinDeviceGroup", mac);
+      conn.invoke("JoinDeviceGroup", normalizedMac);
     });
 
     conn
       .start()
       .then(() => {
-        conn.invoke("JoinDeviceGroup", mac); // join phòng đúng thiết bị
+        conn.invoke("JoinDeviceGroup", normalizedMac);
         setConnection(conn);
       })
       .catch((err) => console.error("SignalR connect error:", err));
 
     return () => {
-      conn.invoke("LeaveDeviceGroup", mac).catch(() => {});
+      conn.invoke("LeaveDeviceGroup", normalizedMac).catch(() => {});
       conn.stop();
     };
   }, [mac]);
