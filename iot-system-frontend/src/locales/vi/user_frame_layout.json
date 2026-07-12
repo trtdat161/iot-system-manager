@@ -1,9 +1,9 @@
 {
-  "notification": "Thong bao",
-  "home": "Trang chu",
-  "help": "Ho tro",
-  "profile": "Ho so",
-  "waiting_connection": "Cho ket noi",
-  "welcome_user": "Chao mung:",
-  "user_avatar_alt": "Anh dai dien nguoi dung"
+  "notification": "Thông báo",
+  "home": "Trang chủ",
+  "help": "Hỗ trợ",
+  "profile": "Hồ sơ",
+  "waiting_connection": "Chờ kết nối",
+  "welcome_user": "Chào mừng:",
+  "user_avatar_alt": "Ảnh đại diện người dùng"
 }

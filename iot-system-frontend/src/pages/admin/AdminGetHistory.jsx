@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { adminGetHistory } from "../../api/admin/notification";
+import {
+  adminGetHistory,
+  SearchAndFilterHistory,
+} from "../../api/admin/notification";
 import {
   FaBell,
   FaClock,
@@ -9,6 +12,9 @@ import {
   FaInfoCircle,
   FaTimesCircle,
   FaSpinner,
+  FaSearch,
+  FaFilter,
+  FaRedoAlt,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
@@ -25,6 +31,12 @@ export function AdminGetHistory() {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // search - filter
+  const [toDate, setToDate] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [read, setRead] = useState("");
+  const [type, setType] = useState("");
 
   const navigate = useNavigate();
 
@@ -50,14 +62,112 @@ export function AdminGetHistory() {
     fetchNotifications(pages);
   }, [pages]);
 
+  const handleSearch = async () => {
+    try {
+      const response = await SearchAndFilterHistory(
+        pages, // page
+        PAGE_SIZE, // pageSize
+        fromDate,
+        toDate,
+        read,
+        type,
+      );
+      const paged = response.data;
+      setNotifications(Array.isArray(paged.data) ? paged.data : []);
+      setTotalPages(paged.totalPages ?? 1);
+      setTotalNotifications(paged.totalItems ?? 0);
+    } catch (err) {
+      console.log("error:", err?.message || err);
+    }
+  };
+
+  const handleReload = () => {
+    setFromDate("");
+    setToDate("");
+    setRead("");
+    setType("");
+    pages === 1 ? fetchNotifications(1) : setPages(1);
+  };
+
   return (
     <main className="admin-notification-history">
-      <div className="notification-glass-panel">
-        {/* Header */}
-        <div className="notification-history-header">
-          <div>
-            <h2>{t("title")}</h2>
+      {/* search & filter */}
+      <div className="notification-search-filter-container mb-4">
+        <div className="notification-search-filter-left">
+          <span className="filter-label-text">{t("filter_time")}</span>
+          <div className="notification-date-group">
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="notification-date-input"
+              title={t("date_range")}
+            />
+            <span className="notification-date-separator">─</span>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="notification-date-input"
+              title={t("date_range")}
+            />
           </div>
+        </div>
+
+        <div className="notification-search-filter-right">
+          <span className="filter-label-text">{t("filter_status")}</span>
+          <select
+            className="filter-select"
+            value={read}
+            onChange={(e) => setRead(e.target.value)}
+            title={t("read_status")}
+          >
+            <option value="" className="text-center">
+              {t("read_status")}
+            </option>
+            <option value="true" className="text-center">
+              ✓ {t("read")}
+            </option>
+            <option value="false" className="text-center">
+              ✗ {t("unread")}
+            </option>
+          </select>
+          <select
+            className="filter-select"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            title={t("notification_type")}
+          >
+            <option value="" className="text-center">
+              {t("notification_type")}
+            </option>
+            <option value="gas" className="text-center">
+              💨 {t("gas")}
+            </option>
+            <option value="heartbeat" className="text-center">
+              💧 {t("humidity")}
+            </option>
+          </select>
+          <button
+            className="btn btn-search"
+            onClick={() => handleSearch()}
+            title={t("search")}
+          >
+            <FaSearch size={13} />
+          </button>
+          <button
+            className="btn btn-reset"
+            onClick={handleReload}
+            title={t("reset")}
+          >
+            <FaRedoAlt size={13} />
+          </button>
+        </div>
+      </div>
+
+      <div className="notification-glass-panel">
+        {/* Stats */}
+        <div className="notification-history-header">
           <div className="notification-history-stats">
             <div className="stat-badge">
               <FaBell size={14} />
@@ -142,7 +252,7 @@ export function AdminGetHistory() {
                     <div className="notification-metadata">
                       <span>📍 {notification.type || "N/A"}</span>
                       <span>•</span>
-                      <span>{notification.IsRead ? "Yes" : "No"}</span>
+                      <span>{notification.IsRead ? t("yes") : t("no")}</span>
                     </div>
                   </div>
                   <div className="notification-time">
@@ -151,7 +261,7 @@ export function AdminGetHistory() {
                       <span>
                         {dayjs(notification.createdAt).format(
                           "DD/MM/YYYY HH:mm:ss",
-                        ) || "Pending"}
+                        ) || t("pending")}
                       </span>
                     </div>
                     <button
@@ -162,7 +272,7 @@ export function AdminGetHistory() {
                         )
                       }
                     >
-                      detail
+                      {t("detail")}
                     </button>
                   </div>
                 </div>

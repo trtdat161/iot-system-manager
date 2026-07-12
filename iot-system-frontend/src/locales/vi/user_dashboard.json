@@ -1,31 +1,31 @@
 {
-  "title": "Bang dieu khien nguoi dung",
-  "notification": "Thong bao tu thiet bi",
-  "hello": "Xin chao: {{name}}",
+  "title": "Bảng điều khiển người dùng",
+  "notification": "Thông báo từ thiết bị",
+  "hello": "Xin chào: {{name}}",
   "temperature": {
-    "label": "Nhiet do"
+    "label": "Nhiệt độ"
   },
   "connection": {
-    "status": "Ket noi thanh cong",
-    "note": "Thiet bi DTECH-01 dang online va san sang nhan du lieu cam bien.",
-    "connect": "Ket noi",
-    "disconnect": "Ngat ket noi"
+    "status": "Kết nối thành công",
+    "note": "Thiết bị DTECH-01 đang online và sẵn sàng nhận dữ liệu cảm biến.",
+    "connect": "Kết nối",
+    "disconnect": "Ngắt kết nối"
   },
   "alert": {
-    "confirm": "OK, da doc"
+    "confirm": "OK, đã đọc"
   },
   "sensors": {
-    "gas_safe": "Nguong gas an toan",
-    "air_stable": "Khong khi on dinh"
+    "gas_safe": "Ngưỡng gas an toàn",
+    "air_stable": "Không khí ổn định"
   },
   "waiting_connection": {
-    "title": "Cho ket noi",
-    "subtitle": "Thiet bi dang cho ket noi",
+    "title": "Chờ kết nối",
+    "subtitle": "Thiết bị đang chờ kết nối",
     "model": "Model",
-    "mac_address": "Dia chi MAC",
-    "status": "Trang thai",
-    "connect_btn": "Ket noi",
-    "pending": "Cho ket noi",
-    "no_devices": "Khong co thiet bi nao dang cho ket noi"
+    "mac_address": "Địa chỉ MAC",
+    "status": "Trạng thái",
+    "connect_btn": "Kết nối",
+    "pending": "Chờ kết nối",
+    "no_devices": "Không có thiết bị nào đang chờ kết nối"
   }
 }

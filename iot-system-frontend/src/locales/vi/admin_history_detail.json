@@ -1,17 +1,17 @@
 {
-  "title": "Chi tiet thong bao",
-  "subtitle": "Xem day du noi dung su kien va trang thai nguoi nhan.",
-  "back": "Quay lai",
-  "loading": "Dang tai chi tiet...",
-  "notification": "Thong bao",
-  "status": "Trang thai",
-  "read": "Da doc",
-  "unread": "Chua doc",
-  "recipients": "Nguoi nhan",
-  "recipient_list": "Danh sach nguoi nhan",
-  "empty_recipients": "Khong co du lieu nguoi nhan.",
+  "title": "Chi tiết thông báo",
+  "subtitle": "Xem đầy đủ nội dung sự kiện và trạng thái người nhận.",
+  "back": "Quay lại",
+  "loading": "Đang tải chi tiết...",
+  "notification": "Thông báo",
+  "status": "Trạng thái",
+  "read": "Đã đọc",
+  "unread": "Chưa đọc",
+  "recipients": "Người nhận",
+  "recipient_list": "Danh sách người nhận",
+  "empty_recipients": "Không có dữ liệu người nhận.",
   "errors": {
-    "not_found": "Khong tim thay chi tiet lich su",
-    "load_failed": "Khong the tai chi tiet thong bao"
+    "not_found": "Không tìm thấy chi tiết lịch sử",
+    "load_failed": "Không thể tải chi tiết thông báo"
   }
 }

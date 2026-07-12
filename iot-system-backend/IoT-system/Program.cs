@@ -9,7 +9,7 @@ using IoT_system.Services.DashboardAdmin;
 using IoT_system.Services.Devices;
 using IoT_system.Services.Languages;
 using IoT_system.Services.Mqtt;
-using IoT_system.Services.Notification;
+using IoT_system.Services.Notifications;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;

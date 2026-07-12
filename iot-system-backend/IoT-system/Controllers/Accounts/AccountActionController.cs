@@ -61,10 +61,12 @@ namespace IoT_system.Controllers.Accounts
         [Authorize(Roles = "admin")]
         [Produces("application/json")]
         [HttpGet("search-account")]
-        public async Task<IActionResult> SeachAccount([FromQuery] string? keyword, [FromQuery] bool? status)
-        /* không dùng fromQuery cũng đc nhưng để từ minh querystring nên có FromQuery */
+        public async Task<IActionResult> SeachAccount([FromQuery] int page = 1, 
+                                                      [FromQuery] int pageSize = 10, 
+                                                      [FromQuery] string? keyword = null,
+                                                      [FromQuery] bool? status = null) 
         {
-            var result = await accountServices.Search(keyword, status);
+            var result = await accountServices.Search(page, pageSize, keyword, status);
             return Ok(result);
         }
 

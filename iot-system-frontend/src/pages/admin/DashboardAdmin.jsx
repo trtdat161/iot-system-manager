@@ -104,7 +104,7 @@ export function DashboardAdmin() {
 
       {/* error banner — vẫn render dashboard bên dưới */}
       {!loading && error && (
-        <p className="alert alert-warning text-center">
+        <p className="alert alert-warning text-center mb-2">
           {t("errors.unavailable")} <br />
           {t("errors.cannot_access")}
         </p>

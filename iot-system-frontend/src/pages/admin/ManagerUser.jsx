@@ -74,8 +74,11 @@ export function ManagerUser() {
   // search + filter
   const handleSearch = async (name, status) => {
     try {
-      const response = await SearchAccount(name, status);
-      setAccounts(Array.isArray(response.data) ? response.data : []);
+      const response = await SearchAccount(pages, PAGE_SIZE, name, status); // đúng thứ tự
+      const paged = response.data;
+      setAccounts(Array.isArray(paged.data) ? paged.data : []);
+      setTotalPages(paged.totalPages ?? 1);
+      setTotalUsers(paged.totalItems ?? 0);
       setSearchName("");
     } catch (err) {
       console.log("error:", err?.message || err);

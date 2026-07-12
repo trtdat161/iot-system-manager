@@ -1,9 +1,9 @@
 {
-  "notification": "Thong bao",
-  "home": "Trang chu",
-  "user": "Nguoi dung",
-  "devices": "Thiet bi",
-  "profile": "Ho so",
-  "welcome_admin": "Chao mung quan tri vien:",
-  "admin_avatar_alt": "Anh dai dien admin"
+  "notification": "Thông báo",
+  "home": "Trang chủ",
+  "user": "Người dùng",
+  "devices": "Thiết bị",
+  "profile": "Hồ sơ",
+  "welcome_admin": "Chào mừng quản trị viên:",
+  "admin_avatar_alt": "Ảnh đại diện admin"
 }

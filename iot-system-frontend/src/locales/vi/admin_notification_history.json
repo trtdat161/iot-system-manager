@@ -6,5 +6,20 @@
   "empty_desc": "Bạn chưa nhận được thông báo nào từ các thiết bị.",
   "prev": "Trước",
   "next": "Tiếp Theo",
-  "page": "Trang {{page}} / {{total}}"
+  "page": "Trang {{page}} / {{total}}",
+  "date_range": "Khoảng Ngày",
+  "read_status": "Trạng Thái Đọc",
+  "read": "Đã Đọc",
+  "unread": "Chưa Đọc",
+  "notification_type": "Loại Thông Báo",
+  "gas": "Gas",
+  "humidity": "Độ Ẩm",
+  "search": "Tìm Kiếm",
+  "reset": "Đặt Lại",
+  "yes": "Có",
+  "no": "Không",
+  "detail": "Chi Tiết",
+  "pending": "Đang Xử Lý",
+  "filter_time": "Lọc Thời Gian",
+  "filter_status": "Lọc Trạng Thái"
 }

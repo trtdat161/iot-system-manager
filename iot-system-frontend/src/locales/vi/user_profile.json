@@ -1,49 +1,49 @@
 {
   "heading": {
-    "account_details": "Chi tiet tai khoan",
-    "profile_information": "Thong tin ho so"
+    "account_details": "Chi tiết tài khoản",
+    "profile_information": "Thông tin hồ sơ"
   },
   "summary": {
-    "current_access": "Quyen hien tai",
-    "created_at": "Ngay tao"
+    "current_access": "Quyền hiện tại",
+    "created_at": "Ngày tạo"
   },
   "fields": {
-    "fullname": "Ho va ten",
+    "fullname": "Họ và tên",
     "email": "Email",
-    "password": "Mat khau",
-    "language": "Ngon ngu"
+    "password": "Mật khẩu",
+    "language": "Ngôn ngữ"
   },
   "languages": {
-    "vietnamese": "Tieng Viet",
-    "english": "Tieng Anh"
+    "vietnamese": "Tiếng Việt",
+    "english": "Tiếng Anh"
   },
   "status": {
-    "active": "Dang hoat dong",
-    "inactive": "Khong hoat dong"
+    "active": "Đang hoạt động",
+    "inactive": "Không hoạt động"
   },
   "roles": {
-    "user": "Nguoi dung",
-    "no_data": "Khong co du lieu"
+    "user": "Người dùng",
+    "no_data": "Không có dữ liệu"
   },
-  "new_password": "Mat khau moi",
+  "new_password": "Mật khẩu mới",
   "actions": {
-    "save": "Luu",
-    "show_password": "Hien mat khau",
-    "hide_password": "An mat khau"
+    "save": "Lưu",
+    "show_password": "Hiện mật khẩu",
+    "hide_password": "Ẩn mật khẩu"
   },
   "messages": {
-    "update_success": "Cap nhat ho so thanh cong"
+    "update_success": "Cập nhật hồ sơ thành công"
   },
   "errors": {
-    "fullname_required": "Vui long nhap ho va ten",
-    "email_required": "Vui long nhap email",
-    "email_invalid": "Email khong hop le",
-    "password_min": "Mat khau phai co it nhat 6 ky tu",
-    "password_lowercase": "Mat khau phai co it nhat 1 chu thuong",
-    "password_uppercase": "Mat khau phai co it nhat 1 chu hoa",
-    "password_number": "Mat khau phai co it nhat 1 chu so",
-    "update_failed": "Cap nhat that bai!",
-    "load_failed": "Khong the tai ho so. Vui long thu lai sau.",
-    "profile_unavailable": "Khong co du lieu ho so."
+    "fullname_required": "Vui lòng nhập họ và tên",
+    "email_required": "Vui lòng nhập email",
+    "email_invalid": "Email không hợp lệ",
+    "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
+    "password_lowercase": "Mật khẩu phải có ít nhất 1 chữ thường",
+    "password_uppercase": "Mật khẩu phải có ít nhất 1 chữ hoa",
+    "password_number": "Mật khẩu phải có ít nhất 1 chữ số",
+    "update_failed": "Cập nhật thất bại!",
+    "load_failed": "Không thể tải hồ sơ. Vui lòng thử lại sau.",
+    "profile_unavailable": "Không có dữ liệu hồ sơ."
   }
 }

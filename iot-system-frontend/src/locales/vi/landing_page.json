@@ -1,71 +1,71 @@
 {
   "nav": {
-    "aria": "Dieu huong chinh",
-    "home_aria": "Trang chu DTECH",
-    "login": "Dang nhap",
-    "register": "Dang ky mien phi"
+    "aria": "Điều hướng chính",
+    "home_aria": "Trang chủ DTECH",
+    "login": "Đăng nhập",
+    "register": "Đăng ký miễn phí"
   },
   "hero": {
-    "aria": "Gioi thieu DTECH",
-    "badge": "Du an IoT ca nhan",
-    "subtitle": "Quan ly IoT",
-    "description": "He thong quan ly thiet bi IoT ca nhan giup ban theo doi canh bao chay, khi gas, nhiet do va nhan thong bao thoi gian thuc qua dashboard va email.",
-    "create_account": "+ Tao tai khoan mien phi",
-    "login": "-> Dang nhap"
+    "aria": "Giới thiệu DTECH",
+    "badge": "Dự án IoT cá nhân",
+    "subtitle": "Quản lý IoT",
+    "description": "Hệ thống quản lý thiết bị IoT cá nhân giúp bạn theo dõi cảnh báo cháy, khí gas, nhiệt độ và nhận thông báo thời gian thực qua dashboard và email.",
+    "create_account": "+ Tạo tài khoản miễn phí",
+    "login": "-> Đăng nhập"
   },
   "stats": [
-    { "num": "100%", "label": "Thoi gian thuc" },
-    { "num": "24/7", "label": "Giam sat" },
-    { "num": "SignalR", "label": "Ket noi" }
+    { "num": "100%", "label": "Thời gian thực" },
+    { "num": "24/7", "label": "Giám sát" },
+    { "num": "SignalR", "label": "Kết nối" }
   ],
   "features": {
-    "tag": "du an ca nhan",
-    "title": "Quan ly IoT",
-    "highlight": "don gian va manh me",
+    "tag": "dự án cá nhân",
+    "title": "Quản lý IoT",
+    "highlight": "đơn giản và mạnh mẽ",
     "items": [
       {
         "icon": "IoT",
-        "title": "Quan ly thiet bi IoT",
-        "desc": "Them va theo doi module bao chay, module bao gas, cam bien nhiet do va nhieu thiet bi khac qua giao dien than thien."
+        "title": "Quản lý thiết bị IoT",
+        "desc": "Thêm và theo dõi module báo cháy, module báo gas, cảm biến nhiệt độ và nhiều thiết bị khác qua giao diện thân thiện."
       },
       {
         "icon": "Alert",
-        "title": "Thong bao thong minh",
-        "desc": "Nhan canh bao thoi gian thuc khi muc gas vuot nguong, nhiet do cao hoac cam bien mat ket noi. He thong gui email va thong bao cho den khi ban xac nhan."
+        "title": "Thông báo thông minh",
+        "desc": "Nhận cảnh báo thời gian thực khi mức gas vượt ngưỡng, nhiệt độ cao hoặc cảm biến mất kết nối. Hệ thống gửi email và thông báo cho đến khi bạn xác nhận."
       },
       {
         "icon": "Chart",
-        "title": "Bieu do va lich su",
-        "desc": "Xem lich su thong bao, so lan canh bao cua thiet bi, thong ke truy cap va bieu do du lieu cam bien."
+        "title": "Biểu đồ và lịch sử",
+        "desc": "Xem lịch sử thông báo, số lần cảnh báo của thiết bị, thống kê truy cập và biểu đồ dữ liệu cảm biến."
       },
       {
         "icon": "Role",
-        "title": "Phan quyen ro rang",
-        "desc": "Admin quan ly nguoi dung va thiet bi. User theo doi dashboard ca nhan va cap nhat ho so."
+        "title": "Phân quyền rõ ràng",
+        "desc": "Admin quản lý người dùng và thiết bị. User theo dõi dashboard cá nhân và cập nhật hồ sơ."
       },
       {
         "icon": "AI",
-        "title": "Ho tro AI tuy chon",
-        "desc": "Tich hop LangChain va LangGraph de tu dong hoa xu ly va cung cap canh bao thong minh hon."
+        "title": "Hỗ trợ AI tùy chọn",
+        "desc": "Tích hợp LangChain và LangGraph để tự động hóa xử lý và cung cấp cảnh báo thông minh hơn."
       }
     ]
   },
   "footer": {
-    "description": "Du an IoT ca nhan. Giam sat thong minh cho nha va khong gian cua ban.",
-    "copy": "Ban quyen {{year}} DTECH - Du an ca nhan cua Tien Dat"
+    "description": "Dự án IoT cá nhân. Giám sát thông minh cho nhà và không gian của bạn.",
+    "copy": "Bản quyền {{year}} DTECH - Dự án cá nhân của Tiến Đạt"
   },
   "mockup": {
     "aria": "Dashboard DTECH IoT",
     "gas": "Gas",
-    "gas_note": "Vuot nguong nhe",
-    "temperature": "Nhiet do",
-    "temperature_note": "Cao hon binh thuong",
-    "devices": "Thiet bi",
-    "devices_value": "4 dang online",
-    "devices_note": "Tat ca he thong dang hoat dong",
-    "recent_devices": "Thiet bi gan day",
-    "gas_module": "Module bao gas",
-    "temperature_sensor": "Cam bien nhiet do",
-    "fire_module": "Module bao chay"
+    "gas_note": "Vượt ngưỡng nhẹ",
+    "temperature": "Nhiệt độ",
+    "temperature_note": "Cao hơn bình thường",
+    "devices": "Thiết bị",
+    "devices_value": "4 đang online",
+    "devices_note": "Tất cả hệ thống đang hoạt động",
+    "recent_devices": "Thiết bị gần đây",
+    "gas_module": "Module báo gas",
+    "temperature_sensor": "Cảm biến nhiệt độ",
+    "fire_module": "Module báo cháy"
   }
 }

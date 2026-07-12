@@ -10,7 +10,7 @@ export function useDeviceSignalR(mac) {
     const normalizedMac = mac.toUpperCase(); // chuẩn hóa 1 lần, dùng xuyên suốt effect
 
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7115/hubs/notification") // thay đúng port BE thật của em
+      .withUrl("https://localhost:7115/hubs/notification") // port BE
       .withAutomaticReconnect()
       .build();
 

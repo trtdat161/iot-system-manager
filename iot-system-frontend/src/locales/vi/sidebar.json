@@ -1,12 +1,12 @@
 {
-  "administrator": "QUAN TRI VIEN",
-  "full_access": "Toan quyen truy cap",
-  "dashboard": "Bang dieu khien",
-  "users": "Nguoi dung",
-  "devices": "Thiet bi",
-  "notifications": "Thong bao",
-  "waiting_connection": "Cho ket noi",
-  "profile": "Ho so",
-  "logout": "Dang xuat",
-  "logout_error": "Loi khi dang xuat"
+  "administrator": "QUẢN TRỊ VIÊN",
+  "full_access": "Toàn quyền truy cập",
+  "dashboard": "Bảng điều khiển",
+  "users": "Người dùng",
+  "devices": "Thiết bị",
+  "notifications": "Thông báo",
+  "waiting_connection": "Chờ kết nối",
+  "profile": "Hồ sơ",
+  "logout": "Đăng xuất",
+  "logout_error": "Lỗi khi đăng xuất"
 }

@@ -1,13 +1,13 @@
 {
-  "user": "NGUOI DUNG",
-  "device_access": "Quyen truy cap thiet bi",
-  "dashboard": "Bang dieu khien",
-  "device_notifications": "Lich su thong bao tu thiet bi",
-  "help": "Tro giup",
-  "profile": "Ho so",
-  "waiting_for_connection": "Dang cho ket noi",
-  "logout": "Dang xuat",
-  "logout_error": "Loi khi dang xuat",
-  "expand": "Mo rong sidebar",
-  "collapse": "Thu gon sidebar"
+  "user": "NGƯỜI DÙNG",
+  "device_access": "Quyền truy cập thiết bị",
+  "dashboard": "Bảng điều khiển",
+  "device_notifications": "Lịch sử thông báo từ thiết bị",
+  "help": "Trợ giúp",
+  "profile": "Hồ sơ",
+  "waiting_for_connection": "Đang chờ kết nối",
+  "logout": "Đăng xuất",
+  "logout_error": "Lỗi khi đăng xuất",
+  "expand": "Mở rộng sidebar",
+  "collapse": "Thu gọn sidebar"
 }

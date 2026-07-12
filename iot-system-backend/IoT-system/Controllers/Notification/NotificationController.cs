@@ -1,4 +1,4 @@
-﻿using IoT_system.Services.Notification;
+﻿using IoT_system.Services.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +43,21 @@ namespace IoT_system.Controllers.Notification
         public async Task<IActionResult> GetHistoryDetail(int id)
         {
             var result = await notificationServices.HistoryDetail(id);
+            return Ok(result);
+        }
+
+        // searhc + filter story
+        [Authorize]
+        [Produces("application/json")]
+        [HttpGet("search-history")]
+        public async Task<IActionResult> SearchGetHistory([FromQuery] DateTime? fromDate = null, 
+                                                          [FromQuery] DateTime? toDate = null, 
+                                                          [FromQuery] bool? isRead = null, 
+                                                          [FromQuery] string? type = null,
+                                                          [FromQuery] int page = 1,
+                                                          [FromQuery] int pageSize = 10)
+        {
+            var result = await notificationServices.SearchHistory(fromDate, toDate, isRead, type, page, pageSize);
             return Ok(result);
         }
     }
