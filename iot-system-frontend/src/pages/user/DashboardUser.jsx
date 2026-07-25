@@ -8,7 +8,7 @@ import {
   FaThermometerHalf,
   FaTint,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../css/user/Dashboard.css";
 import { useDeviceSignalR } from "../../hooks/useDeviceSignalR";
 
@@ -52,6 +52,41 @@ export function DashboardUser({ mac }) {
 
   const connectDevice = async () => {};
 
+  const formatTime = (timestamp) => {
+    if (!timestamp) return "--";
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return timestamp;
+    return date.toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  const groupedAlerts = useMemo(() => {
+    const groups = [];
+    alerts.forEach((alert) => {
+      const last = groups[groups.length - 1];
+      const shouldGroup =
+        alert.type === "gas_danger" || alert.type === "heartbeat";
+      if (
+        shouldGroup &&
+        last &&
+        last.type === alert.type &&
+        last.message === alert.message
+      ) {
+        last.count += 1;
+        last.createdAt = alert.createdAt;
+      } else {
+        groups.push({ ...alert, count: 1 });
+      }
+    });
+    return groups;
+  }, [alerts]);
+
   return (
     <main className="user-dashboard">
       <div className="user-dashboard-top user-glass-panel">
@@ -68,27 +103,43 @@ export function DashboardUser({ mac }) {
           <FaThermometerHalf />
           <div>
             <span>{t("temperature.label")}</span>
-            <strong>30.4C</strong>
+            <strong>{sensorData.temperature ?? "--"}°C</strong>
           </div>
         </div>
       </div>
       {/* test realtime */}
-      <div className="test-realtime">
-        <h2>Trạng thái thiết bị {mac}</h2>
-
+      <div className="test-realtime user-glass-panel">
         <div className="sensor-grid">
-          <div>🌡️ Nhiệt độ: {sensorData.temperature ?? "--"}°C</div>
-          <div>💧 Độ ẩm: {sensorData.humidity ?? "--"}%</div>
-          <div>💨 Gas (MQ2): {sensorData.gas ?? "--"}</div>
-          <div>Cập nhật lúc: {sensorData.timestamp ?? "--"}</div>
+          <div className="update-row">
+            <span>Cập nhật lúc</span>
+            <strong>{sensorData.timestamp ?? "--"}</strong>
+          </div>
         </div>
 
-        <h3>Cảnh báo gần đây</h3>
-        {alerts.map((a, idx) => (
-          <div key={idx} style={{ color: "red" }}>
-            [{a.type}] {a.message} — {a.createdAt}
+        <div className="alerts-panel">
+          <div className="alerts-header">
+            <h3>Cảnh báo gần đây</h3>
+            <span className="alerts-count">
+              {alerts.length} mục · {groupedAlerts.length} nhóm
+            </span>
           </div>
-        ))}
+          <div className="alerts-list">
+            {groupedAlerts.map((a, idx) => (
+              <div key={idx} className="alert-item">
+                <div className="alert-body">
+                  <div className="alert-label">
+                    <span className={`alert-type ${a.type}`}>[{a.type}]</span>
+                    {a.count > 1 && (
+                      <span className="alert-count-badge">x{a.count}</span>
+                    )}
+                  </div>
+                  <div className="alert-message">{a.message}</div>
+                </div>
+                <span className="alert-time">{formatTime(a.createdAt)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <section className="user-device-panel user-glass-panel">
@@ -98,7 +149,7 @@ export function DashboardUser({ mac }) {
           <span>{t("connection.status")}</span>
           <p>{t("connection.note")}</p>
 
-          <div className="user-control-actions">
+          <div className="user-control-actions d-flex justify-content-center">
             <button type="button" className="user-action-btn connect">
               <FaPlug />
               {t("connection.connect")}
@@ -113,15 +164,15 @@ export function DashboardUser({ mac }) {
         <div className="alert-sensor">
           <div className="user-sensor-item">
             <FaFire />
-            <span>MQ-1</span>
+            <span>MQ-2</span>
             <strong>{t("sensors.gas_safe")}</strong>
-            <small>42%</small>
+            <small>{sensorData.gas ?? "--"}%</small>
           </div>
           <div className="user-sensor-item">
             <FaTint />
             <span>DHT11</span>
             <strong>{t("sensors.air_stable")}</strong>
-            <small>58%</small>
+            <small>{sensorData.humidity ?? "--"}%</small>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ namespace IoT_system.Controllers.Languages
     {
         private readonly LanguageServices languageServices;
 
-        public LanguagesController(LanguageServices _languageServices) { 
+        public LanguagesController(LanguageServices _languageServices){ 
             languageServices = _languageServices;
         }
 

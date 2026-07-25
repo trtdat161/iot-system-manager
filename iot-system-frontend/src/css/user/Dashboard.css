@@ -23,7 +23,11 @@
   overflow: hidden;
   border-radius: 8px;
   background:
-    radial-gradient(circle at 22% 16%, rgba(56, 189, 248, 0.28), transparent 30%),
+    radial-gradient(
+      circle at 22% 16%,
+      rgba(56, 189, 248, 0.28),
+      transparent 30%
+    ),
     radial-gradient(circle at 82% 6%, rgba(34, 197, 94, 0.18), transparent 28%),
     linear-gradient(135deg, #07111f 0%, #0f2530 48%, #dbe8e6 145%);
   transform: translateZ(0);
@@ -53,10 +57,16 @@
 }
 
 .user-glass-panel {
-  background: linear-gradient(145deg, var(--user-surface-strong), rgba(255, 255, 255, 0.08));
+  background: linear-gradient(
+    145deg,
+    var(--user-surface-strong),
+    rgba(255, 255, 255, 0.08)
+  );
   border: 1px solid var(--user-border);
   border-radius: 8px;
-  box-shadow: var(--user-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  box-shadow:
+    var(--user-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
   transition:
@@ -255,11 +265,19 @@
 }
 
 .user-action-btn.connect {
-  background: linear-gradient(145deg, rgba(34, 197, 94, 0.78), rgba(34, 197, 94, 0.44));
+  background: linear-gradient(
+    145deg,
+    rgba(34, 197, 94, 0.78),
+    rgba(34, 197, 94, 0.44)
+  );
 }
 
 .user-action-btn.disconnect {
-  background: linear-gradient(145deg, rgba(251, 113, 133, 0.78), rgba(251, 113, 133, 0.42));
+  background: linear-gradient(
+    145deg,
+    rgba(251, 113, 133, 0.78),
+    rgba(251, 113, 133, 0.42)
+  );
 }
 
 .alert-sensor {
@@ -304,6 +322,137 @@
   font-weight: 800;
 }
 
+.test-realtime {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.update-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.update-row span {
+  color: var(--user-muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.update-row strong {
+  color: #ffffff;
+}
+
+.alerts-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.alerts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.alerts-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f8fbff;
+}
+
+.alerts-count {
+  color: var(--user-muted);
+  font-size: 0.85rem;
+}
+
+.alerts-list {
+  display: grid;
+  gap: 10px;
+}
+
+.alert-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(251, 113, 133, 0.12);
+  border: 1px solid rgba(251, 113, 133, 0.2);
+}
+
+.alert-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.alert-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.alert-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: max-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(251, 113, 133, 0.18);
+  color: #fecdd3;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.alert-type.heartbeat {
+  background: rgba(56, 189, 248, 0.18);
+  color: #90cdf4;
+}
+
+.alert-message {
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.alert-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fbff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.alert-time {
+  color: var(--user-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  justify-self: end;
+}
+
 .user-read-btn {
   width: 100%;
   background: rgba(49, 95, 186, 0.72);
@@ -339,6 +488,15 @@
   .user-control-actions,
   .alert-sensor {
     grid-template-columns: 1fr;
+  }
+
+  .alert-item {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .alert-time {
+    justify-self: flex-start;
   }
 }
 
