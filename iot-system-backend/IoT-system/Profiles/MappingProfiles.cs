@@ -21,7 +21,8 @@ namespace IoT_system.Profiles
                 .ForMember(dest => dest.DeviceName, 
                            opt => opt.MapFrom(src => src.Device != null ? src.Device.Name : null));
             CreateMap<AccountRegisterDtos, Account>();
-            CreateMap<AccountUpldateDtos, Account>();   
+            CreateMap<AccountUpldateDtos, Account>();
+
 
             // ------- Language -------
             CreateMap<Language, LanguageResponseDtos>();

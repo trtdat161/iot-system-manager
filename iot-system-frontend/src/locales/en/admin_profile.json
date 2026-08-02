@@ -25,7 +25,8 @@
     "admin": "Administrator",
     "no_data": "No data"
   },
-  "new_password": "new password",
+  "old_password": "Old password",
+  "new_password": "New password",
   "actions": {
     "save": "Save",
     "show_password": "Show password",

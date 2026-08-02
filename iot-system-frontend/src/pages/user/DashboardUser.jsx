@@ -66,26 +66,26 @@ export function DashboardUser({ mac }) {
     });
   };
 
-  const groupedAlerts = useMemo(() => {
-    const groups = [];
-    alerts.forEach((alert) => {
-      const last = groups[groups.length - 1];
-      const shouldGroup =
-        alert.type === "gas_danger" || alert.type === "heartbeat";
-      if (
-        shouldGroup &&
-        last &&
-        last.type === alert.type &&
-        last.message === alert.message
-      ) {
-        last.count += 1;
-        last.createdAt = alert.createdAt;
-      } else {
-        groups.push({ ...alert, count: 1 });
-      }
-    });
-    return groups;
-  }, [alerts]);
+  // const groupedAlerts = useMemo(() => {
+  //   const groups = [];
+  //   alerts.forEach((alert) => {
+  //     const last = groups[groups.length - 1];
+  //     const shouldGroup =
+  //       alert.type === "gas_danger" || alert.type === "heartbeat";
+  //     if (
+  //       shouldGroup &&
+  //       last &&
+  //       last.type === alert.type &&
+  //       last.message === alert.message
+  //     ) {
+  //       last.count += 1;
+  //       last.createdAt = alert.createdAt;
+  //     } else {
+  //       groups.push({ ...alert, count: 1 });
+  //     }
+  //   });
+  //   return groups;
+  // }, [alerts]);
 
   return (
     <main className="user-dashboard">
@@ -108,7 +108,7 @@ export function DashboardUser({ mac }) {
         </div>
       </div>
       {/* test realtime */}
-      <div className="test-realtime user-glass-panel">
+      {/* <div className="test-realtime user-glass-panel">
         <div className="sensor-grid">
           <div className="update-row">
             <span>Cập nhật lúc</span>
@@ -140,7 +140,7 @@ export function DashboardUser({ mac }) {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       <section className="user-device-panel user-glass-panel">
         {/* xử lý connect */}

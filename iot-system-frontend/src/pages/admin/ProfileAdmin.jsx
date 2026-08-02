@@ -11,6 +11,7 @@ import {
 import "../../css/admin/Dashboard.css";
 import "../../css/admin/ProfileAdmin.css";
 import {
+  ConfirmPassword,
   GetAdminProfile,
   UpdateAdminProfile,
 } from "../../api/admin/profileApi";
@@ -31,9 +32,11 @@ export function ProfileAdmin() {
   const [done, setDone] = useState("");
   const [originalForm, setOriginalForm] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState("");
   const [form, setForm] = useState({
     fullname: "",
     email: "",
+    oldPassword: "",
     password: "",
     languageId: 0,
     role: null,
@@ -66,6 +69,15 @@ export function ProfileAdmin() {
       type: "email",
       icon: <FaEnvelope />,
       tone: "blue",
+    },
+    {
+      id: "oldPassword",
+      label: t("fields.old_password"),
+      value: form.oldPassword,
+      type: "password",
+      icon: <FaKey />,
+      tone: "amber",
+      content: t("old_password"),
     },
     {
       id: "password",
@@ -132,6 +144,23 @@ export function ProfileAdmin() {
     return Object.keys(newErrors).length === 0; // trả về boolean, nếu newErrors = {}; thì là true
   };
 
+  // api xác nhận password cũ
+  const confirmOldPassword = async () => {
+    try {
+      const response = await ConfirmPassword();
+      if (!response?.data) {
+        setErrors({ form: t("errors.confirm_failed") });
+        return false;
+      }
+      console.log("Password confirmed successfully:", response.data);
+      return true;
+    } catch (error) {
+      console.error("Error confirming password:", error);
+      setErrors({ form: t("errors.confirm_failed") });
+      return false;
+    }
+  };
+
   // gọi api update profile
   const updateProfile = async (e) => {
     e.preventDefault();
@@ -147,6 +176,22 @@ export function ProfileAdmin() {
         languageId: Number(form.languageId),
       };
       // chi thêm pass nếu người dùng có nhập
+      if (form.oldPassword.trim() !== "") {
+        const isConfirmed = await confirmOldPassword(); // true false
+        // nếu api trả về false thì set lỗi và return luôn, ko gửi api update nữa
+        if (!isConfirmed) {
+          return;
+        }
+        // nếu api trả về true thì set lỗi rỗng và thêm oldPassword vào payload
+        if (isConfirmed.data.message === "OLD_PASSWORD_OK") {
+          setErrors({ oldPassword: "" });
+          payload.oldPassword = form.oldPassword;
+        } else {
+          setErrors({ oldPassword: t("errors.old_password_incorrect") });
+          return;
+        }
+      }
+      // sau khi xác nhận password cũ xong thì mới check password mới, nếu có thì mới thêm vào payload
       if (form.password.trim() !== "") {
         payload.password = form.password;
       }

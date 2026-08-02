@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BCrypt.Net;
 using CaiderProject.Authen;
 using IoT_system.Configurations.jwt;
 
@@ -304,6 +305,32 @@ namespace IoT_system.Services.Accounts
             return new AccountLogoutResponseDtos
             {
                 Message = "LOGOUT_SUCCESS"
+            };
+        }
+
+        /* ------------ confirm password ------------ */
+        public async Task<AccountConfirmPasswordResponseDtos> ConfirmPasswordAfterChange(string oldPassword, int idAccount)
+        {
+            if (string.IsNullOrWhiteSpace(oldPassword))
+            {
+                throw new BadHttpRequestException("re-enter the old password!");
+            }
+            var currentAccount = await dbContext.Accounts.FindAsync(idAccount);
+
+            if(currentAccount == null)
+            {
+                throw new BadHttpRequestException("not found account");
+            }
+
+            var isValid = BCrypt.Net.BCrypt.Verify(oldPassword, currentAccount.Password);
+            if(!isValid)
+            {
+                throw new BadHttpRequestException("old password invalid !");
+            }
+            // tự trả về dto
+            return new AccountConfirmPasswordResponseDtos
+            {
+                Message = "OLD_PASSWORD_OK"
             };
         }
 

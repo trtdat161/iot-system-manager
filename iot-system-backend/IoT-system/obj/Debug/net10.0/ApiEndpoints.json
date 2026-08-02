@@ -59,6 +59,22 @@
   },
   {
     "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
+    "Method": "ConfirmOldPassword",
+    "RelativePath": "api/action/confirm-old-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "oldPassword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IoT_system.Controllers.Accounts.AccountActionController",
     "Method": "RemoveAccount",
     "RelativePath": "api/action/delete-account/{id}",
     "HttpMethod": "DELETE",

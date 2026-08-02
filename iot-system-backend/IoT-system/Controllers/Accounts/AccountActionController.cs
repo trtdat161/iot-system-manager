@@ -1,6 +1,7 @@
 ﻿using IoT_system.DTOS.Accounts;
 using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -108,6 +109,17 @@ namespace IoT_system.Controllers.Accounts
              * 
              * TÓM LẠI: => (Lấy UserId từ JWT của người đang đăng nhập rồi chuyển thành kiểu int) */
         }
+        // nhập lại pass trước khi đổi
+        [Authorize]// chỉ xác thực jwt còn lại role nào cũng đăng nhập đc đổi đc
+        [Produces("application/json")]
+        [HttpPost("confirm-old-password")]
+        public async Task<IActionResult> ConfirmOldPassword(string oldPassword)
+        {
+            var idUser = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await accountServices.ConfirmPasswordAfterChange(oldPassword, idUser);
+            return Ok(result);
+        }
+        
 
         // đôi profile
         [Authorize]// chỉ xác thực jwt còn lại role nào cũng đăng nhập đc đổi đc

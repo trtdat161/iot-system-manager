@@ -25,6 +25,7 @@
     "admin": "Quản trị viên",
     "no_data": "Không có dữ liệu"
   },
+  "old_password": "Mật khẩu cũ",
   "new_password": "Mật khẩu mới",
   "actions": {
     "save": "Lưu",
