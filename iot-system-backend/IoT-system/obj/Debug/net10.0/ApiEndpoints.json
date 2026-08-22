@@ -66,9 +66,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "oldPassword",
-        "Type": "System.String",
-        "IsRequired": false
+        "Name": "passwordDtos",
+        "Type": "IoT_system.DTOS.Accounts.AccountConfirmPasswordDtos",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

@@ -9,5 +9,9 @@
   "logout": "Logout",
   "logout_error": "Logout failed",
   "expand": "Expand sidebar",
-  "collapse": "Collapse sidebar"
+  "collapse": "Collapse sidebar",
+  "logout_confirm_title": "Confirm logout",
+  "logout_confirm_message": "Are you sure you want to log out?",
+  "logout_cancel": "Cancel",
+  "logout_confirm": "Log out"
 }

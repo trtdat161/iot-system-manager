@@ -18,7 +18,7 @@ namespace IoT_system.Services.Accounts
         public Task<AccountResponseDtos> OpenAccountById(int id);// Mở tk
         public Task<PagedResponseDtos<AccountResponseDtos>> Search(int page, int pageSize, string? keyword, bool? status); // search keyword
 
-        public Task<AccountConfirmPasswordResponseDtos> ConfirmPasswordAfterChange(string oldPassword, int idAccount);
+        public Task<AccountConfirmPasswordResponseDtos> ConfirmPasswordAfterChange(AccountConfirmPasswordDtos passwordDtos, int idAccount);
         public Task<AccountResponseDtos> EditProfile(AccountEditedResonseDtos accountEdit , int id);
 
         // --------------------------- auth --------------------------

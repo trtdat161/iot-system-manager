@@ -11,7 +11,11 @@ import {
 import "../../css/user/ProfileUser.css";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { GetUserProfile, UpdateUserProfile } from "../../api/user/profileApi";
+import {
+  ConfirmPassword,
+  GetUserProfile,
+  UpdateUserProfile,
+} from "../../api/user/profileApi";
 import { useTranslation } from "react-i18next";
 
 const languageCodeById = {
@@ -28,9 +32,11 @@ export function ProfileUser() {
   const [done, setDone] = useState("");
   const [originalForm, setOriginalForm] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [form, setForm] = useState({
     fullname: "",
     email: "",
+    oldPassword: "",
     password: "",
     languageId: 0,
     role: null,
@@ -63,6 +69,15 @@ export function ProfileUser() {
       type: "email",
       icon: <FaEnvelope />,
       tone: "blue",
+    },
+    {
+      id: "oldPassword",
+      label: t("fields.old_password"),
+      value: form.oldPassword,
+      type: "password",
+      icon: <FaKey />,
+      tone: "amber",
+      content: t("fields.old_password"),
     },
     {
       id: "password",
@@ -114,6 +129,9 @@ export function ProfileUser() {
 
     // nếu có password thì mới validate
     if (form.password.trim() !== "") {
+      if (form.oldPassword.trim() === "") {
+        newErrors.oldPassword = t("errors.old_password_required");
+      }
       if (form.password.length < 6) {
         newErrors.password = t("errors.password_min");
       } else if (!/(?=.*[a-z])/.test(form.password)) {
@@ -127,6 +145,17 @@ export function ProfileUser() {
 
     setErrors(newErrors); // set lỗi nếu có
     return Object.keys(newErrors).length === 0; // trả về boolean, nếu newErrors = {}; thì là true
+  };
+
+  const confirmOldPassword = async () => {
+    try {
+      const response = await ConfirmPassword(form.oldPassword);
+      return response?.status >= 200 && response?.status < 300;
+    } catch (error) {
+      console.error("Error confirming password:", error);
+      setErrors({ oldPassword: t("errors.old_password_incorrect") });
+      return false;
+    }
   };
 
   // gọi api update profile
@@ -145,6 +174,11 @@ export function ProfileUser() {
       };
       // chi thêm pass nếu người dùng có nhập
       if (form.password.trim() !== "") {
+        const isConfirmed = await confirmOldPassword();
+        if (!isConfirmed) {
+          return;
+        }
+        payload.oldPassword = form.oldPassword;
         payload.password = form.password;
       }
 
@@ -161,6 +195,7 @@ export function ProfileUser() {
         ...form,
         fullname: response.data.fullname,
         email: response.data.email,
+        oldPassword: "",
         password: "", // put lên rồi thì lear tiếp, đảm bảo ko show pass trên UI
         languageId: Number(response.data.languageId ?? form.languageId),
         role: response.data.role ?? form.role,
@@ -209,6 +244,7 @@ export function ProfileUser() {
         const formData = {
           fullname: response.data.fullname,
           email: response.data.email,
+          oldPassword: "",
           password: "",
           languageId: Number(response.data.languageId),
           role: response.data.role,
@@ -312,14 +348,15 @@ export function ProfileUser() {
                   ) : (
                     <div
                       className={
-                        field.id === "password"
+                        field.id === "password" || field.id === "oldPassword"
                           ? "profile-password-control"
                           : "profile-input-control"
                       }
                     >
                       <input
                         type={
-                          field.id === "password" && showPassword
+                          (field.id === "password" && showPassword) ||
+                          (field.id === "oldPassword" && showOldPassword)
                             ? "text"
                             : field.type
                         }
@@ -329,18 +366,35 @@ export function ProfileUser() {
                         onChange={handleChange}
                         placeholder={field.content}
                       />
-                      {field.id === "password" && (
+                      {(field.id === "password" ||
+                        field.id === "oldPassword") && (
                         <button
                           type="button"
                           className="profile-password-toggle"
                           aria-label={
-                            showPassword
+                            (
+                              field.id === "password"
+                                ? showPassword
+                                : showOldPassword
+                            )
                               ? t("actions.hide_password")
                               : t("actions.show_password")
                           }
-                          onClick={() => setShowPassword((prev) => !prev)}
+                          onClick={() =>
+                            field.id === "password"
+                              ? setShowPassword((prev) => !prev)
+                              : setShowOldPassword((prev) => !prev)
+                          }
                         >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          {(
+                            field.id === "password"
+                              ? showPassword
+                              : showOldPassword
+                          ) ? (
+                            <FaEyeSlash />
+                          ) : (
+                            <FaEye />
+                          )}
                         </button>
                       )}
                     </div>

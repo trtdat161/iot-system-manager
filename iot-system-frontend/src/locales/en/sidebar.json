@@ -8,5 +8,9 @@
   "waiting_connection": "Waiting connection",
   "profile": "Profile",
   "logout": "Logout",
-  "logout_error": "Logout failed"
+  "logout_error": "Logout failed",
+  "logout_confirm_title": "Confirm logout",
+  "logout_confirm_message": "Are you sure you want to log out?",
+  "logout_cancel": "Cancel",
+  "logout_confirm": "Log out"
 }

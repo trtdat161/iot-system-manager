@@ -9,5 +9,6 @@ namespace IoT_system.Services.Notifications
         public Task<NotificationDetailResponseDtos> HistoryDetail(int id);
         public Task<PagedResponseDtos<NotificationResponseDtos>> HistoryForUser(int userId, int page, int pageSize);
         public Task<PagedResponseDtos<NotificationResponseDtos>> SearchHistory(DateTime? fromDate, DateTime? toDate, bool? isRead, string? type, int page, int pageSize);
+        public Task<NotificationIsreadResponseDtos> IsReadAction(NotificationIsreadResponseDtos confirmNotification, int idUser);
     }
 }

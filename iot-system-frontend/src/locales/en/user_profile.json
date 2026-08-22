@@ -10,6 +10,7 @@
   "fields": {
     "fullname": "Full name",
     "email": "Email",
+    "old_password": "Old password",
     "password": "Password",
     "language": "Language"
   },
@@ -43,6 +44,8 @@
     "password_lowercase": "Password must contain at least 1 lowercase letter",
     "password_uppercase": "Password must contain at least 1 uppercase letter",
     "password_number": "Password must contain at least 1 number",
+    "old_password_required": "Enter your old password to change the password",
+    "old_password_incorrect": "The old password is incorrect",
     "update_failed": "Update failed!",
     "load_failed": "Failed to load profile. Please try again later.",
     "profile_unavailable": "Profile data is unavailable."

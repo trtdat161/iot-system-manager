@@ -166,8 +166,15 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
-            account.DeletedAt = DateTime.UtcNow; // không cần await vì nó chỉ đánh dấu
-            return await dbContext.SaveChangesAsync() > 0;
+            account.DeletedAt = DateTime.UtcNow;
+            var result = await dbContext.SaveChangesAsync() > 0; // lưu TRƯỚC
+
+            if (result)
+            {
+                await SyncDeviceClaimStatusAsync(account.DeviceId); // sync SAU khi DB đã cập nhật
+            }
+
+            return result;
         }
 
         // ------------------ register ------------------
@@ -309,9 +316,9 @@ namespace IoT_system.Services.Accounts
         }
 
         /* ------------ confirm password ------------ */
-        public async Task<AccountConfirmPasswordResponseDtos> ConfirmPasswordAfterChange(string oldPassword, int idAccount)
+        public async Task<AccountConfirmPasswordResponseDtos> ConfirmPasswordAfterChange(AccountConfirmPasswordDtos passwordDtos, int idAccount)
         {
-            if (string.IsNullOrWhiteSpace(oldPassword))
+            if (string.IsNullOrWhiteSpace(passwordDtos.Password))
             {
                 throw new BadHttpRequestException("re-enter the old password!");
             }
@@ -322,7 +329,7 @@ namespace IoT_system.Services.Accounts
                 throw new BadHttpRequestException("not found account");
             }
 
-            var isValid = BCrypt.Net.BCrypt.Verify(oldPassword, currentAccount.Password);
+            var isValid = BCrypt.Net.BCrypt.Verify(passwordDtos.Password, currentAccount.Password);
             if(!isValid)
             {
                 throw new BadHttpRequestException("old password invalid !");
@@ -359,7 +366,27 @@ namespace IoT_system.Services.Accounts
             
             await dbContext.SaveChangesAsync();
             return mapper.Map<AccountResponseDtos>(account);
-        } 
+        }
+
+        // giải quyết tài khoản isClaim bị xoá
+        private async Task SyncDeviceClaimStatusAsync(int? deviceId)
+        {
+            if (deviceId == null)
+            {
+                return;
+            }
+
+            bool stillHasActiveUser = await dbContext.Accounts.AnyAsync(a => a.DeviceId == deviceId && a.DeletedAt == null);
+
+            if (stillHasActiveUser) 
+            {
+                return;
+            }
+
+            await dbContext.Devices
+                .Where(d => d.Id == deviceId && d.IsClaimed)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.IsClaimed, false));
+        }
     }
 }
 /*

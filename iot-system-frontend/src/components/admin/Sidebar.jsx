@@ -14,6 +14,7 @@ import {
 import { MdDashboard, MdDevices } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { LogoutAccount } from "../../api/authApi";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 // --- config menu items ---
 const MENU_ITEMS = [
@@ -47,6 +48,7 @@ const MENU_ITEMS = [
 export function Sidebar({ collapsed, setCollapsed }) {
   // nhận collapsed
   const [_error, setError] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation("sidebar");
@@ -54,6 +56,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
   const isActive = (path) => location.pathname === path;
 
   const LogoutAction = async () => {
+    setShowLogoutDialog(false);
     try {
       const response = await LogoutAccount();
       response.data ? navigate("/") : setError(t("logout_error"));
@@ -65,6 +68,15 @@ export function Sidebar({ collapsed, setCollapsed }) {
 
   return (
     <>
+      <ConfirmDialog
+        open={showLogoutDialog}
+        title={t("logout_confirm_title")}
+        message={t("logout_confirm_message")}
+        cancelLabel={t("logout_cancel")}
+        confirmLabel={t("logout_confirm")}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={LogoutAction}
+      />
       {/* ===== SIDEBAR ===== */}
 
       <div
@@ -226,7 +238,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
           }}
         >
           <button
-            onClick={() => LogoutAction()}
+            onClick={() => setShowLogoutDialog(true)}
             style={{
               width: "100%",
               background: "none",

@@ -13,6 +13,7 @@ import { MdDashboard } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { LogoutAccount } from "../../api/authApi";
 import "../../css/user/Layout.css";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 const MENU_ITEMS = [
   {
@@ -44,6 +45,7 @@ const MENU_ITEMS = [
 
 export function Sidebar({ collapsed, setCollapsed }) {
   const [_error, setError] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation("user_sidebar");
@@ -51,6 +53,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
   const isActive = (path) => location.pathname === path;
 
   const LogoutAction = async () => {
+    setShowLogoutDialog(false);
     try {
       const response = await LogoutAccount();
       response.data ? navigate("/") : setError(t("logout_error"));
@@ -61,61 +64,72 @@ export function Sidebar({ collapsed, setCollapsed }) {
   };
 
   return (
-    <aside className={`user-sidebar ${collapsed ? "collapsed" : ""}`}>
-      <div className="user-sidebar-brand">
-        {!collapsed && (
-          <div className="user-sidebar-logo">
-            <FaMicrochip size={20} />
-            <span>DTECH</span>
-          </div>
-        )}
-        <button
-          type="button"
-          className="user-sidebar-toggle"
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? t("expand") : t("collapse")}
-        >
-          {collapsed ? <FaBars size={16} /> : <FaTimes size={16} />}
-        </button>
-      </div>
-
-      {!collapsed && (
-        <div className="user-sidebar-badge">
-          <FaUser size={14} />
-          <div>
-            <p>{t("user")}</p>
-            <span>{t("device_access")}</span>
-          </div>
-        </div>
-      )}
-
-      <nav className="user-sidebar-nav">
-        {MENU_ITEMS.map((item) => (
+    <>
+      <ConfirmDialog
+        open={showLogoutDialog}
+        title={t("logout_confirm_title")}
+        message={t("logout_confirm_message")}
+        cancelLabel={t("logout_cancel")}
+        confirmLabel={t("logout_confirm")}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={LogoutAction}
+      />
+      <aside className={`user-sidebar ${collapsed ? "collapsed" : ""}`}>
+        <div className="user-sidebar-brand">
+          {!collapsed && (
+            <div className="user-sidebar-logo">
+              <FaMicrochip size={20} />
+              <span>DTECH</span>
+            </div>
+          )}
           <button
             type="button"
-            key={item.key}
-            className={`user-sidebar-link ${
-              isActive(item.path) ? "active" : ""
-            }`}
-            onClick={() => navigate(item.path)}
-            title={collapsed ? t(item.key) : ""}
+            className="user-sidebar-toggle"
+            onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? t("expand") : t("collapse")}
           >
-            <span className="user-sidebar-icon">{item.icon}</span>
-            {!collapsed && <span>{t(item.key)}</span>}
+            {collapsed ? <FaBars size={16} /> : <FaTimes size={16} />}
           </button>
-        ))}
-      </nav>
+        </div>
 
-      <div className="user-sidebar-footer">
-        <button
-          type="button"
-          className="user-sidebar-logout"
-          onClick={() => LogoutAction()}
-        >
-          <FaSignOutAlt size={16} />
-          {!collapsed && <span>{t("logout")}</span>}
-        </button>
-      </div>
-    </aside>
+        {!collapsed && (
+          <div className="user-sidebar-badge">
+            <FaUser size={14} />
+            <div>
+              <p>{t("user")}</p>
+              <span>{t("device_access")}</span>
+            </div>
+          </div>
+        )}
+
+        <nav className="user-sidebar-nav">
+          {MENU_ITEMS.map((item) => (
+            <button
+              type="button"
+              key={item.key}
+              className={`user-sidebar-link ${
+                isActive(item.path) ? "active" : ""
+              }`}
+              onClick={() => navigate(item.path)}
+              title={collapsed ? t(item.key) : ""}
+            >
+              <span className="user-sidebar-icon">{item.icon}</span>
+              {!collapsed && <span>{t(item.key)}</span>}
+            </button>
+          ))}
+        </nav>
+
+        <div className="user-sidebar-footer">
+          <button
+            type="button"
+            className="user-sidebar-logout"
+            onClick={() => setShowLogoutDialog(true)}
+          >
+            <FaSignOutAlt size={16} />
+            {!collapsed && <span>{t("logout")}</span>}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

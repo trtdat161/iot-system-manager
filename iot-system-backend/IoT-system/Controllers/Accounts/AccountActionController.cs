@@ -113,10 +113,10 @@ namespace IoT_system.Controllers.Accounts
         [Authorize]// chỉ xác thực jwt còn lại role nào cũng đăng nhập đc đổi đc
         [Produces("application/json")]
         [HttpPost("confirm-old-password")]
-        public async Task<IActionResult> ConfirmOldPassword(string oldPassword)
+        public async Task<IActionResult> ConfirmOldPassword([FromBody] AccountConfirmPasswordDtos passwordDtos)
         {
             var idUser = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await accountServices.ConfirmPasswordAfterChange(oldPassword, idUser);
+            var result = await accountServices.ConfirmPasswordAfterChange(passwordDtos, idUser);
             return Ok(result);
         }
         

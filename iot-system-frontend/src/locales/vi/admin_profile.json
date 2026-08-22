@@ -10,6 +10,7 @@
   "fields": {
     "fullname": "Họ và tên",
     "email": "Email",
+    "old_password": "Mật khẩu cũ",
     "password": "Mật khẩu",
     "language": "Ngôn ngữ"
   },
@@ -43,6 +44,9 @@
     "password_lowercase": "Mật khẩu phải có ít nhất 1 chữ thường",
     "password_uppercase": "Mật khẩu phải có ít nhất 1 chữ hoa",
     "password_number": "Mật khẩu phải có ít nhất 1 chữ số",
+    "old_password_required": "Vui lòng nhập mật khẩu cũ để đổi mật khẩu",
+    "old_password_incorrect": "Mật khẩu cũ không chính xác",
+    "confirm_failed": "Không thể xác nhận mật khẩu cũ",
     "update_failed": "Cập nhật thất bại!",
     "load_failed": "Không thể tải hồ sơ. Vui lòng thử lại sau.",
     "profile_unavailable": "Không có dữ liệu hồ sơ."

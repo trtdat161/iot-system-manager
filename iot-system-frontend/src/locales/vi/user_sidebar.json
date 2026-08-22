@@ -9,5 +9,9 @@
   "logout": "Đăng xuất",
   "logout_error": "Lỗi khi đăng xuất",
   "expand": "Mở rộng sidebar",
-  "collapse": "Thu gọn sidebar"
+  "collapse": "Thu gọn sidebar",
+  "logout_confirm_title": "Xác nhận đăng xuất",
+  "logout_confirm_message": "Bạn có chắc muốn đăng xuất không?",
+  "logout_cancel": "Hủy",
+  "logout_confirm": "Đăng xuất"
 }

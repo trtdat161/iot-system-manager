@@ -32,7 +32,7 @@ export function ProfileAdmin() {
   const [done, setDone] = useState("");
   const [originalForm, setOriginalForm] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [errorConfirmPassword, setErrorConfirmPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -77,7 +77,7 @@ export function ProfileAdmin() {
       type: "password",
       icon: <FaKey />,
       tone: "amber",
-      content: t("old_password"),
+      content: t("fields.old_password"),
     },
     {
       id: "password",
@@ -129,6 +129,9 @@ export function ProfileAdmin() {
 
     // nếu có password thì mới validate
     if (form.password.trim() !== "") {
+      if (form.oldPassword.trim() === "") {
+        newErrors.oldPassword = t("errors.old_password_required");
+      }
       if (form.password.length < 6) {
         newErrors.password = t("errors.password_min");
       } else if (!/(?=.*[a-z])/.test(form.password)) {
@@ -147,16 +150,11 @@ export function ProfileAdmin() {
   // api xác nhận password cũ
   const confirmOldPassword = async () => {
     try {
-      const response = await ConfirmPassword();
-      if (!response?.data) {
-        setErrors({ form: t("errors.confirm_failed") });
-        return false;
-      }
-      console.log("Password confirmed successfully:", response.data);
-      return true;
+      const response = await ConfirmPassword(form.oldPassword);
+      return response?.status >= 200 && response?.status < 300;
     } catch (error) {
       console.error("Error confirming password:", error);
-      setErrors({ form: t("errors.confirm_failed") });
+      setErrors({ oldPassword: t("errors.old_password_incorrect") });
       return false;
     }
   };
@@ -175,21 +173,15 @@ export function ProfileAdmin() {
         email: form.email,
         languageId: Number(form.languageId),
       };
-      // chi thêm pass nếu người dùng có nhập
+      // chi thêm pass mới nếu người dùng có nhập
       if (form.oldPassword.trim() !== "") {
         const isConfirmed = await confirmOldPassword(); // true false
         // nếu api trả về false thì set lỗi và return luôn, ko gửi api update nữa
         if (!isConfirmed) {
           return;
         }
-        // nếu api trả về true thì set lỗi rỗng và thêm oldPassword vào payload
-        if (isConfirmed.data.message === "OLD_PASSWORD_OK") {
-          setErrors({ oldPassword: "" });
-          payload.oldPassword = form.oldPassword;
-        } else {
-          setErrors({ oldPassword: t("errors.old_password_incorrect") });
-          return;
-        }
+        setErrors({ oldPassword: "" });
+        payload.oldPassword = form.oldPassword;
       }
       // sau khi xác nhận password cũ xong thì mới check password mới, nếu có thì mới thêm vào payload
       if (form.password.trim() !== "") {
@@ -210,6 +202,7 @@ export function ProfileAdmin() {
         fullname: response.data.fullname,
         email: response.data.email,
         password: "", // put lên rồi thì lear tiếp, đảm bảo ko show pass trên UI
+        oldPassword: "", // put lên rồi thì lear tiếp, đảm bảo ko show pass trên UI
         languageId: Number(response.data.languageId ?? form.languageId),
         role: response.data.role ?? form.role,
         status: response.data.status ?? form.status,
@@ -257,6 +250,7 @@ export function ProfileAdmin() {
         const formData = {
           fullname: response.data.fullname,
           email: response.data.email,
+          oldPassword: "",
           password: "",
           languageId: Number(response.data.languageId),
           role: response.data.role,
@@ -360,14 +354,15 @@ export function ProfileAdmin() {
                   ) : (
                     <div
                       className={
-                        field.id === "password"
+                        field.id === "password" || field.id === "oldPassword"
                           ? "profile-password-control"
                           : "profile-input-control"
                       }
                     >
                       <input
                         type={
-                          field.id === "password" && showPassword
+                          (field.id === "password" && showPassword) ||
+                          (field.id === "oldPassword" && showOldPassword)
                             ? "text"
                             : field.type
                         }
@@ -377,18 +372,35 @@ export function ProfileAdmin() {
                         onChange={handleChange}
                         placeholder={field.content}
                       />
-                      {field.id === "password" && (
+                      {(field.id === "password" ||
+                        field.id === "oldPassword") && (
                         <button
                           type="button"
                           className="profile-password-toggle"
                           aria-label={
-                            showPassword
+                            (
+                              field.id === "password"
+                                ? showPassword
+                                : showOldPassword
+                            )
                               ? t("actions.hide_password")
                               : t("actions.show_password")
                           }
-                          onClick={() => setShowPassword((prev) => !prev)}
+                          onClick={() =>
+                            field.id === "password"
+                              ? setShowPassword((prev) => !prev)
+                              : setShowOldPassword((prev) => !prev)
+                          }
                         >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          {(
+                            field.id === "password"
+                              ? showPassword
+                              : showOldPassword
+                          ) ? (
+                            <FaEyeSlash />
+                          ) : (
+                            <FaEye />
+                          )}
                         </button>
                       )}
                     </div>

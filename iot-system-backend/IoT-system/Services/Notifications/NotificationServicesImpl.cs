@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using IoT_system.DTOS.Accounts;
 using IoT_system.DTOS.Common;
 using IoT_system.DTOS.Notification;
 using IoT_system.Helpers;
@@ -103,6 +104,23 @@ namespace IoT_system.Services.Notifications
 
             return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(query, page, pageSize, mapper);
         }
+
+        // khi click ấn đã xem để thiết bị không spam cảnh báo nữa
+        public async Task<NotificationIsreadResponseDtos> IsReadAction(int notificationId, int idUser)
+        {
+            var notification = await dbContext.Notifications
+                                              .FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == idUser);
+            if (notification == null)
+            {
+                throw new BadHttpRequestException("not found notifications");
+            }
+
+            notification.IsRead = true;// khi ng dùng ấn xác nhận thì là true, device ko spam nữa
+            await dbContext.SaveChangesAsync();
+            return mapper.Map<NotificationIsreadResponseDtos>(notification);
+
+        }
+
 
     }
 }
