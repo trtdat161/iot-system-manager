@@ -9,3 +9,6 @@ export const SearchAndFilterHistory = (date, isRead, type) =>
   axiosInstance.get(
     `notification/search-history?date=${date}&isRead=${isRead}&type=${type}`,
   );
+
+export const UserIsRead = (notificationId) =>
+  axiosInstance.post(`notification/is-read/${notificationId}`);

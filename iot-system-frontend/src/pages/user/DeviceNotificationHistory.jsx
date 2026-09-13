@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { UserGetHistory } from "../../api/user/notification";
+import { UserGetHistory, UserIsRead } from "../../api/user/notification";
 import {
   FaBell,
   FaClock,
@@ -23,6 +23,8 @@ export function DeviceNotificationHistory() {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [confirmIsRead, setConfirmIsRead] = useState("");
+  const [readIds, setReadIds] = useState(new Set());
 
   const fetchNotifications = async (currentPage) => {
     setLoading(true);
@@ -69,6 +71,19 @@ export function DeviceNotificationHistory() {
         return "#fb7185";
       default:
         return "#38bdf8";
+    }
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const response = await UserIsRead(notificationId);
+      if (response.data.IsRead === true) {
+        setConfirmIsRead("Notification marked as read");
+        setReadIds((prev) => new Set(prev).add(notificationId));
+      }
+    } catch (err) {
+      console.log("error:", err?.message || err);
+      setConfirmIsRead("Failed to mark notification as read");
     }
   };
 
@@ -153,7 +168,7 @@ export function DeviceNotificationHistory() {
                           {notification.deviceName || "System"}
                         </p>
                       </div>
-                      <div className="notification-time">
+                      <div className="notification-time d-flex flex-column align-items-end gap-2">
                         <div className="time-badge">
                           <FaClock size={11} style={{ marginRight: "4px" }} />
                           <span>
@@ -162,6 +177,15 @@ export function DeviceNotificationHistory() {
                               : "Pending"}
                           </span>
                         </div>
+                        <button
+                          className="btn btn-sm btn-primary mt-2"
+                          onClick={() => markAsRead(notification.id)}
+                          disabled={readIds.has(notification.id)}
+                        >
+                          {readIds.has(notification.id)
+                            ? "đã đọc"
+                            : "đánh dấu là đã đọc"}
+                        </button>
                       </div>
                     </div>
                     <p className="notification-item-message">

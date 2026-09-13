@@ -60,5 +60,15 @@ namespace IoT_system.Controllers.Notification
             var result = await notificationServices.SearchHistory(fromDate, toDate, isRead, type, page, pageSize);
             return Ok(result);
         }
+
+        [Authorize(Roles = "user")]
+        [Produces("application/json")]
+        [HttpPost("is-read")]
+        public async Task<IActionResult> UserIsRead(int notificationId)// truyền id từ FE
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await notificationServices.IsReadAction(userId, notificationId);
+            return Ok(result);
+        } 
     }
 }

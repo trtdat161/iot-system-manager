@@ -212,31 +212,39 @@ namespace IoT_system.Services.Mqtt
 
             if (sensor.Alert || hasDhtAlert)
             {
-                var userIds = await db.Accounts
-                    .Where(a => a.DeviceId == device.Id && a.DeletedAt == null)
-                    .Select(a => a.Id)
-                    .ToListAsync();
-
                 var message = BuildMessage(sensor);
                 var now = TimeHelper.VnNow();
 
-                foreach (var userId in userIds)
-                {
-                    await db.Database.ExecuteSqlRawAsync(
-                        "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
-                        device.Id, userId, message, sensor.Type, false, now
-                    );
-                }
+                // Kiểm tra: còn cảnh báo cũ nào của device này CHƯA đọc không
+                bool hasUnread = await db.Notifications.AnyAsync(n =>
+                    n.DeviceId == device.Id &&
+                    n.Type == sensor.Type &&
+                    n.IsRead == false);
 
-                // Bắn realtime cảnh báo riêng, khác event với data thường
-                await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
+                if (!hasUnread) // không còn cái nào chưa đọc -> cho bắn tiếp
                 {
-                    Mac = mac,
-                    DeviceId = device.Id,
-                    Message = message,
-                    Type = sensor.Type,
-                    CreatedAt = now
-                });
+                    var userIds = await db.Accounts
+                        .Where(a => a.DeviceId == device.Id && a.DeletedAt == null)
+                        .Select(a => a.Id)
+                        .ToListAsync();
+
+                    foreach (var userId in userIds)
+                    {
+                        await db.Database.ExecuteSqlRawAsync(
+                            "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
+                            device.Id, userId, message, sensor.Type, false, now
+                        );
+                    }
+
+                    await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
+                    {
+                        Mac = mac,
+                        DeviceId = device.Id,
+                        Message = message,
+                        Type = sensor.Type,
+                        CreatedAt = now
+                    });
+                }
             }
         }
 

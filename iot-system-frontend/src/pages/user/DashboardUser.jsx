@@ -15,7 +15,7 @@ import { useDeviceSignalR } from "../../hooks/useDeviceSignalR";
 export function DashboardUser({ mac }) {
   const { t } = useTranslation("user_dashboard");
   // const connection = useDeviceSignalR(mac);
-  const testMac = "E098060E87C0"; // TẠM thời, thay bằng MAC thật của ESP em đang có trong DB
+  const testMac = "E098060E87C0"; // TẠM thời, thay bằng MAC thật của ESP đang có trong DB
   const connection = useDeviceSignalR(testMac);
 
   // State riêng cho trạng thái hiện tại - luôn bị ghi đè bởi data mới nhất
@@ -49,8 +49,6 @@ export function DashboardUser({ mac }) {
       connection.off("ReceiveAlert");
     };
   }, [connection]);
-
-  const connectDevice = async () => {};
 
   const formatTime = (timestamp) => {
     if (!timestamp) return "--";
@@ -148,7 +146,7 @@ export function DashboardUser({ mac }) {
           <FaCheckCircle />
           <span>{t("connection.status")}</span>
           <p>{t("connection.note")}</p>
-
+          {/* button connect / disconnect */}
           <div className="user-control-actions d-flex justify-content-center">
             <button type="button" className="user-action-btn connect">
               <FaPlug />
