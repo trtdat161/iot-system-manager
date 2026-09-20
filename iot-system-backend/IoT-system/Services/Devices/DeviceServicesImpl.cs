@@ -1,17 +1,21 @@
-﻿using IoT_system.Models;
+﻿using AutoMapper;
 using IoT_system.Configurations.mqtt;
-using Microsoft.EntityFrameworkCore;
 using IoT_system.DTOS.Devices;
+using IoT_system.Models;
+using Microsoft.EntityFrameworkCore;
 namespace IoT_system.Services.Devices
 {
     public class DeviceServiceImpl : DeviceServices
     {
         private readonly DatabaseContext db;
         private readonly MqttClient mqtt;
-        public DeviceServiceImpl(DatabaseContext _db, MqttClient _mqtt)
+        private readonly IMapper mapper;
+
+        public DeviceServiceImpl(DatabaseContext _db, MqttClient _mqtt, IMapper _mapper)
         {
             db = _db;
             mqtt = _mqtt;
+            mapper = _mapper;
         }
         public async Task<List<PendingDeviceDto>> GetPendingDevices(int userId)
         {
@@ -60,6 +64,87 @@ namespace IoT_system.Services.Devices
 
             await db.SaveChangesAsync();
             return true;
+        }
+
+        // connect disconnect
+        public async Task<DeviceResponseDtos> ConnectOrDisconnect(int userId, int deviceId)
+        {
+            if (userId <= 0)
+            {
+                throw new BadHttpRequestException("userId invalid !");
+            }
+            if (deviceId <= 0)
+            {
+                throw new BadHttpRequestException("deviceId invalid !");
+            }
+
+            var account = await db.Accounts.FindAsync(userId);
+            if (account is null)
+            {
+                throw new BadHttpRequestException("Account not found !");
+            }
+
+            var device = await db.Devices.FindAsync(deviceId);
+            if (device is null)
+            {
+                throw new BadHttpRequestException("Device not found !");
+            }
+
+            bool isConnected = account.DeviceId == deviceId;
+
+            if (isConnected)
+            {
+                // ---- DISCONNECT ----
+                account.DeviceId = null;
+                await db.SaveChangesAsync();
+                await SyncDeviceClaimStatusAsync(deviceId);
+            }
+            else
+            {
+                // ---- CONNECT (có thể đang connect device khác, cho chuyển thẳng) ----
+                if (!device.IsClaimed)
+                {
+                    throw new BadHttpRequestException("The device has not been claimed, please claim it before connecting !");
+                }
+
+                int? oldDeviceId = account.DeviceId; // lưu lại device cũ TRƯỚC khi ghi đè
+
+                account.DeviceId = deviceId;
+                await db.SaveChangesAsync();
+
+                // nếu trước đó đang connect device khác -> dọn dẹp trạng thái claim của device cũ
+                if (oldDeviceId.HasValue && oldDeviceId.Value != deviceId)
+                {
+                    await SyncDeviceClaimStatusAsync(oldDeviceId.Value);
+                }
+            }
+
+            return mapper.Map<DeviceResponseDtos>(device);
+        }
+
+        // Hàm dọn dẹp trạng thái claim của 1 device sau khi có người rời đi
+        private async Task SyncDeviceClaimStatusAsync(int deviceId)
+        {
+            // nếu vẫn còn người dùng đang hoạt động
+            bool stillHasActiveUser = await db.Accounts.AnyAsync(a => a.DeviceId == deviceId && a.DeletedAt == null);
+
+            if (!stillHasActiveUser)
+            {
+                var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId);
+                if (device is not null && device.IsClaimed)
+                {
+                    // báo lại status vào db
+                    device.IsClaimed = false;
+                    await db.SaveChangesAsync();
+
+                    // báo cho thiết bị thật biết để nó tự unclaim
+                    await mqtt.PublishAsync(
+                        $"devices/{device.MacAddress}/command",
+                        "unclaim",
+                        retained: true
+                    );
+                }
+            }
         }
     }
 }

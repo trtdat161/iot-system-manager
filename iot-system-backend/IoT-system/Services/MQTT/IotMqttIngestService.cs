@@ -35,7 +35,8 @@ namespace IoT_system.Services.Mqtt
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
             ILogger<IotMqttIngestService> _logger,
-            IHubContext<NotificationHub> _hubContext)
+            IHubContext<NotificationHub> _hubContext
+            )
 
         {
             scopeFactory = _scopeFactory;

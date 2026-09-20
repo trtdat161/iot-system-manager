@@ -35,9 +35,21 @@ namespace IoT_system.Controllers.Devices
             var ok = await deviceService.ClaimDevice(deviceId, userId);
 
             if (!ok)
+            {
                 return NotFound();
+            }
 
             return Ok(new { message = "claimed" });
+        }
+
+        [HttpPost("{deviceId}/connect-disconnect")]
+        [Produces("application/json")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> ConnectAndDisconnect(int deviceId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await deviceService.ConnectOrDisconnect(userId, deviceId);
+            return Ok(result);
         }
     }
 }
