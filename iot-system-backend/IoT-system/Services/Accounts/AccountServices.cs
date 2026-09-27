@@ -22,9 +22,10 @@ namespace IoT_system.Services.Accounts
         public Task<AccountResponseDtos> EditProfile(AccountEditedResonseDtos accountEdit , int id);
 
         // --------------------------- auth --------------------------
+        Task<AccountLoginResponseDtos> RefreshToken();   // thêm mới
         public Task<AccountResponseDtos> Register(AccountRegisterDtos dto);// iresult
         public Task<AccountLoginResponseDtos> Login(AccountLoginDtos dto);
-        public AccountLogoutResponseDtos Logout();
+        Task<AccountLogoutResponseDtos> Logout();
 
         // user
     }

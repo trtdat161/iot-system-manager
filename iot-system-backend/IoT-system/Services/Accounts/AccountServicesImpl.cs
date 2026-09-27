@@ -11,6 +11,8 @@ using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace IoT_system.Services.Accounts
 {
@@ -59,6 +61,27 @@ namespace IoT_system.Services.Accounts
             SameSite=None  <->  Secure=true  (tách ra là browser DROP cookie)
              */
         }
+        // generate refreshtoken
+        private void GenerateRefreshToken(Account acc)
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            var refreshToken = Convert.ToBase64String(randomBytes);
+
+            acc.RefreshToken = refreshToken;
+            acc.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            httpContextAccessor.HttpContext!.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Path = "/"
+            });
+        }
+
         // list account for admin
         public async Task<PagedResponseDtos<AccountResponseDtos>> ListOfAccounts(int page, int pageSize)
         {
@@ -279,6 +302,8 @@ namespace IoT_system.Services.Accounts
 
             // -> nếu ok chạy đc đến đây thì thực hiện tiếp
             GenerateJwt(account);
+            GenerateRefreshToken(account);              // <= THÊM
+            await dbContext.SaveChangesAsync();         // <= THÊM (lưu refresh token vào DB)
 
             // done
             return new AccountLoginResponseDtos
@@ -288,31 +313,52 @@ namespace IoT_system.Services.Accounts
                 Role = account.Role // trả về để biết role nào rồi phân quyền
             };
         }
+        public async Task<AccountLoginResponseDtos> RefreshToken()
+        {
+            var refreshToken = httpContextAccessor.HttpContext!.Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+                throw new BadHttpRequestException("REFRESH_TOKEN_MISSING");
+
+            var account = await dbContext.Accounts.Include(a => a.Language)
+                .FirstOrDefaultAsync(a => a.RefreshToken == refreshToken && a.DeletedAt == null);
+
+            if (account == null || account.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                throw new BadHttpRequestException("REFRESH_TOKEN_INVALID");
+
+            GenerateJwt(account);
+            GenerateRefreshToken(account);
+            await dbContext.SaveChangesAsync();
+
+            return new AccountLoginResponseDtos
+            {
+                Message = "REFRESH_SUCCESS",
+                LanguageCode = account.Language.Code,
+                Role = account.Role
+            };
+        }
 
 
         // logout 
-        public AccountLogoutResponseDtos Logout()
+        public async Task<AccountLogoutResponseDtos> Logout()
         {
-            httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
+            var idClaim = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(idClaim, out var accountId))
             {
-                /*
-                 do SameSiteMode.None
-                 => nên phải khai báo lại SameSiteMode.None là:
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
+                var account = await dbContext.Accounts.FindAsync(accountId);
+                if (account != null)
+                {
+                    account.RefreshToken = null;
+                    account.RefreshTokenExpiryTime = null;
+                    await dbContext.SaveChangesAsync();
+                }
+            }
 
-                 => nếu ko khai báo lại SameSiteMode.None thì browser coi đây là 2 cookie khác nhau -> không xoá
-                 */
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,  // <- bắt buộc phải có
-                Path = "/"// trỏ vào cookie đó
-            });
-            return new AccountLogoutResponseDtos
-            {
-                Message = "LOGOUT_SUCCESS"
-            };
+            httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
+            { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
+            httpContextAccessor.HttpContext!.Response.Cookies.Delete("refresh_token", new CookieOptions
+            { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
+
+            return new AccountLogoutResponseDtos { Message = "LOGOUT_SUCCESS" };
         }
 
         /* ------------ confirm password ------------ */

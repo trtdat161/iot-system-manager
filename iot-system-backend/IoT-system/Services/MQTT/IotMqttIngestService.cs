@@ -118,7 +118,7 @@ namespace IoT_system.Services.Mqtt
             var exists = await db.Devices.FirstOrDefaultAsync(x => x.MacAddress == data.Mac);
             if (exists != null) return;
 
-            db.Devices.Add(new Device
+            db.Devices.Add(new Device // tự động thêm vào db device mới online 
             {
                 MacAddress = data.Mac.ToUpperInvariant(), // chuẩn hóa ngay từ lúc lưu DB
                 Name = $"Device_{data.Mac}",

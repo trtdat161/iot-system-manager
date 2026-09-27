@@ -33,6 +33,10 @@ public partial class Account
 
     public DateTime? ResetTokenExpires { get; set; }
 
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+
     public virtual Device? Device { get; set; }
 
     public virtual Language Language { get; set; } = null!;

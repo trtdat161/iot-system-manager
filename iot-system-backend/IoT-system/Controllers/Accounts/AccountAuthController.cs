@@ -32,9 +32,9 @@ public class AccountAuthController : ControllerBase
 
     [Authorize]
     [HttpPost("logout")]
-    public IActionResult LogoutAccount()
+    public async Task<IActionResult> LogoutAccount()   // sync => async
     {
-        var result = accountServices.Logout();
+        var result = await accountServices.Logout();   // thêm await
         return Ok(result);
     }
 }
