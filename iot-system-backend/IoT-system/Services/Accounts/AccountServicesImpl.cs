@@ -61,17 +61,22 @@ namespace IoT_system.Services.Accounts
             SameSite=None  <->  Secure=true  (tách ra là browser DROP cookie)
              */
         }
-        // generate refreshtoken
+        /*
+         generate refreshtoken
+         Method này tạo token, gán vào account và gửi cookie. Nó không tự gọi SaveChangesAsync(), 
+         nên cần method bên ngoài lưu thay đổi xuống database.
+         */
         private void GenerateRefreshToken(Account acc)
         {
-            var randomBytes = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
+            var randomBytes = new byte[64]; // Tạo một mảng chứa 64 byte để lưu dữ liệu ngẫu nhiên.
+            using var rng = RandomNumberGenerator.Create();// tạo sinh số ngẫu nhiên dùng cho bảo mật mật mã.
             rng.GetBytes(randomBytes);
-            var refreshToken = Convert.ToBase64String(randomBytes);
-
+            var refreshToken = Convert.ToBase64String(randomBytes);// Chuyển mảng byte thành chuỗi Base64 để dễ lưu trữ và truyền qua cookie.
             acc.RefreshToken = refreshToken;
             acc.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-
+            /*
+             Backend đưa cookie vào HTTP response trả về cho browser. Browser nhận response và lưu cookie đó lại.
+             */
             httpContextAccessor.HttpContext!.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
@@ -121,6 +126,9 @@ namespace IoT_system.Services.Accounts
                 throw new BadHttpRequestException($"not found account id = {id}!");
             }
             account.Status = false;
+            // xóa refresh token đang lưu trong DB của tài khoản bị khóa, để token đó không dùng được nữa tức khóa rồi thì không refresh được
+            account.RefreshToken = null;              
+            account.RefreshTokenExpiryTime = null;   
             if (!string.IsNullOrWhiteSpace(note))// phủ định lại tức nếu có giá trị
             {
                 account.Note = note;
@@ -255,6 +263,8 @@ namespace IoT_system.Services.Accounts
             await dbContext.Entry(account).Reference(a => a.Language).LoadAsync(); //load thêm data Language cho account
 
             GenerateJwt(account);
+            GenerateRefreshToken(account);
+            await dbContext.SaveChangesAsync();
 
             // dùng account thật đã register map đến AccountResponseDtos trả về cho client
             return mapper.Map<AccountResponseDtos>(account);// trả client để có thể get ra các info user...
@@ -302,8 +312,8 @@ namespace IoT_system.Services.Accounts
 
             // -> nếu ok chạy đc đến đây thì thực hiện tiếp
             GenerateJwt(account);
-            GenerateRefreshToken(account);              // <= THÊM
-            await dbContext.SaveChangesAsync();         // <= THÊM (lưu refresh token vào DB)
+            GenerateRefreshToken(account);// <= lưu chuỗi generate refresh token để sau lấy chuỗi so sánh khi refresh token
+            await dbContext.SaveChangesAsync();// <= THÊM (lưu refresh token vào DB)
 
             // done
             return new AccountLoginResponseDtos
@@ -313,20 +323,26 @@ namespace IoT_system.Services.Accounts
                 Role = account.Role // trả về để biết role nào rồi phân quyền
             };
         }
+        // RefreshToken
         public async Task<AccountLoginResponseDtos> RefreshToken()
         {
+            // Lấy Refresh Token từ cookie để so với chuỗi refresh
             var refreshToken = httpContextAccessor.HttpContext!.Request.Cookies["refresh_token"];
-            if (string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(refreshToken)) // Server đọc token mà trình duyệt gửi lên. Nếu không có token thì từ chối
+            {
                 throw new BadHttpRequestException("REFRESH_TOKEN_MISSING");
-
+            }
+            // tìm tk trong db và kiểm tra token gửi lên có khớp token đang lưu trong db khônResponse.Cookies.Appendg
             var account = await dbContext.Accounts.Include(a => a.Language)
-                .FirstOrDefaultAsync(a => a.RefreshToken == refreshToken && a.DeletedAt == null);
+                .FirstOrDefaultAsync(a => a.RefreshToken == refreshToken && a.DeletedAt == null && a.Status); // tài khoản bị khóa thì không cho refresh
 
             if (account == null || account.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
                 throw new BadHttpRequestException("REFRESH_TOKEN_INVALID");
+            }
 
-            GenerateJwt(account);
-            GenerateRefreshToken(account);
+            GenerateJwt(account);//  tạo access token mới 
+            GenerateRefreshToken(account);// tạo refresh token mới
             await dbContext.SaveChangesAsync();
 
             return new AccountLoginResponseDtos
@@ -347,6 +363,7 @@ namespace IoT_system.Services.Accounts
                 var account = await dbContext.Accounts.FindAsync(accountId);
                 if (account != null)
                 {
+                    // xóa Refresh Token đang lưu trong database
                     account.RefreshToken = null;
                     account.RefreshTokenExpiryTime = null;
                     await dbContext.SaveChangesAsync();
@@ -354,9 +371,17 @@ namespace IoT_system.Services.Accounts
             }
 
             httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token", new CookieOptions
-            { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
-            httpContextAccessor.HttpContext!.Response.Cookies.Delete("refresh_token", new CookieOptions
-            { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Path = "/" });
+            { 
+                HttpOnly = true, 
+                Secure = true, 
+                SameSite = SameSiteMode.None, 
+                Path = "/" });
+                httpContextAccessor.HttpContext!.Response.Cookies.Delete("refresh_token", new CookieOptions
+            { 
+                HttpOnly = true, 
+                Secure = true, 
+                SameSite = SameSiteMode.None, 
+                Path = "/" });
 
             return new AccountLogoutResponseDtos { Message = "LOGOUT_SUCCESS" };
         }

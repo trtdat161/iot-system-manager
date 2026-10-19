@@ -30,6 +30,15 @@ public class AccountAuthController : ControllerBase
         return Ok(result);
     }
 
+    // refresh
+    [AllowAnonymous] // Access token có thể hết hạn nên cần cho phép gọi API mà không cần access token hợp lệ = dùng [AllowAnonymous]
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshTokenAccountU()
+    {
+        var result = await accountServices.RefreshToken();
+        return Ok(result);
+    }
+
     [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> LogoutAccount()   // sync => async
