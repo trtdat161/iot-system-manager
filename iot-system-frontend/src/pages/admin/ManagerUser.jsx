@@ -23,6 +23,7 @@ import "../../css/admin/ManagerUserAndDevice.css";
 import { Sidebar } from "../../components/admin/Sidebar";
 import { MdManageAccounts } from "react-icons/md";
 import { Pagination } from "../../components/common/Pagination";
+import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 
 export function ManagerUser() {
   const [errorAccount, _setErrorAccount] = useState("");
@@ -327,30 +328,16 @@ export function ManagerUser() {
           </table>
 
           {/* Dialog xác nhận xoá — đặt ngoài table */}
-          {deleteUser && (
-            <div
-              className="sure-delete-overlay"
-              onClick={() => setDeleteUser(null)}
-            >
-              <div className="sure-delete" onClick={(e) => e.stopPropagation()}>
-                <span>{t("confirm_delete_account")}</span>
-                <div className="sure-delete-actions">
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => removeAccount(deleteUser)}
-                  >
-                    {t("delete")}
-                  </button>
-                  <button
-                    className="btn btn-sm btn-secondary"
-                    onClick={() => setDeleteUser(null)}
-                  >
-                    {t("cancel")}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <ConfirmDialog
+            open={Boolean(deleteUser)}
+            title={t("delete_account")}
+            message={t("confirm_delete_account")}
+            cancelLabel={t("cancel")}
+            confirmLabel={t("delete")}
+            DialogIcon={FaTrash}
+            onCancel={() => setDeleteUser(null)}
+            onConfirm={() => removeAccount(deleteUser)}
+          />
         </div>
 
         {/* Pagination — dùng lại ở bất kỳ đâu chỉ cần 3 props */}

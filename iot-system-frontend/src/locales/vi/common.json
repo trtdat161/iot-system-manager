@@ -1,7 +1,10 @@
 {
   "pagination": {
-    "previous": "« Truoc",
+    "previous": "« Trước",
     "page": "Trang {{page}} / {{totalPages}}",
-    "next": "Tiep »"
+    "next": "Tiếp »",
+    "navigation": "Điều hướng phân trang",
+    "pages": "Các trang",
+    "goToPage": "Đến trang {{page}}"
   }
 }

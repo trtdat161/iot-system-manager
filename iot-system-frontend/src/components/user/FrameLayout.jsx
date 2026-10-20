@@ -68,7 +68,7 @@ export function FrameLayoutUser() {
 
   const styleFrame = {
     marginLeft: collapsed ? "7px" : "162px",
-    transition: "margin-left 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
+    transition: "margin-left 0.24s ease-out",
     padding: "20px",
   };
 

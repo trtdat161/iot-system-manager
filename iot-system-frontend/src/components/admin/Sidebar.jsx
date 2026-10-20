@@ -86,7 +86,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
           background: "#0f172a",
           display: "flex",
           flexDirection: "column",
-          transition: "width 0.35s ease",
+          transition: "width 0.24s ease-out",
           flexShrink: 0,
           position: "fixed", // để là fixed để luôn đưng yên và không chiếm layout làm cho content thay đổi bị đẩy xuống
           top: 0,

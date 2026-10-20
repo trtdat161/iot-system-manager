@@ -10,6 +10,7 @@ export function ConfirmDialog({
   confirmLabel,
   onCancel,
   onConfirm,
+  DialogIcon = FaSignOutAlt,
 }) {
   if (!open) {
     return null;
@@ -26,7 +27,7 @@ export function ConfirmDialog({
           onMouseDown={(event) => event.stopPropagation()}
         >
           <div className="confirm-dialog-icon" aria-hidden="true">
-            <FaSignOutAlt />
+            <DialogIcon />
           </div>
           <h2 id="confirm-dialog-title">{title}</h2>
           <p>{message}</p>

@@ -2,6 +2,9 @@
   "pagination": {
     "previous": "« Previous",
     "page": "Page {{page}} / {{totalPages}}",
-    "next": "Next »"
+    "next": "Next »",
+    "navigation": "Pagination navigation",
+    "pages": "Pages",
+    "goToPage": "Go to page {{page}}"
   }
 }

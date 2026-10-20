@@ -190,6 +190,16 @@
   },
   {
     "ContainingType": "AccountAuthController",
+    "Method": "RefreshTokenAccountU",
+    "RelativePath": "api/auth/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AccountAuthController",
     "Method": "RegisterAccount",
     "RelativePath": "api/auth/register",
     "HttpMethod": "POST",

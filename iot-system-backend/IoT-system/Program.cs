@@ -10,7 +10,7 @@ using IoT_system.Services.Devices;
 using IoT_system.Services.Languages;
 using IoT_system.Services.Mqtt;
 using IoT_system.Services.Notifications;
-using IoT_system.Services.Token;
+//using IoT_system.Services.Token;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -48,7 +48,7 @@ builder.Services.AddScoped<LanguageServices, LanguageServiceImpl>();
 builder.Services.AddScoped<DeviceServices, DeviceServiceImpl>();
 builder.Services.AddScoped<DashboardAdminServices, DashboardAdminServicesImpl>();
 builder.Services.AddScoped<NotificationServices, NotificationServicesImpl>();
-builder.Services.AddScoped<TokenService, TokenServiceImpl>();
+//builder.Services.AddScoped<TokenService, TokenServiceImpl>();
 
 
 // ===== MQTT IoT =====
