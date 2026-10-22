@@ -39,6 +39,7 @@ namespace IoT_system.Services.Accounts
             mapper = _mapper;
         }
 
+        private const string RefreshTokenCookiePath = "/api/auth/refresh-token";
         // generate jwt
         private void GenerateJwt(Account acc)
         {
@@ -83,7 +84,7 @@ namespace IoT_system.Services.Accounts
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
-                Path = "/"
+                Path = RefreshTokenCookiePath // đổi
             });
         }
 
@@ -381,7 +382,7 @@ namespace IoT_system.Services.Accounts
                 HttpOnly = true, 
                 Secure = true, 
                 SameSite = SameSiteMode.None, 
-                Path = "/" });
+                Path = RefreshTokenCookiePath });
 
             return new AccountLogoutResponseDtos { Message = "LOGOUT_SUCCESS" };
         }

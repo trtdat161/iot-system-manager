@@ -17,7 +17,7 @@ axiosInstance.interceptors.request.use((config) => {
 // (BE dùng rotation, refresh token cũ chết ngay sau mỗi lần refresh)
 let refreshPromise = null;
 
-const refreshToken = () => {
+const refreshSession = () => {
   if (!refreshPromise) {
     refreshPromise = axiosInstance.post("auth/refresh-token").finally(() => {
       refreshPromise = null;
@@ -28,7 +28,7 @@ const refreshToken = () => {
 };
 
 /*
-1. Interceptor = trạm kiểm soát mà mọi request/response của axios phải đi qua
+1. Interceptor = trạm kiểm soát mà mọi request/response của axios phải đi qua, Interceptor tự xin token mới rồi gọi lại request vừa thất bại
 2. use() nhận 2 hàm. Axios tự quyết định gọi hàm nào dựa vào status code. Bạn chỉ “đăng ký” hai hàm đó một lần ở đây.
 */
 axiosInstance.interceptors.response.use(
