@@ -28,9 +28,9 @@ const refreshSession = () => {
 };
 
 /*
-1. Interceptor = trạm kiểm soát mà mọi request/response của axios phải đi qua, Interceptor tự xin token mới rồi gọi lại request vừa thất bại
-2. use() nhận 2 hàm. Axios tự quyết định gọi hàm nào dựa vào status code. Bạn chỉ “đăng ký” hai hàm đó một lần ở đây.
-*/
+  1. Interceptor = trạm kiểm soát mà mọi request/response của axios phải đi qua, Interceptor tự xin token mới rồi gọi lại request vừa thất bại
+  2. use() nhận 2 hàm. Axios tự quyết định gọi hàm nào dựa vào status code. Bạn chỉ “đăng ký” hai hàm đó một lần ở đây.
+  */
 axiosInstance.interceptors.response.use(
   (res) => res, // chạy khi thảnh công khi status 200
   async (error) => {
