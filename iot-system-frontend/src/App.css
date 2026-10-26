@@ -1,3 +1,49 @@
+:root {
+  --app-bg: #071311;
+  --app-surface: #0c1b18;
+  --app-panel: #10221e;
+  --app-mint: #72f0ce;
+  --app-mint-bright: #a3ffe8;
+  --app-text: #ecf7f2;
+  --app-muted: #91a9a0;
+  --app-border: rgba(171, 228, 208, 0.16);
+}
+
+.app-page-frame {
+  min-height: 100vh;
+  color: var(--app-text);
+  background:
+    radial-gradient(ellipse at 82% 5%, rgba(69, 159, 125, 0.12), transparent 34%),
+    var(--app-bg);
+}
+
+.app-page-frame input::placeholder,
+.app-page-frame textarea::placeholder {
+  color: var(--app-muted) !important;
+  opacity: 0.72;
+}
+
+body:has(.app-page-frame) {
+  background: var(--app-bg);
+}
+
+body:has(.app-page-frame) #root {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  text-align: left;
+  display: block;
+}
+
+body:has(.app-page-frame) .user-frame-header,
+body:has(.app-page-frame) .admin-app-header {
+  color: var(--app-text);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 16px 36px rgba(2, 10, 8, 0.28);
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;

@@ -2,8 +2,9 @@
   "nav": {
     "aria": "Main navigation",
     "home_aria": "DTECH home",
+    "features": "Features",
     "login": "Login",
-    "register": "Register free"
+    "register": "Register"
   },
   "hero": {
     "aria": "DTECH introduction",
@@ -22,6 +23,7 @@
     "tag": "personal project",
     "title": "IoT management",
     "highlight": "simple and powerful",
+    "note": "One clear view of your connected devices, live alerts, and sensor history.",
     "items": [
       {
         "icon": "IoT",
@@ -56,6 +58,17 @@
   },
   "mockup": {
     "aria": "Dashboard DTECH IoT",
+    "live_overview": "Live system overview",
+    "system_online": "System online",
+    "dashboard_title": "DTECH / OVERVIEW",
+    "environment": "YOUR ENVIRONMENT",
+    "overview": "System overview",
+    "today": "TODAY",
+    "sensor_activity": "Sensor activity",
+    "last_12_hours": "LAST 12 HOURS",
+    "online": "Online",
+    "alert_title": "Live alerts",
+    "alert_description": "Every signal, in real time",
     "gas": "Gas",
     "gas_note": "Slightly above threshold",
     "temperature": "Temperature",

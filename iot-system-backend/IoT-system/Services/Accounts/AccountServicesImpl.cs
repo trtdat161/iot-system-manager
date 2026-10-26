@@ -314,7 +314,7 @@ namespace IoT_system.Services.Accounts
             // -> nếu ok chạy đc đến đây thì thực hiện tiếp
             GenerateJwt(account);
             GenerateRefreshToken(account);// <= lưu chuỗi generate refresh token để sau lấy chuỗi so sánh khi refresh token
-            await dbContext.SaveChangesAsync();// <= THÊM (lưu refresh token vào DB)
+            await dbContext.SaveChangesAsync();// <= THÊM (lưu refresh token vào DB để BE có chuỗi trong DB để so với chuỗi cookie gửi lên)
 
             // done
             return new AccountLoginResponseDtos
@@ -333,6 +333,16 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("REFRESH_TOKEN_MISSING");
             }
+
+            // ====== DEBUG: thêm đoạn này, test xong thì xóa ======
+            Console.WriteLine($"[DEBUG] cookie = {refreshToken}");
+
+            var byToken = await dbContext.Accounts
+                .FirstOrDefaultAsync(a => a.RefreshToken == refreshToken);
+
+            Console.WriteLine($"[DEBUG] found={byToken != null} | expiry={byToken?.RefreshTokenExpiryTime} | now={DateTime.UtcNow}");
+            // ====== hết đoạn DEBUG ======
+
             // tìm tk trong db và kiểm tra token gửi lên có khớp token đang lưu trong db khônResponse.Cookies.Appendg
             var account = await dbContext.Accounts.Include(a => a.Language)
                 .FirstOrDefaultAsync(a => a.RefreshToken == refreshToken && a.DeletedAt == null && a.Status); // tài khoản bị khóa thì không cho refresh

@@ -125,7 +125,7 @@
 }
 
 .search-icon {
-    color: #9ca3af;
+    color: #64748b;
     flex-shrink: 0;
 }
 
@@ -141,7 +141,7 @@
 }
 
 .search-input::placeholder {
-    color: #b4b8bf;
+    color: #64748b;
     font-weight: 400;
 }
 
@@ -335,6 +335,10 @@
     margin-bottom: 0 !important;
 }
 
+.table-wrapper-fixed .text-muted {
+    color: #475569 !important;
+}
+
 .table-wrapper-fixed .table tbody tr {
     border-bottom: 1px solid #e5e7eb;
 }
@@ -406,4 +410,74 @@
         width: calc(100vw - 32px);
         min-width: 0;
     }
+}
+
+.admin-app-frame .parent > div.bg-white {
+    color: var(--app-text) !important;
+    background: linear-gradient(145deg, rgba(171, 228, 208, 0.09), rgba(171, 228, 208, 0.035)) !important;
+    border-color: var(--app-border) !important;
+    box-shadow: 0 16px 36px rgba(2, 10, 8, 0.2) !important;
+}
+
+.admin-app-frame .parent > div.bg-white h4,
+.admin-app-frame .parent .title {
+    color: var(--app-text) !important;
+}
+
+.admin-app-frame .search-filter {
+    background: rgba(7, 19, 17, 0.42);
+    border: 1px solid var(--app-border);
+}
+
+.admin-app-frame .filter-group,
+.admin-app-frame .search-group {
+    background: rgba(7, 19, 17, 0.58);
+    border-color: var(--app-border);
+}
+
+.admin-app-frame .filter-label,
+.admin-app-frame .filter-select,
+.admin-app-frame .search-input {
+    color: var(--app-text);
+}
+
+.admin-app-frame .filter-select option {
+    color: var(--app-text);
+    background: var(--app-surface);
+}
+
+.admin-app-frame .table-wrapper-fixed {
+    background: rgba(12, 27, 24, 0.78);
+    border-color: var(--app-border);
+    box-shadow: 0 16px 36px rgba(2, 10, 8, 0.2);
+}
+
+.admin-app-frame .table-wrapper-fixed .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--app-text);
+    --bs-table-border-color: var(--app-border);
+    --bs-table-hover-bg: rgba(114, 240, 206, 0.06);
+    --bs-table-hover-color: var(--app-text);
+    color: var(--app-text);
+}
+
+.admin-app-frame .table-wrapper-fixed .table thead.table-light {
+    --bs-table-bg: rgba(171, 228, 208, 0.08);
+    --bs-table-color: var(--app-text);
+    --bs-table-border-color: var(--app-border);
+    background: rgba(171, 228, 208, 0.08) !important;
+    color: var(--app-text);
+}
+
+.admin-app-frame .table-wrapper-fixed .table tbody tr {
+    border-color: var(--app-border);
+}
+
+.admin-app-frame .table-wrapper-fixed .table tbody tr:hover,
+.admin-app-frame .table-wrapper-fixed > div:not(.table-responsive) {
+    background: rgba(114, 240, 206, 0.06);
+}
+
+.admin-app-frame .table-wrapper-fixed .text-muted {
+    color: #a5b9b0 !important;
 }

@@ -77,7 +77,7 @@ export function FrameLayoutUser() {
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div
-        className={`user-frame ${collapsed ? "collapsed" : ""}`}
+        className={`app-page-frame user-frame ${collapsed ? "collapsed" : ""}`}
         style={styleFrame}
       >
         <div className="container-fluid mb-3">

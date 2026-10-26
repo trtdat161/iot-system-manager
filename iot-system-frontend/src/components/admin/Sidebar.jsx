@@ -83,7 +83,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
         style={{
           width: collapsed ? "35px" : "190px",
           minHeight: "100vh",
-          background: "#0f172a",
+          background: "#0c1b18",
           display: "flex",
           flexDirection: "column",
           transition: "width 0.24s ease-out",
@@ -105,7 +105,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
         >
           {!collapsed && (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <FaMicrochip size={20} color="#38bdf8" />
+              <FaMicrochip size={20} color="#72f0ce" />
               <span
                 style={{
                   color: "#f1f5f9",
@@ -184,13 +184,13 @@ export function Sidebar({ collapsed, setCollapsed }) {
               style={{
                 width: "100%",
                 background: isActive(item.path)
-                  ? "rgba(56,189,248,0.12)"
+                  ? "rgba(114,240,206,0.1)"
                   : "none",
                 border: "none",
                 borderLeft: isActive(item.path)
-                  ? "3px solid #38bdf8"
+                  ? "3px solid #72f0ce"
                   : "3px solid transparent",
-                color: isActive(item.path) ? "#38bdf8" : "#94a3b8",
+                color: isActive(item.path) ? "#72f0ce" : "#94a3b8",
                 display: "flex",
                 alignItems: "center",
                 gap: 10,

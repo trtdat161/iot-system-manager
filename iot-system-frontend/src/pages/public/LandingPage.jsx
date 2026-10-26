@@ -1,135 +1,69 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  ArrowDownRight,
+  ArrowRight,
+  Activity,
+  BellRing,
+  ChartNoAxesCombined,
+  Check,
+  Cpu,
+  Flame,
+  Gauge,
+  ShieldCheck,
+  Sparkles,
+  Waves,
+} from "lucide-react";
+import { LanguageSwitcher } from "../../components/switchLanguage/LanguageSwitch";
 import "../../css/LandingPage.css";
 
+const featureIcons = {
+  IoT: Cpu,
+  Alert: BellRing,
+  Chart: ChartNoAxesCombined,
+  Role: ShieldCheck,
+  AI: Sparkles,
+};
+
 export function LandingPage() {
+  const { t } = useTranslation("landing_page");
   const year = new Date().getFullYear();
-  const navigate = useNavigate();
-
-  const stats = [
-    { num: "100%", label: "Realtime" },
-    { num: "24/7", label: "Monitoring" },
-    { num: "SignalR", label: "Connection" },
-  ];
-
-  const features = [
-    {
-      icon: "IoT",
-      title: "IoT device management",
-      desc: "Add and monitor fire alarm modules, gas alarm modules, temperature sensors, and more through a friendly interface.",
-    },
-    {
-      icon: "Alert",
-      title: "Smart notifications",
-      desc: "Receive realtime alerts when gas levels exceed thresholds, temperature is high, or sensors disconnect. Send email and notifications until you acknowledge them.",
-    },
-    {
-      icon: "Chart",
-      title: "Charts and history",
-      desc: "View notification history, device alert counts, access statistics, and sensor data charts.",
-    },
-    {
-      icon: "Role",
-      title: "Clear permissions",
-      desc: "Admins manage users and devices. Users monitor their personal dashboard and update their profile.",
-    },
-    {
-      icon: "AI",
-      title: "AI assistance (optional)",
-      desc: "Integrate LangChain and LangGraph to automate processing and provide smarter alerts.",
-    },
-  ];
-
-  useEffect(() => {
-    const container = document.getElementById("dtech-particles");
-    if (!container) return;
-
-    for (let i = 0; i < 18; i++) {
-      const dot = document.createElement("div");
-      dot.className = "dtech-dot";
-      dot.style.cssText = [
-        `left:${Math.random() * 100}%`,
-        `animation-duration:${8 + Math.random() * 12}s`,
-        `animation-delay:${Math.random() * 10}s`,
-        `width:${2 + Math.random() * 3}px`,
-        `height:${2 + Math.random() * 3}px`,
-        `opacity:${0.3 + Math.random() * 0.5}`,
-      ].join(";");
-      container.appendChild(dot);
-    }
-
-    return () => {
-      container.innerHTML = "";
-    };
-  }, []);
+  const stats = t("stats", { returnObjects: true });
+  const features = t("features.items", { returnObjects: true });
 
   return (
-    <>
-      <div className="dt-circuit-bg" aria-hidden="true">
-        <svg
-          viewBox="0 0 1400 800"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g stroke="#00e5ff" strokeWidth="1" fill="none">
-            <line x1="0" y1="200" x2="400" y2="200" />
-            <line x1="400" y1="200" x2="400" y2="100" />
-            <line x1="400" y1="100" x2="700" y2="100" />
-            <line x1="700" y1="100" x2="700" y2="300" />
-            <line x1="700" y1="300" x2="1000" y2="300" />
-            <line x1="1000" y1="300" x2="1000" y2="150" />
-            <line x1="1000" y1="150" x2="1400" y2="150" />
-            <line x1="200" y1="0" x2="200" y2="400" />
-            <line x1="200" y1="400" x2="500" y2="400" />
-            <line x1="500" y1="400" x2="500" y2="600" />
-            <line x1="500" y1="600" x2="900" y2="600" />
-            <line x1="900" y1="600" x2="900" y2="450" />
-            <line x1="900" y1="450" x2="1400" y2="450" />
-            <line x1="800" y1="0" x2="800" y2="200" />
-            <line x1="1200" y1="0" x2="1200" y2="300" />
-            <line x1="1200" y1="300" x2="1400" y2="300" />
-            <line x1="0" y1="650" x2="300" y2="650" />
-            <line x1="300" y1="650" x2="300" y2="800" />
-            <circle cx="400" cy="200" r="5" />
-            <circle cx="700" cy="100" r="5" />
-            <circle cx="1000" cy="300" r="5" />
-            <circle cx="200" cy="400" r="5" />
-            <circle cx="500" cy="600" r="5" />
-            <circle cx="900" cy="450" r="5" />
-            <rect x="393" y="193" width="14" height="14" />
-            <rect x="693" y="93" width="14" height="14" />
-            <rect x="993" y="293" width="14" height="14" />
-            <rect x="493" y="593" width="14" height="14" />
-          </g>
-        </svg>
+    <div className="landing-page">
+      <div className="landing-atmosphere" aria-hidden="true">
+        <div className="landing-orb landing-orb-one" />
+        <div className="landing-orb landing-orb-two" />
+        <div className="landing-grid" />
       </div>
 
-      <div className="dt-particles" id="dtech-particles" aria-hidden="true" />
+      <header className="landing-header">
+        <nav className="landing-nav" aria-label={t("nav.aria")}>
+          <Link
+            to="/"
+            className="landing-brand"
+            aria-label={t("nav.home_aria")}
+          >
+            <span className="landing-brand-mark">
+              <Waves size={20} strokeWidth={2.4} />
+            </span>
+            <span>DTECH<span className="landing-brand-period">.</span></span>
+          </Link>
 
-      <header>
-        <nav className="dt-navbar" aria-label="Main navigation">
-          <div className="container">
-            <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-              <a href="#home" aria-label="DTECH home" className="dt-brand">
-                DTECH
-                <span className="dt-blink dt-brand-dot" />
-              </a>
-
-              <div className="d-flex align-items-center gap-2">
-                <button
-                  className="dt-btn dt-btn-outline"
-                  onClick={() => navigate("/login")}
-                >
-                  Login
-                </button>
-                <button
-                  className="dt-btn dt-btn-solid"
-                  onClick={() => navigate("/register")}
-                >
-                  Register free
-                </button>
-              </div>
-            </div>
+          <div className="landing-nav-actions">
+            <a className="landing-nav-link" href="#features">
+              {t("nav.features")}
+            </a>
+            <LanguageSwitcher />
+            <Link className="landing-login-link" to="/login">
+              {t("nav.login")}
+            </Link>
+            <Link className="landing-nav-cta" to="/register">
+              {t("nav.register")}
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </nav>
       </header>
@@ -137,186 +71,226 @@ export function LandingPage() {
       <main>
         <section
           id="home"
-          aria-label="DTECH introduction"
-          className="dt-hero-section"
+          aria-label={t("hero.aria")}
+          className="landing-hero landing-container"
         >
-          <div className="container">
-            <div className="row align-items-center">
-              <div className="col-lg-6">
-                <div className="dt-badge">
-                  <span className="dt-badge-dot" />
-                  Personal IoT project
-                </div>
+          <div className="landing-hero-copy">
+            <div className="landing-eyebrow">
+              <span className="landing-live-dot" />
+              <span>{t("hero.badge")}</span>
+              <span className="landing-eyebrow-line" />
+            </div>
 
-                <h1 className="dt-hero-title">
-                  <span className="dt-hero-title-main">DTECH</span>
-                  <span className="dt-hero-title-sub">Manager IoT</span>
-                </h1>
+            <h1 className="landing-title">
+              <span className="landing-title-brand">DTECH</span>
+              <span className="landing-title-sub">{t("hero.subtitle")}</span>
+            </h1>
 
-                <p className="dt-hero-desc">
-                  A personal IoT device management system that helps you monitor
-                  fire alerts, gas levels, temperature, and receive realtime
-                  notifications through the dashboard and email.
-                </p>
+            <p className="landing-description">{t("hero.description")}</p>
 
-                <div className="d-flex flex-wrap gap-3 mb-5">
-                  <HeroBtn href="/register" variant="primary">
-                    + Create free account
-                  </HeroBtn>
-                  <HeroBtn href="/login" variant="secondary">
-                    -&gt; Login
-                  </HeroBtn>
-                </div>
+            <div className="landing-hero-actions">
+              <Link className="landing-button landing-button-primary" to="/register">
+                {t("hero.create_account")}
+                <ArrowRight size={18} />
+              </Link>
+              <Link className="landing-button landing-button-secondary" to="/login">
+                {t("hero.login")}
+                <ArrowDownRight size={17} />
+              </Link>
+            </div>
 
-                <div className="dt-stats">
-                  {stats.map(({ num, label }) => (
-                    <div key={label} className="dt-stat">
-                      <span className="dt-stat-num">{num}</span>
-                      <span className="dt-stat-label">{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="landing-stats" aria-label={t("hero.aria")}>
+              {Array.isArray(stats) &&
+                stats.map(({ num, label }) => (
+                  <div className="landing-stat" key={label}>
+                    <span className="landing-stat-value">{num}</span>
+                    <span className="landing-stat-label">{label}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
 
-              <div className="col-lg-6 mt-5 mt-lg-0">
-                <DashboardMockup />
-              </div>
+          <div className="landing-visual">
+            <div className="landing-visual-caption">
+              <span className="landing-caption-icon"><Activity size={15} /></span>
+              {t("mockup.live_overview")}
+              <span className="landing-caption-status">{t("mockup.system_online")}</span>
+            </div>
+            <DashboardMockup t={t} />
+            <div className="landing-float-card">
+              <span className="landing-float-icon"><BellRing size={17} /></span>
+              <span>
+                <strong>{t("mockup.alert_title")}</strong>
+                <small>{t("mockup.alert_description")}</small>
+              </span>
+              <span className="landing-float-check"><Check size={13} /></span>
             </div>
           </div>
         </section>
 
         <section
           id="features"
-          aria-labelledby="features-heading"
-          className="dt-features-section"
+          aria-labelledby="landing-features-title"
+          className="landing-features"
         >
-          <div className="container">
-            <div className="row mb-5">
-              <div className="col-lg-8">
-                <p className="dt-section-tag">personal project</p>
-                <h2 id="features-heading" className="dt-section-title">
-                  IoT management{" "}
-                  <span className="dt-section-title-highlight">
-                    simple and powerful
-                  </span>
+          <div className="landing-container">
+            <div className="landing-section-heading">
+              <div>
+                <p className="landing-section-kicker">
+                  <span className="landing-heading-line" />
+                  {t("features.tag")}
+                </p>
+                <h2 id="landing-features-title">
+                  {t("features.title")}{" "}
+                  <span>{t("features.highlight")}</span>
                 </h2>
               </div>
+              <p className="landing-section-note">
+                {t("features.note")}
+              </p>
             </div>
 
-            <div className="row g-4">
-              {features.map(({ icon, title, desc }) => (
-                <div key={title} className="col-md-6 col-lg-4">
-                  <article className="dt-feature-card">
-                    <div className="dt-feature-icon">{icon}</div>
-                    <h3 className="dt-feature-title">{title}</h3>
-                    <p className="dt-feature-desc">{desc}</p>
-                  </article>
-                </div>
-              ))}
+            <div className="landing-feature-grid">
+              {Array.isArray(features) &&
+                features.map(({ icon, title, desc }, index) => {
+                  const Icon = featureIcons[icon] || Cpu;
+                  return (
+                    <article className="landing-feature-card" key={title}>
+                      <div className="landing-feature-topline">
+                        <span className="landing-feature-icon">
+                          <Icon size={20} strokeWidth={1.8} />
+                        </span>
+                        <span className="landing-feature-index">
+                          0{index + 1}
+                        </span>
+                      </div>
+                      <h3>{title}</h3>
+                      <p>{desc}</p>
+                      <ArrowRight className="landing-feature-arrow" size={17} />
+                    </article>
+                  );
+                })}
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="dt-footer">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-md-4 mb-3 mb-md-0">
-              <div className="dt-footer-brand">
-                DTECH<span className="dt-footer-brand-dot">.</span>
-              </div>
-              <p className="dt-footer-desc">
-                Personal IoT project. Smart monitoring for your home and space.
-              </p>
-            </div>
-
-            <div className="col-md-4 text-md-end">
-              <p className="dt-footer-copy">
-                Copyright {year} DTECH - A personal project by Tien Dat
-              </p>
-
-              <div className="d-flex flex-column flex-sm-row justify-content-md-end gap-3 gap-sm-4 text-muted small">
-                <a
-                  href="tel:0374757256"
-                  className="dtech-contact-link d-flex align-items-center gap-2 text-decoration-none"
-                >
-                  <i className="bi bi-telephone-fill"></i>
-                  0374 757 256
-                </a>
-                <a
-                  href="mailto:trtdat161@gmail.com"
-                  className="dtech-contact-link d-flex align-items-center gap-2 text-decoration-none"
-                >
-                  <i className="bi bi-envelope-fill"></i>
-                  trtdat161@gmail.com
-                </a>
-              </div>
-            </div>
+      <footer className="landing-footer">
+        <div className="landing-container landing-footer-inner">
+          <div className="landing-footer-brand">
+            <span className="landing-brand-mark">
+              <Waves size={18} strokeWidth={2.4} />
+            </span>
+            <span>
+              <strong>DTECH</strong>
+              <small>{t("footer.description")}</small>
+            </span>
+          </div>
+          <div className="landing-footer-meta">
+            <a href="mailto:trtdat161@gmail.com">trtdat161@gmail.com</a>
+            <a href="tel:0374757256">0374 757 256</a>
+            <span>{t("footer.copy", { year })}</span>
           </div>
         </div>
       </footer>
-    </>
+
+      <div className="landing-mobile-dock" aria-label={t("nav.aria")}>
+        <Link className="landing-dock-login" to="/login">
+          {t("nav.login")}
+        </Link>
+        <Link className="landing-dock-register" to="/register">
+          {t("nav.register")}
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+    </div>
   );
 }
 
-function HeroBtn({ href, variant, children }) {
-  const isPrimary = variant === "primary";
-  const className = isPrimary
-    ? "dt-hero-btn dt-hero-btn-primary"
-    : "dt-hero-btn dt-hero-btn-secondary";
-
+function DashboardMockup({ t }) {
   return (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  );
-}
-
-function DashboardMockup() {
-  return (
-    <div className="dt-dashboard" role="img" aria-label="Dashboard DTECH IoT">
-      <div className="dt-dashboard-header">
-        {["#ff5f57", "#febc2e", "#28c840"].map((color) => (
-          <span
-            key={color}
-            className="dt-dashboard-dot"
-            style={{ background: color }}
-          />
-        ))}
-        <span className="dt-dashboard-title">DTECH IoT Dashboard</span>
+    <div className="landing-dashboard" role="img" aria-label={t("mockup.aria")}>
+      <div className="landing-dashboard-topbar">
+        <div className="landing-window-controls" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <span className="landing-dashboard-name">{t("mockup.dashboard_title")}</span>
+        <span className="landing-dashboard-live">
+          <span className="landing-live-dot" />
+          LIVE
+        </span>
       </div>
 
-      <div className="dt-dashboard-body">
-        <div className="dt-metric">
-          <div className="dt-metric-label">Gas</div>
-          <div className="dt-metric-value" style={{ color: "#ff5f57" }}>
-            0.85%
+      <div className="landing-dashboard-content">
+        <div className="landing-dashboard-heading">
+          <div>
+            <span className="landing-dashboard-overline">{t("mockup.environment")}</span>
+            <strong>{t("mockup.overview")}</strong>
           </div>
-          <div className="dt-metric-change warning">
-            Slightly above threshold
-          </div>
-        </div>
-        <div className="dt-metric">
-          <div className="dt-metric-label">Temperature</div>
-          <div className="dt-metric-value">31.4 C</div>
-          <div className="dt-metric-change positive">Above normal</div>
-        </div>
-        <div className="dt-metric">
-          <div className="dt-metric-label">Devices</div>
-          <div className="dt-metric-value">4 Online</div>
-          <div className="dt-metric-change positive">All systems active</div>
+          <span className="landing-dashboard-date">{t("mockup.today")} <span>·</span> 09:41</span>
         </div>
 
-        <div className="dt-devices mt-3">
-          <div className="dt-metric-label">Recent devices</div>
-          <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Gas Alarm Module
+        <div className="landing-metric-grid">
+          <div className="landing-metric-card landing-metric-warning">
+            <div className="landing-metric-label">
+              <Gauge size={14} /> {t("mockup.gas")}
+            </div>
+            <strong>0.85<span>%</span></strong>
+            <small><span /> {t("mockup.gas_note")}</small>
           </div>
-          <div className="dt-device-item">
-            <span className="dt-device-dot online" /> Temperature Sensor
+          <div className="landing-metric-card">
+            <div className="landing-metric-label">
+              <Activity size={14} /> {t("mockup.temperature")}
+            </div>
+            <strong>31.4<span>°C</span></strong>
+            <small className="landing-metric-ok"><span /> {t("mockup.temperature_note")}</small>
           </div>
-          <div className="dt-device-item">
-            <span className="dt-device-dot idle" /> Fire Alarm Module
+        </div>
+
+        <div className="landing-chart-card">
+          <div className="landing-chart-heading">
+            <span>{t("mockup.sensor_activity")}</span>
+            <span className="landing-chart-range">{t("mockup.last_12_hours")}</span>
+          </div>
+          <div className="landing-chart">
+            <div className="landing-chart-lines"><i /><i /><i /></div>
+            <svg viewBox="0 0 520 88" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="landing-chart-fill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#4ee5c1" stopOpacity=".25" />
+                  <stop offset="100%" stopColor="#4ee5c1" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15 V88 H0Z" fill="url(#landing-chart-fill)" />
+              <path d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15" fill="none" stroke="#4ee5c1" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            </svg>
+          </div>
+          <div className="landing-chart-times">
+            <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span>
+          </div>
+        </div>
+
+        <div className="landing-devices-card">
+          <div className="landing-devices-heading">
+            <span>{t("mockup.recent_devices")}</span>
+            <span className="landing-device-count">{t("mockup.devices_value")}</span>
+          </div>
+          <div className="landing-device-row">
+            <span className="landing-device-symbol"><Gauge size={15} /></span>
+            <span>{t("mockup.gas_module")}</span>
+            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
+          </div>
+          <div className="landing-device-row">
+            <span className="landing-device-symbol"><Activity size={15} /></span>
+            <span>{t("mockup.temperature_sensor")}</span>
+            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
+          </div>
+          <div className="landing-device-row">
+            <span className="landing-device-symbol"><Flame size={15} /></span>
+            <span>{t("mockup.fire_module")}</span>
+            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
           </div>
         </div>
       </div>

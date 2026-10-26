@@ -72,12 +72,12 @@ export function FrameLayout() {
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       {/* content */}
-      <div style={styleFrame}>
+      <div className="app-page-frame admin-app-frame" style={styleFrame}>
         {/* header */}
         <div className="container-fluid mb-3">
           <div className="row">
             <div className="col-md-12">
-              <div className="bg-dark text-white rounded p-2">
+              <div className="admin-app-header rounded p-2">
                 <div className="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                   {/* left */}
                   <div className="d-flex align-items-center gap-3 flex-wrap">
@@ -100,12 +100,12 @@ export function FrameLayout() {
                           width: 30,
                           height: 30,
                           borderRadius: 8,
-                          background: "rgba(56,189,248,0.12)",
-                          color: "#38bdf8",
+                          background: "rgba(114,240,206,0.08)",
+                          color: "#72f0ce",
                           display: "inline-flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          border: "1px solid rgba(56,189,248,0.22)",
+                          border: "1px solid rgba(114,240,206,0.18)",
                         }}
                       >
                         <FaHome size={14} />
@@ -134,10 +134,10 @@ export function FrameLayout() {
                               style={{
                                 color: isActive ? "#f8fafc" : "#94a3b8",
                                 background: isActive
-                                  ? "linear-gradient(135deg, rgba(56,189,248,0.28), rgba(14,165,233,0.16))"
+                                  ? "linear-gradient(135deg, rgba(114,240,206,0.2), rgba(65,165,132,0.12))"
                                   : "rgba(255,255,255,0.04)",
                                 border: isActive
-                                  ? "1px solid rgba(125,211,252,0.48)"
+                                  ? "1px solid rgba(114,240,206,0.36)"
                                   : "1px solid rgba(148,163,184,0.16)",
                                 borderRadius: 8,
                                 padding: "6px 10px",
@@ -146,7 +146,7 @@ export function FrameLayout() {
                                 fontWeight: isActive ? 700 : 500,
                                 lineHeight: 1,
                                 boxShadow: isActive
-                                  ? "0 8px 18px rgba(14,165,233,0.16), inset 0 1px 0 rgba(255,255,255,0.16)"
+                                  ? "0 8px 18px rgba(65,165,132,0.12), inset 0 1px 0 rgba(255,255,255,0.16)"
                                   : "none",
                                 transition:
                                   "background 0.18s ease, border-color 0.18s ease, color 0.18s ease",

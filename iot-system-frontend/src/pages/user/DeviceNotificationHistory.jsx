@@ -70,7 +70,7 @@ export function DeviceNotificationHistory() {
       case "error":
         return "#fb7185";
       default:
-        return "#38bdf8";
+        return "#72f0ce";
     }
   };
 

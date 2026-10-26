@@ -172,6 +172,7 @@ export function Login() {
                 <p className="small text-muted text-center">
                   {t("support")}
                   <a href="tel:0374757256" className="auth-contact-link">
+                    {" "}
                     0374 757 256
                   </a>
                 </p>

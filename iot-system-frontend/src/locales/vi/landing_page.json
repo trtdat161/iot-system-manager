@@ -2,8 +2,9 @@
   "nav": {
     "aria": "Điều hướng chính",
     "home_aria": "Trang chủ DTECH",
+    "features": "Tính năng",
     "login": "Đăng nhập",
-    "register": "Đăng ký miễn phí"
+    "register": "Đăng ký"
   },
   "hero": {
     "aria": "Giới thiệu DTECH",
@@ -22,6 +23,7 @@
     "tag": "dự án cá nhân",
     "title": "Quản lý IoT",
     "highlight": "đơn giản và mạnh mẽ",
+    "note": "Theo dõi thiết bị kết nối, cảnh báo trực tiếp và lịch sử cảm biến trên cùng một màn hình.",
     "items": [
       {
         "icon": "IoT",
@@ -56,6 +58,17 @@
   },
   "mockup": {
     "aria": "Dashboard DTECH IoT",
+    "live_overview": "Tổng quan hệ thống trực tiếp",
+    "system_online": "Hệ thống đang hoạt động",
+    "dashboard_title": "DTECH / TỔNG QUAN",
+    "environment": "MÔI TRƯỜNG CỦA BẠN",
+    "overview": "Tổng quan hệ thống",
+    "today": "HÔM NAY",
+    "sensor_activity": "Hoạt động cảm biến",
+    "last_12_hours": "12 GIỜ QUA",
+    "online": "Trực tuyến",
+    "alert_title": "Cảnh báo trực tiếp",
+    "alert_description": "Mọi tín hiệu, theo thời gian thực",
     "gas": "Gas",
     "gas_note": "Vượt ngưỡng nhẹ",
     "temperature": "Nhiệt độ",

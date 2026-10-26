@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../../css/Pagination.css";
 
 const MAX_VISIBLE_PAGES = 5;
@@ -23,11 +24,13 @@ export function Pagination({ page, totalPages, onPageChange }) {
       aria-label={t("pagination.navigation")}
     >
       <button
+        type="button"
         className="btn btn-outline-primary pagination-arrow"
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
+        aria-label={t("pagination.previous")}
       >
-        {t("pagination.previous")}
+        <FaChevronLeft aria-hidden="true" />
       </button>
       <div className="pagination-pages" role="group" aria-label={t("pagination.pages")}>
         {pages.map((pageNumber) => (
@@ -44,11 +47,13 @@ export function Pagination({ page, totalPages, onPageChange }) {
         ))}
       </div>
       <button
+        type="button"
         className="btn btn-outline-primary pagination-arrow"
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
+        aria-label={t("pagination.next")}
       >
-        {t("pagination.next")}
+        <FaChevronRight aria-hidden="true" />
       </button>
     </nav>
   );
