@@ -8,6 +8,9 @@ namespace IoT_system.Services.Devices
     {
         public Task<List<PendingDeviceDto>> GetPendingDevices(int userId);
         public Task<bool> ClaimDevice(int deviceId, int userId);
-        public Task<DeviceResponseDtos> ConnectOrDisconnect(int userId, int deviceId);
+
+        // tách riêng connect - disconnect
+        public Task<DeviceResponseDtos> ConnectDevice(int userId, int deviceId);
+        public Task<DeviceResponseDtos> DisconnectDevice(int userId, int deviceId);
     }
 }

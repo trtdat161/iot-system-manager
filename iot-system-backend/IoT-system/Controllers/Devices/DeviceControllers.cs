@@ -42,13 +42,23 @@ namespace IoT_system.Controllers.Devices
             return Ok(new { message = "claimed" });
         }
 
-        [HttpPost("{deviceId}/connect-disconnect")]
+        [HttpPost("{deviceId}/connect-device")]
         [Produces("application/json")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> ConnectAndDisconnect(int deviceId)
+        public async Task<IActionResult> ConnectDevice(int deviceId)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await deviceService.ConnectOrDisconnect(userId, deviceId);
+            var result = await deviceService.ConnectDevice(userId, deviceId);
+            return Ok(result);
+        }
+
+        [HttpPost("{deviceId}/disconnect-device")]
+        [Produces("application/json")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> DisConnectDevice(int deviceId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await deviceService.DisconnectDevice(userId, deviceId);
             return Ok(result);
         }
     }

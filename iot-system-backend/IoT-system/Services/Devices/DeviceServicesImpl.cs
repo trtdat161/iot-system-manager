@@ -19,132 +19,162 @@ namespace IoT_system.Services.Devices
         }
         public async Task<List<PendingDeviceDto>> GetPendingDevices(int userId)
         {
+            if (userId <= 0)
+            {
+                throw new BadHttpRequestException("userId invalid!");
+            }
+            // Lấy danh sách thiết bị chưa được liên kết với tài khoản
             return await db.Devices
                 .AsNoTracking()
-                .Where(x => x.DeletedAt == null && x.Accounts.All(a => a.Id != userId))
-                // device mà user này chưa join
-                .Select(x => new PendingDeviceDto
+                .Where(d =>
+                    d.DeletedAt == null &&
+                    !d.Accounts.Any(a => a.Id == userId)) // phủ đinh lại kiểu nếu user có rồi thì sẽ true => false muc đích để lọc và hiển thị ra thiết bị chưa được liên kết với tài khoản 
+                .Select(d => new PendingDeviceDto
                 {
-                    Id = x.Id,
-                    MacAddress = x.MacAddress
+                    Id = d.Id,
+                    MacAddress = d.MacAddress
                 })
                 .ToListAsync();
         }
 
         public async Task<bool> ClaimDevice(int deviceId, int userId)
         {
-            var device = await db.Devices.FirstOrDefaultAsync(x => x.Id == deviceId);
-            if (device == null) return false;
+            if (deviceId <= 0 || userId <= 0)
+                return false;
 
-            var user = await db.Accounts.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null) return false;
+            var user = await db.Accounts
+                .FirstOrDefaultAsync(a => a.Id == userId && a.DeletedAt == null);
 
-            // User này đã join device này rồi
-            if (user.DeviceId == deviceId) return false;
+            if (user == null)
+                return false;
 
+            var device = await db.Devices
+                .FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+
+            if (device == null)
+                return false;
+
+            // User đã kết nối device này rồi
+            if (user.DeviceId == deviceId)
+                return false;
+
+            // User phải disconnect device hiện tại trước ---------
+            if (user.DeviceId.HasValue)
+                return false;
+
+            // Device đã được claim thì không claim lại
+            // Các user khác sử dụng ConnectDevice().
+            if (device.IsClaimed)
+                return false;
+
+            device.IsClaimed = true;
             user.DeviceId = deviceId;
 
-            // Chỉ publish MQTT lần đầu tiên có người claim
-            if (!device.IsClaimed)
-            {
-                device.IsClaimed = true;
-                await mqtt.PublishAsync(
-                    $"devices/{device.MacAddress}/command",
-                    "claimed", 
-                    retained: true
-                );
-
-                await Task.Delay(500);
-                await mqtt.PublishAsync(
-                    $"devices/{device.MacAddress}/command",
-                    "", 
-                    retained: true
-                ); // xóa retained
-            }
-
             await db.SaveChangesAsync();
+
+            await mqtt.PublishAsync(
+                $"devices/{device.MacAddress}/command",
+                "claimed",
+                retained: true);
+
+            await Task.Delay(500);
+
+            await mqtt.PublishAsync(
+                $"devices/{device.MacAddress}/command",
+                "",
+                retained: true);
+
             return true;
         }
 
         // connect disconnect
-        public async Task<DeviceResponseDtos> ConnectOrDisconnect(int userId, int deviceId)
+        public async Task<DeviceResponseDtos> ConnectDevice(int userId, int deviceId)
         {
             if (userId <= 0)
             {
-                throw new BadHttpRequestException("userId invalid !");
+                throw new BadHttpRequestException("userId invalid!");
             }
+
             if (deviceId <= 0)
             {
-                throw new BadHttpRequestException("deviceId invalid !");
+                throw new BadHttpRequestException("deviceId invalid!");
             }
 
-            var account = await db.Accounts.FindAsync(userId);
-            if (account is null)
+            var account = await db.Accounts.FirstOrDefaultAsync(a => a.Id == userId && a.DeletedAt == null);
+
+            if (account == null)
+                throw new BadHttpRequestException("Account not found!");
+
+            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+
+            if (device == null)
             {
-                throw new BadHttpRequestException("Account not found !");
+                throw new BadHttpRequestException("Device not found!");
             }
 
-            var device = await db.Devices.FindAsync(deviceId);
-            if (device is null)
+            // Đã kết nối đúng device này
+            if (account.DeviceId == deviceId)
             {
-                throw new BadHttpRequestException("Device not found !");
+                throw new BadHttpRequestException("Already connected to this device!");
             }
 
-            bool isConnected = account.DeviceId == deviceId;
-
-            if (isConnected)
+            // phải disconnect trước
+            if (account.DeviceId.HasValue)
             {
-                // ---- DISCONNECT ----
-                account.DeviceId = null;
-                await db.SaveChangesAsync();
-                await SyncDeviceClaimStatusAsync(deviceId);
+                throw new BadHttpRequestException("Please disconnect from your current device first!");
             }
-            else
+
+            // Chỉ kết nối được device đã claim
+            if (!device.IsClaimed)
             {
-                // ---- CONNECT (có thể đang connect device khác, cho chuyển thẳng) ----
-                if (!device.IsClaimed)
-                {
-                    throw new BadHttpRequestException("The device has not been claimed, please claim it before connecting !");
-                }
-
-                int? oldDeviceId = account.DeviceId; // lưu lại device cũ TRƯỚC khi ghi đè
-
-                account.DeviceId = deviceId;
-                await db.SaveChangesAsync();
-
-                // nếu trước đó đang connect device khác -> dọn dẹp trạng thái claim của device cũ
-                if (oldDeviceId.HasValue && oldDeviceId.Value != deviceId)
-                {
-                    await SyncDeviceClaimStatusAsync(oldDeviceId.Value);
-                }
+                throw new BadHttpRequestException("The device has not been claimed. Please claim it first!");
             }
+
+            account.DeviceId = deviceId;
+            await db.SaveChangesAsync();
+
+            return mapper.Map<DeviceResponseDtos>(device);
+        }
+
+        public async Task<DeviceResponseDtos> DisconnectDevice(int userId, int deviceId)
+        {
+            if (userId <= 0)
+            {
+                throw new BadHttpRequestException("userId invalid!");
+            }
+
+            if (deviceId <= 0)
+            {
+                throw new BadHttpRequestException("deviceId invalid!");
+            }
+
+            var account = await db.Accounts.FirstOrDefaultAsync(a => a.Id == userId && a.DeletedAt == null);
+
+            if (account == null)
+            {
+                throw new BadHttpRequestException("Account not found!");
+            }
+
+            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+
+            if (device == null)
+            {
+                throw new BadHttpRequestException("Device not found!");
+            }
+
+            // User không kết nối device này.
+            if (account.DeviceId != deviceId)
+            {
+                throw new BadHttpRequestException("The user is not connected to this device!");
+            }
+
+            account.DeviceId = null;
+            await db.SaveChangesAsync();
 
             return mapper.Map<DeviceResponseDtos>(device);
         }
 
         // Hàm dọn dẹp trạng thái claim của 1 device sau khi có người rời đi
-        private async Task SyncDeviceClaimStatusAsync(int deviceId)
-        {
-            // nếu vẫn còn người dùng đang hoạt động
-            bool stillHasActiveUser = await db.Accounts.AnyAsync(a => a.DeviceId == deviceId && a.DeletedAt == null);
-
-            if (!stillHasActiveUser)
-            {
-                var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId);
-                if (device is not null && device.IsClaimed)
-                {
-                    // báo lại status vào db
-                    device.IsClaimed = false;
-                    await db.SaveChangesAsync();
-
-                    // báo cho thiết bị thật biết để nó tự unclaim
-                    await mqtt.PublishAsync(
-                        $"devices/{device.MacAddress}/command",
-                        "unclaim",
-                        retained: true
-                    );
-                }
-            }
-        }
+        
     }
 }
