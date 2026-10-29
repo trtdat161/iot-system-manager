@@ -4,6 +4,13 @@
   "loading": "Loading notifications...",
   "empty": "No notifications yet",
   "empty_desc": "You haven't received any notifications from devices.",
+  "errors": {
+    "load": "Unable to load notification history. Please try again."
+  },
+  "mark_read_success": "Notification marked as read.",
+  "mark_read_error": "Unable to mark the notification as read. Please try again.",
+  "mark_read": "Mark as read",
+  "read": "Read",
   "prev": "Previous",
   "next": "Next",
   "page": "Page {{page}} / {{total}}"

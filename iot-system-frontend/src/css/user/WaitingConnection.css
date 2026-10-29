@@ -199,6 +199,16 @@
   color: var(--user-muted);
 }
 
+.waiting-error-message {
+  color: #fca5a5;
+  text-align: center;
+}
+
+.waiting-loading-message {
+  color: var(--user-muted);
+  text-align: center;
+}
+
 .waiting-empty-icon {
   opacity: 0.5;
   margin-bottom: 16px;

@@ -8,6 +8,13 @@
   "connection": {
     "status": "Connect successful",
     "note": "Device DTECH-01 is online and ready to receive sensor data.",
+    "disconnected": "Disconnected",
+    "noDevice": "You don't have a linked device yet.",
+    "errors": {
+      "loadDevice": "Unable to load device information. Please try again.",
+      "connect": "Failed to connect to the device. Please try again.",
+      "disconnect": "Failed to disconnect from the device. Please try again."
+    },
     "connect": "Connect",
     "disconnect": "Disconnect"
   },
@@ -21,6 +28,11 @@
   "waiting_connection": {
     "title": "Waiting for Connection",
     "subtitle": "Devices pending connection",
+    "loading": "Loading devices...",
+    "errors": {
+      "fetch": "Unable to load devices. Please try again.",
+      "connect": "Unable to connect to the device. Please try again."
+    },
     "model": "Model",
     "mac_address": "MAC Address",
     "status": "Status",

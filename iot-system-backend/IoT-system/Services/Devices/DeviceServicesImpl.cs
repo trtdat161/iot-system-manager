@@ -87,7 +87,7 @@ namespace IoT_system.Services.Devices
             return true;
         }
 
-        // connect disconnect
+        // connect 
         public async Task<DeviceResponseDtos> ConnectDevice(int userId, int deviceId)
         {
             if (userId <= 0)
@@ -103,7 +103,9 @@ namespace IoT_system.Services.Devices
             var account = await db.Accounts.FirstOrDefaultAsync(a => a.Id == userId && a.DeletedAt == null);
 
             if (account == null)
+            {
                 throw new BadHttpRequestException("Account not found!");
+            }
 
             var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
 
@@ -174,7 +176,24 @@ namespace IoT_system.Services.Devices
             return mapper.Map<DeviceResponseDtos>(device);
         }
 
-        // Hàm dọn dẹp trạng thái claim của 1 device sau khi có người rời đi
-        
+        // Hàm hiẻn thị device mà user đã chọn vào để connectd dẻ trả về id gắn vào hàm connect và disconnect
+        public async Task<DeviceResponseDtos?> GetConnectedDeviceAsync(int userId)
+        {
+            if (userId <= 0)
+            {
+                throw new BadHttpRequestException("userId invalid!");
+            }
+            // tìm thiết bị mà user đang kết nối, ta chỉ cần tìm account của user đó rồi đọc DeviceId
+            return await db.Accounts
+                .AsNoTracking()
+                .Where(a => a.Id == userId && a.DeviceId != null)
+                .Select(a => new DeviceResponseDtos // Lấy thông tin thiết bị liên kết với account đag login
+                {
+                    Id = a.Device!.Id, 
+                    MacAddress = a.Device.MacAddress
+                })
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

@@ -8,6 +8,13 @@
   "connection": {
     "status": "Kết nối thành công",
     "note": "Thiết bị DTECH-01 đang online và sẵn sàng nhận dữ liệu cảm biến.",
+    "disconnected": "Đã ngắt kết nối",
+    "noDevice": "Bạn chưa có thiết bị được liên kết.",
+    "errors": {
+      "loadDevice": "Không thể tải thông tin thiết bị. Vui lòng thử lại.",
+      "connect": "Lỗi khi kết nối với thiết bị. Vui lòng thử lại.",
+      "disconnect": "Lỗi khi ngắt kết nối với thiết bị. Vui lòng thử lại."
+    },
     "connect": "Kết nối",
     "disconnect": "Ngắt kết nối"
   },
@@ -21,6 +28,11 @@
   "waiting_connection": {
     "title": "Chờ kết nối",
     "subtitle": "Thiết bị đang chờ kết nối",
+    "loading": "Đang tải thiết bị...",
+    "errors": {
+      "fetch": "Không thể tải danh sách thiết bị. Vui lòng thử lại.",
+      "connect": "Không thể kết nối với thiết bị. Vui lòng thử lại."
+    },
     "model": "Model",
     "mac_address": "Địa chỉ MAC",
     "status": "Trạng thái",

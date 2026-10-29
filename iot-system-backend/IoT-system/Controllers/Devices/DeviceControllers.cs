@@ -61,5 +61,15 @@ namespace IoT_system.Controllers.Devices
             var result = await deviceService.DisconnectDevice(userId, deviceId);
             return Ok(result);
         }
+
+        [HttpGet("get-connected-device")]
+        [Produces("application/json")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> GetConnected()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await deviceService.GetConnectedDeviceAsync(userId);
+            return Ok(result);
+        }
     }
 }

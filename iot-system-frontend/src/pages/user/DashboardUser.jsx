@@ -6,14 +6,26 @@ import {
   FaPlug,
   FaPowerOff,
   FaThermometerHalf,
+  FaTimesCircle,
   FaTint,
 } from "react-icons/fa";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import "../../css/user/Dashboard.css";
 import { useDeviceSignalR } from "../../hooks/useDeviceSignalR";
+import {
+  ConnectDevice,
+  DisconnectDevice,
+  GetConnectedDevice,
+} from "../../api/user/connectDevice";
 
 export function DashboardUser({ mac }) {
   const { t } = useTranslation("user_dashboard");
+  const [isConnect, setIsConnect] = useState(false);
+  const [errorConnect, setErrorConnect] = useState("");
+  const [errorDisconnect, setErrorDisconnect] = useState("");
+  const [errorDevice, setErrorDevice] = useState("");
+  const [isLoadingDevice, setIsLoadingDevice] = useState(true);
+  const [device, setDevice] = useState(null); // object do BE đag trả về first chỉ 1 device liên kết với user hiện tại
   // const connection = useDeviceSignalR(mac);
   const testMac = "E098060E87C0"; // TẠM thời, thay bằng MAC thật của ESP đang có trong DB
   const connection = useDeviceSignalR(testMac);
@@ -85,6 +97,48 @@ export function DashboardUser({ mac }) {
   //   return groups;
   // }, [alerts]);
 
+  const GetDeviceConnected = async () => {
+    try {
+      const response = await GetConnectedDevice();
+      setDevice(response.data);
+      setErrorDevice("");
+    } catch (err) {
+      console.error("Failed to load the connected device:", err);
+      setDevice(null);
+      setErrorDevice(t("connection.errors.loadDevice"));
+    } finally {
+      setIsLoadingDevice(false);
+    }
+  };
+
+  const HandleConnectDevice = async (deviceId) => {
+    setErrorConnect("");
+    setErrorDisconnect("");
+    try {
+      await ConnectDevice(deviceId);
+      setIsConnect(true);
+    } catch (err) {
+      console.error("Failed to connect to the device:", err);
+      setErrorConnect(t("connection.errors.connect"));
+    }
+  };
+
+  const HandleDisconnectDevice = async (deviceId) => {
+    setErrorConnect("");
+    setErrorDisconnect("");
+    try {
+      await DisconnectDevice(deviceId);
+      setIsConnect(false);
+    } catch (err) {
+      console.error("Failed to disconnect from the device:", err);
+      setErrorDisconnect(t("connection.errors.disconnect"));
+    }
+  };
+
+  useEffect(() => {
+    GetDeviceConnected();
+  }, []);
+
   return (
     <main className="user-dashboard">
       <div className="user-dashboard-top user-glass-panel">
@@ -143,20 +197,59 @@ export function DashboardUser({ mac }) {
       <section className="user-device-panel user-glass-panel">
         {/* xử lý connect */}
         <div className="user-connect-box">
-          <FaCheckCircle />
-          <span>{t("connection.status")}</span>
-          <p>{t("connection.note")}</p>
+          {isConnect ? (
+            <>
+              <FaCheckCircle />
+              <span className="mb-2">{t("connection.status")}</span>
+              <p>{t("connection.note")}</p>
+            </>
+          ) : (
+            <>
+              <FaTimesCircle className="disconnected" />
+              <span className="mb-2">{t("connection.disconnected")}</span>
+            </>
+          )}
           {/* button connect / disconnect */}
           <div className="user-control-actions d-flex justify-content-center">
-            <button type="button" className="user-action-btn connect">
+            <button
+              type="button"
+              className="user-action-btn connect"
+              onClick={() => HandleConnectDevice(device.id)}
+              disabled={!device}
+            >
               <FaPlug />
               {t("connection.connect")}
             </button>
-            <button type="button" className="user-action-btn disconnect">
+            <button
+              type="button"
+              className="user-action-btn disconnect"
+              onClick={() => HandleDisconnectDevice(device.id)}
+              disabled={!device}
+            >
               <FaPowerOff />
               {t("connection.disconnect")}
             </button>
           </div>
+          {errorDevice && (
+            <p className="user-connect-message error" role="alert">
+              {errorDevice}
+            </p>
+          )}
+          {errorConnect && (
+            <p className="user-connect-message error" role="alert">
+              {errorConnect}
+            </p>
+          )}
+          {errorDisconnect && (
+            <p className="user-connect-message error" role="alert">
+              {errorDisconnect}
+            </p>
+          )}
+          {!isLoadingDevice && !device && !errorDevice && (
+            <p className="user-connect-message" role="status">
+              {t("connection.noDevice")}
+            </p>
+          )}
         </div>
 
         <div className="alert-sensor">

@@ -23,7 +23,7 @@ export function DeviceNotificationHistory() {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [confirmIsRead, setConfirmIsRead] = useState("");
+  const [confirmIsRead, setConfirmIsRead] = useState(null);
   const [readIds, setReadIds] = useState(new Set());
 
   const fetchNotifications = async (currentPage) => {
@@ -36,9 +36,9 @@ export function DeviceNotificationHistory() {
       setNotifications(Array.isArray(paged.data) ? paged.data : []);
       setTotalPages(paged.totalPages ?? 1);
     } catch (err) {
-      console.log("error:", err?.message || err);
+      console.error("Failed to load notification history:", err);
       setNotifications([]);
-      setError(err?.message || "Failed to load notifications");
+      setError(t("errors.load"));
     } finally {
       setLoading(false);
     }
@@ -75,15 +75,18 @@ export function DeviceNotificationHistory() {
   };
 
   const markAsRead = async (notificationId) => {
+    setConfirmIsRead(null);
     try {
       const response = await UserIsRead(notificationId);
-      if (response.data.IsRead === true) {
-        setConfirmIsRead("Notification marked as read");
+      if (response.data?.IsRead === true) {
+        setConfirmIsRead("success");
         setReadIds((prev) => new Set(prev).add(notificationId));
+      } else {
+        setConfirmIsRead("error");
       }
     } catch (err) {
-      console.log("error:", err?.message || err);
-      setConfirmIsRead("Failed to mark notification as read");
+      console.error("Failed to mark notification as read:", err);
+      setConfirmIsRead("error");
     }
   };
 
@@ -123,6 +126,34 @@ export function DeviceNotificationHistory() {
           </div>
         )}
 
+        {confirmIsRead && (
+          <div
+            role={confirmIsRead === "error" ? "alert" : "status"}
+            style={{
+              padding: "12px",
+              marginBottom: "16px",
+              background:
+                confirmIsRead === "error"
+                  ? "rgba(251, 113, 133, 0.15)"
+                  : "rgba(34, 197, 94, 0.15)",
+              border: `1px solid ${
+                confirmIsRead === "error"
+                  ? "rgba(251, 113, 133, 0.3)"
+                  : "rgba(34, 197, 94, 0.3)"
+              }`,
+              borderRadius: "6px",
+              color: confirmIsRead === "error" ? "#fb7185" : "#86efac",
+              fontSize: "13px",
+            }}
+          >
+            {t(
+              confirmIsRead === "error"
+                ? "mark_read_error"
+                : "mark_read_success",
+            )}
+          </div>
+        )}
+
         {/* Loading State */}
         {loading && (
           <div className="notification-loading">
@@ -132,7 +163,7 @@ export function DeviceNotificationHistory() {
         )}
 
         {/* Empty State */}
-        {!loading && notifications.length === 0 && (
+        {!loading && !error && notifications.length === 0 && (
           <div className="notification-empty-state">
             <div className="notification-empty-icon">
               <FaBell size={48} />
@@ -183,8 +214,8 @@ export function DeviceNotificationHistory() {
                           disabled={readIds.has(notification.id)}
                         >
                           {readIds.has(notification.id)
-                            ? "đã đọc"
-                            : "đánh dấu là đã đọc"}
+                            ? t("read")
+                            : t("mark_read")}
                         </button>
                       </div>
                     </div>

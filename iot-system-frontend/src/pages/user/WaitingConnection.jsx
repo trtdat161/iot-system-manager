@@ -2,38 +2,40 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaMicrochip, FaPlug } from "react-icons/fa";
 import "../../css/user/WaitingConnection.css";
-import { ConnectDevice, DeviceDepending } from "../../api/user/connectDevice";
+import { ClaimDevice, DeviceDepending } from "../../api/user/connectDevice";
 
 export function WaitingConnection() {
   const { t } = useTranslation("user_dashboard");
   const [errorConnect, setErrorConnect] = useState("");
+  const [errorFetch, setErrorFetch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   // Mock data - tạm thời hashcode = html
   const [pendingDevices, setPendingDevices] = useState([]);
 
   const fetchDevices = async () => {
+    setErrorFetch("");
     try {
       const response = await DeviceDepending();
       setPendingDevices(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
-      console.log("error: " + err?.message ?? err);
+      console.error("Failed to load pending devices:", err);
       setPendingDevices([]);
+      setErrorFetch(t("waiting_connection.errors.fetch"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // connect device
-  const handleConnect = async (deviceId, deviceName) => {
+  const handleConnect = async (deviceId) => {
+    setErrorConnect("");
     try {
-      const response = await ConnectDevice(deviceId);
-      if (response.data) {
-        console.log(`Connecting to device: ${response.data})`);
-      } else {
-        console.log(`lỗi khi in thông tin response`);
-      }
-      fetchDevices();
+      await ClaimDevice(deviceId);
+      await fetchDevices();
     } catch (err) {
-      console.log("error: " + err?.message ?? err);
-      setErrorConnect("lỗi khi kết nối với thiết bị");
+      console.error("Failed to claim the device:", err);
+      setErrorConnect(t("waiting_connection.errors.connect"));
     }
   };
 
@@ -61,7 +63,20 @@ export function WaitingConnection() {
       </div>
 
       <section className="user-device-panel user-glass-panel">
-        {pendingDevices.length === 0 ? (
+        {errorConnect && (
+          <p className="waiting-error-message" role="alert">
+            {errorConnect}
+          </p>
+        )}
+        {errorFetch ? (
+          <p className="waiting-error-message" role="alert">
+            {errorFetch}
+          </p>
+        ) : isLoading ? (
+          <p className="waiting-loading-message" role="status">
+            {t("waiting_connection.loading")}
+          </p>
+        ) : pendingDevices.length === 0 ? (
           <div className="waiting-empty-state">
             <FaMicrochip size={48} className="waiting-empty-icon" />
             <p>{t("waiting_connection.no_devices")}</p>
@@ -105,7 +120,7 @@ export function WaitingConnection() {
                   <button
                     type="button"
                     className="user-action-btn connect waiting-connect-btn"
-                    onClick={() => handleConnect(device.id, device.name)}
+                    onClick={() => handleConnect(device.id)}
                   >
                     <FaPlug />
                     {t("waiting_connection.connect_btn")}

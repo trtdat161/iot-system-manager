@@ -213,6 +213,10 @@
   margin-bottom: 12px;
 }
 
+.user-connect-box > svg.disconnected {
+  color: #fca5a5;
+}
+
 .user-connect-box > span {
   color: #ffffff;
   font-size: 1.35rem;
@@ -224,6 +228,15 @@
   margin: 8px 0 18px;
   color: #b9cadb;
   line-height: 1.55;
+}
+
+.user-connect-box .user-connect-message {
+  margin: 12px 0 0;
+  color: #b9cadb;
+}
+
+.user-connect-box .user-connect-message.error {
+  color: #fca5a5;
 }
 
 .user-control-actions {

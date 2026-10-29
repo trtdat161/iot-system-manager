@@ -4,6 +4,13 @@
   "loading": "Đang tải thông báo...",
   "empty": "Chưa có thông báo nào",
   "empty_desc": "Bạn chưa nhận được thông báo nào từ các thiết bị.",
+  "errors": {
+    "load": "Không thể tải lịch sử thông báo. Vui lòng thử lại."
+  },
+  "mark_read_success": "Đã đánh dấu thông báo là đã đọc.",
+  "mark_read_error": "Không thể đánh dấu thông báo là đã đọc. Vui lòng thử lại.",
+  "mark_read": "Đánh dấu đã đọc",
+  "read": "Đã đọc",
   "prev": "Trước",
   "next": "Tiếp Theo",
   "page": "Trang {{page}} / {{total}}"
