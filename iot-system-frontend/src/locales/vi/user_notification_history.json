@@ -10,7 +10,9 @@
   "mark_read_success": "Đã đánh dấu thông báo là đã đọc.",
   "mark_read_error": "Không thể đánh dấu thông báo là đã đọc. Vui lòng thử lại.",
   "mark_read": "Đánh dấu đã đọc",
+  "marking_read": "Đang cập nhật...",
   "read": "Đã đọc",
+  "unread": "Chưa đọc",
   "prev": "Trước",
   "next": "Tiếp Theo",
   "page": "Trang {{page}} / {{total}}"

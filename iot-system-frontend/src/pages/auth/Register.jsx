@@ -53,29 +53,29 @@ export function Register() {
     const newErrors = {};
 
     if (!form.fullname.trim()) {
-      newErrors.fullname = t("errors.fullname_required"); // trỏ đến tên key trong file translation.json
+      newErrors.fullname = "errors.fullname_required";
     }
 
     if (!form.email.trim()) {
-      newErrors.email = t("errors.email_required");
+      newErrors.email = "errors.email_required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = t("errors.email_invalid");
+      newErrors.email = "errors.email_invalid";
     }
 
     if (!form.password) {
-      newErrors.password = t("errors.password_required");
+      newErrors.password = "errors.password_required";
     } else if (form.password.length < 6) {
-      newErrors.password = t("errors.password_min");
+      newErrors.password = "errors.password_min";
     } else if (!/(?=.*[a-z])/.test(form.password)) {
-      newErrors.password = t("errors.password_lowercase");
+      newErrors.password = "errors.password_lowercase";
     } else if (!/(?=.*[A-Z])/.test(form.password)) {
-      newErrors.password = t("errors.password_uppercase");
+      newErrors.password = "errors.password_uppercase";
     } else if (!/(?=.*\d)/.test(form.password)) {
-      newErrors.password = t("errors.number");
+      newErrors.password = "errors.password_number";
     }
 
     if (!form.languageId) {
-      newErrors.languageId = t("errors.language_required");
+      newErrors.languageId = "errors.language_required";
     }
 
     setErrors(newErrors); // set lỗi nếu có
@@ -97,7 +97,7 @@ export function Register() {
       navigate("/user-frame-layout/dashboard-user");
     } catch (err) {
       console.log("error:", { form: err.message });
-      setErrors({ form: t("errors.register_failed") });
+      setErrors({ form: "errors.register_failed" });
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,7 @@ export function Register() {
                   onChange={handleChange}
                 />
                 {errors.fullname && (
-                  <div className="form-error">{errors.fullname}</div>
+                  <div className="form-error">{t(errors.fullname)}</div>
                 )}
               </div>
 
@@ -153,7 +153,7 @@ export function Register() {
                   onChange={handleChange}
                 />
                 {errors.email && (
-                  <div className="form-error">{errors.email}</div>
+                  <div className="form-error">{t(errors.email)}</div>
                 )}
               </div>
 
@@ -172,7 +172,7 @@ export function Register() {
                   onChange={handleChange}
                 />
                 {errors.password && (
-                  <div className="form-error">{errors.password}</div>
+                  <div className="form-error">{t(errors.password)}</div>
                 )}
               </div>
 
@@ -203,7 +203,7 @@ export function Register() {
                   ))}
                 </select>
                 {errors.languageId && (
-                  <div className="form-error">{errors.languageId}</div>
+                  <div className="form-error">{t(errors.languageId)}</div>
                 )}
               </div>
 
@@ -215,7 +215,7 @@ export function Register() {
               {/* Form Error */}
               {errors.form && (
                 <div className="alert alert-danger text-center mt-3">
-                  {errors.form}
+                  {t(errors.form)}
                 </div>
               )}
             </form>

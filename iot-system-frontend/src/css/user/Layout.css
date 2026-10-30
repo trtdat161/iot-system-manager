@@ -144,7 +144,29 @@
 }
 
 .user-sidebar-icon {
+    position: relative;
     flex: 0 0 auto;
+}
+
+.notification-count-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #ef4444;
+    border: 1px solid #0c1b18;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .user-sidebar-footer {
@@ -263,6 +285,18 @@
     height: 20px;
     flex: 0 0 auto;
     color: #72f0ce;
+}
+
+.user-frame-notice-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.user-frame-notice-bell .notification-count-badge {
+    top: -7px;
+    right: -8px;
 }
 
 .user-frame-breadcrumb {

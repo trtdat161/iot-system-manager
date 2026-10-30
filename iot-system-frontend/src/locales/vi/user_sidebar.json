@@ -3,7 +3,7 @@
   "device_access": "Quyền truy cập thiết bị",
   "dashboard": "Bảng điều khiển",
   "device_notifications": "Lịch sử thông báo từ thiết bị",
-  "help": "Trợ giúp",
+  "unread_notifications": "Thông báo chưa đọc",
   "profile": "Hồ sơ",
   "waiting_for_connection": "Đang chờ kết nối",
   "logout": "Đăng xuất",

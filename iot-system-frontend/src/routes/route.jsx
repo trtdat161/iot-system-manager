@@ -9,7 +9,6 @@ import { LockAccount } from "../pages/admin/LockAccount";
 import { FrameLayout } from "../components/admin/FrameLayout";
 import { FrameLayoutUser } from "../components/user/FrameLayout";
 import { DeviceNotificationHistory } from "../pages/user/DeviceNotificationHistory";
-import { Help } from "../pages/user/Help";
 import { ProfileUser } from "../pages/user/ProfileUser";
 import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 import { WaitingConnection } from "../pages/user/WaitingConnection";
@@ -51,7 +50,12 @@ export function CreateRouter() {
             path="device-notifications" // user xem thông báo đồng thời là xem lịch sử thiết bị gửi thông báo luôn
             element={<DeviceNotificationHistory />}
           ></Route>
-          <Route path="help" element={<Help />}></Route>
+          <Route
+            path="help"
+            element={
+              <Navigate to="/user-frame-layout/dashboard-user" replace />
+            }
+          ></Route>
           <Route path="profile" element={<ProfileUser />}></Route>
           <Route
             path="waiting-connection"

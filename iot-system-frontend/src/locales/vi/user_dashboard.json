@@ -6,7 +6,7 @@
     "label": "Nhiệt độ"
   },
   "connection": {
-    "status": "Kết nối thành công",
+    "status": "Hệ thống ổn định",
     "note": "Thiết bị DTECH-01 đang online và sẵn sàng nhận dữ liệu cảm biến.",
     "disconnected": "Đã ngắt kết nối",
     "noDevice": "Bạn chưa có thiết bị được liên kết.",

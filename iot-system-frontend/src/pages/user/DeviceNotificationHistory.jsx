@@ -12,8 +12,11 @@ import {
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
 import dayjs from "dayjs";
+import { useOutletContext } from "react-router-dom";
 
 export function DeviceNotificationHistory() {
+  const outletContext = useOutletContext() || {};
+  const onNotificationRead = outletContext.onNotificationRead;
   const { t } = useTranslation("user_notification_history");
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -23,7 +26,8 @@ export function DeviceNotificationHistory() {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [confirmIsRead, setConfirmIsRead] = useState(null);
+  const [markReadFeedback, setMarkReadFeedback] = useState(null);
+  const [markingNotificationId, setMarkingNotificationId] = useState(null);
   const [readIds, setReadIds] = useState(new Set());
 
   const fetchNotifications = async (currentPage) => {
@@ -32,8 +36,20 @@ export function DeviceNotificationHistory() {
     try {
       const response = await UserGetHistory(currentPage, PAGE_SIZE);
       const paged = response.data;
+      const items = Array.isArray(paged.data) ? paged.data : [];
       setTotalNotifications(paged.totalItems ?? 0);
-      setNotifications(Array.isArray(paged.data) ? paged.data : []);
+      setNotifications(items);
+      setReadIds(
+        new Set(
+          items
+            .filter(
+              (notification) =>
+                notification.isRead === true || notification.IsRead === true,
+            )
+            .map((notification) => notification.id ?? notification.Id)
+            .filter((id) => id !== undefined && id !== null),
+        ),
+      );
       setTotalPages(paged.totalPages ?? 1);
     } catch (err) {
       console.error("Failed to load notification history:", err);
@@ -47,6 +63,16 @@ export function DeviceNotificationHistory() {
   useEffect(() => {
     fetchNotifications(pages);
   }, [pages]);
+
+  useEffect(() => {
+    if (!markReadFeedback) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setMarkReadFeedback(null);
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [markReadFeedback]);
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -75,18 +101,18 @@ export function DeviceNotificationHistory() {
   };
 
   const markAsRead = async (notificationId) => {
-    setConfirmIsRead(null);
+    setMarkReadFeedback(null);
+    setMarkingNotificationId(notificationId);
     try {
-      const response = await UserIsRead(notificationId);
-      if (response.data?.IsRead === true) {
-        setConfirmIsRead("success");
-        setReadIds((prev) => new Set(prev).add(notificationId));
-      } else {
-        setConfirmIsRead("error");
-      }
+      await UserIsRead(notificationId);
+      setMarkReadFeedback("success");
+      setReadIds((prev) => new Set(prev).add(notificationId));
+      onNotificationRead?.();
     } catch (err) {
       console.error("Failed to mark notification as read:", err);
-      setConfirmIsRead("error");
+      setMarkReadFeedback("error");
+    } finally {
+      setMarkingNotificationId(null);
     }
   };
 
@@ -126,31 +152,25 @@ export function DeviceNotificationHistory() {
           </div>
         )}
 
-        {confirmIsRead && (
+        {markReadFeedback && (
           <div
-            role={confirmIsRead === "error" ? "alert" : "status"}
-            style={{
-              padding: "12px",
-              marginBottom: "16px",
-              background:
-                confirmIsRead === "error"
-                  ? "rgba(251, 113, 133, 0.15)"
-                  : "rgba(34, 197, 94, 0.15)",
-              border: `1px solid ${
-                confirmIsRead === "error"
-                  ? "rgba(251, 113, 133, 0.3)"
-                  : "rgba(34, 197, 94, 0.3)"
-              }`,
-              borderRadius: "6px",
-              color: confirmIsRead === "error" ? "#fb7185" : "#86efac",
-              fontSize: "13px",
-            }}
+            className={`notification-action-feedback ${markReadFeedback}`}
+            role={markReadFeedback === "error" ? "alert" : "status"}
+            aria-live={markReadFeedback === "error" ? "assertive" : "polite"}
+            aria-atomic="true"
           >
-            {t(
-              confirmIsRead === "error"
-                ? "mark_read_error"
-                : "mark_read_success",
+            {markReadFeedback === "error" ? (
+              <FaTimesCircle aria-hidden="true" />
+            ) : (
+              <FaCheckCircle aria-hidden="true" />
             )}
+            <span>
+              {t(
+                markReadFeedback === "error"
+                  ? "mark_read_error"
+                  : "mark_read_success",
+              )}
+            </span>
           </div>
         )}
 
@@ -179,10 +199,15 @@ export function DeviceNotificationHistory() {
             {notifications.map((notification) => {
               const type = notification.type || "info";
               const sentAt = notification.timestamp || notification.createdAt;
+              const notificationId = notification.id ?? notification.Id;
+              const isRead =
+                notification.isRead === true ||
+                notification.IsRead === true ||
+                readIds.has(notificationId);
 
               return (
                 <div
-                  key={notification.id}
+                  key={notificationId}
                   className="notification-item"
                   style={{ borderLeft: `4px solid ${getAccentColor(type)}` }}
                 >
@@ -208,14 +233,29 @@ export function DeviceNotificationHistory() {
                               : "Pending"}
                           </span>
                         </div>
-                        <button
-                          className="btn btn-sm btn-primary mt-2"
-                          onClick={() => markAsRead(notification.id)}
-                          disabled={readIds.has(notification.id)}
+                        <span
+                          className={`notification-read-status ${
+                            isRead ? "read" : "unread"
+                          }`}
                         >
-                          {readIds.has(notification.id)
-                            ? t("read")
-                            : t("mark_read")}
+                          {t(isRead ? "read" : "unread")}
+                        </span>
+                        <button
+                          className={`btn btn-sm mt-2 ${
+                            isRead
+                              ? "btn-success"
+                              : "btn-primary"
+                          }`}
+                          onClick={() => markAsRead(notificationId)}
+                          disabled={
+                            isRead || markingNotificationId !== null
+                          }
+                        >
+                          {markingNotificationId === notificationId
+                            ? t("marking_read")
+                            : isRead
+                              ? t("read")
+                              : t("mark_read")}
                         </button>
                       </div>
                     </div>

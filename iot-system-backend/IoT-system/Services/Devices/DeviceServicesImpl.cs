@@ -176,7 +176,7 @@ namespace IoT_system.Services.Devices
             return mapper.Map<DeviceResponseDtos>(device);
         }
 
-        // Hàm hiẻn thị device mà user đã chọn vào để connectd dẻ trả về id gắn vào hàm connect và disconnect
+        // Hàm hiẻn thị device mà user đã chọn vào để connectd dẻ trả về cho FE lấy id gắn vào hàm connect và disconnect
         public async Task<DeviceResponseDtos?> GetConnectedDeviceAsync(int userId)
         {
             if (userId <= 0)

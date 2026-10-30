@@ -3,7 +3,7 @@
   "device_access": "Device access",
   "dashboard": "Dashboard",
   "device_notifications": "Device notification history",
-  "help": "Help",
+  "unread_notifications": "Unread notifications",
   "profile": "Profile",
   "waiting_for_connection": "Waiting for connection",
   "logout": "Logout",

@@ -63,11 +63,11 @@ namespace IoT_system.Controllers.Notification
 
         [Authorize(Roles = "user")]
         [Produces("application/json")]
-        [HttpPost("is-read")]
+        [HttpPost("is-read/{notificationId}")]
         public async Task<IActionResult> UserIsRead(int notificationId)// truyền id từ FE
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await notificationServices.IsReadAction(userId, notificationId);
+            var result = await notificationServices.IsReadAction(notificationId, userId);
             return Ok(result);
         } 
     }

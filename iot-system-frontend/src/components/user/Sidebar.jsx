@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaBell,
-  FaHeadset,
   FaMicrochip,
   FaSignOutAlt,
   FaTimes,
@@ -27,23 +26,18 @@ const MENU_ITEMS = [
     path: "/user-frame-layout/device-notifications",
   },
   {
-    key: "help",
-    icon: <FaHeadset size={16} />,
-    path: "/user-frame-layout/help",
+    key: "waiting_for_connection",
+    icon: <FaMicrochip size={16} />,
+    path: "/user-frame-layout/waiting-connection",
   },
   {
     key: "profile",
     icon: <FaUser size={16} />,
     path: "/user-frame-layout/profile",
   },
-  {
-    key: "waiting_for_connection",
-    icon: <FaMicrochip size={16} />,
-    path: "/user-frame-layout/waiting-connection",
-  },
 ];
 
-export function Sidebar({ collapsed, setCollapsed }) {
+export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
   const [_error, setError] = useState("");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
@@ -113,7 +107,18 @@ export function Sidebar({ collapsed, setCollapsed }) {
               onClick={() => navigate(item.path)}
               title={collapsed ? t(item.key) : ""}
             >
-              <span className="user-sidebar-icon">{item.icon}</span>
+              <span className="user-sidebar-icon">
+                {item.icon}
+                {item.key === "device_notifications" && unreadCount > 0 && (
+                  <span
+                    className="notification-count-badge"
+                    title={`${t("unread_notifications")}: ${unreadCount}`}
+                    aria-label={`${t("unread_notifications")}: ${unreadCount}`}
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </span>
               {!collapsed && <span>{t(item.key)}</span>}
             </button>
           ))}

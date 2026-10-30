@@ -106,10 +106,10 @@ namespace IoT_system.Services.Notifications
         }
 
         // khi click ấn đã xem để thiết bị không spam cảnh báo nữa
-        public async Task<NotificationIsreadResponseDtos> IsReadAction(int notificationId, int idUser)
+        public async Task<NotificationIsreadResponseDtos> IsReadAction(int notificationId, int userId)
         {
             var notification = await dbContext.Notifications
-                                              .FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == idUser);
+                                              .FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
             if (notification == null)
             {
                 throw new BadHttpRequestException("not found notifications");
@@ -120,8 +120,6 @@ namespace IoT_system.Services.Notifications
             return mapper.Map<NotificationIsreadResponseDtos>(notification);
 
         }
-
-
     }
 }
 

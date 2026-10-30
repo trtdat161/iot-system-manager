@@ -6,7 +6,7 @@
     "label": "Temperature"
   },
   "connection": {
-    "status": "Connect successful",
+    "status": "Stabilization system",
     "note": "Device DTECH-01 is online and ready to receive sensor data.",
     "disconnected": "Disconnected",
     "noDevice": "You don't have a linked device yet.",

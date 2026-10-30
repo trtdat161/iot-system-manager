@@ -1,7 +1,7 @@
 {
   "notification": "Notification",
+  "live_alert_count": "New alerts this session",
   "home": "Home",
-  "help": "Help",
   "profile": "Profile",
   "waiting_connection": "Waiting connection",
   "welcome_user": "Welcome:",

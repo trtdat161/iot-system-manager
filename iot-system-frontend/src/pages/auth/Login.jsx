@@ -31,13 +31,13 @@ export function Login() {
     const newErrors = {};
 
     if (!form.email.trim()) {
-      newErrors.email = t("errors.email_required");
+      newErrors.email = "errors.email_required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = t("errors.email_invalid");
+      newErrors.email = "errors.email_invalid";
     }
 
     if (!form.password.trim()) {
-      newErrors.password = t("errors.password_required");
+      newErrors.password = "errors.password_required";
     }
 
     setErrors(newErrors); // set lỗi nếu có
@@ -76,11 +76,11 @@ export function Login() {
       const errorKey = err?.response?.data?.error;
       if (errorKey === "ACCOUNT_LOCKED") {
         setErrors({
-          form: t("errors.account_locked"),
+          form: "errors.account_locked",
         });
       } else {
         setErrors({
-          form: t("errors.login_failed"),
+          form: "errors.login_failed",
         });
       }
       /*
@@ -121,7 +121,7 @@ export function Login() {
                   onChange={handleChange}
                 />
                 {errors.email && (
-                  <div className="form-error">{errors.email}</div>
+                  <div className="form-error">{t(errors.email)}</div>
                 )}
               </div>
 
@@ -140,7 +140,7 @@ export function Login() {
                   onChange={handleChange}
                 />
                 {errors.password && (
-                  <div className="form-error">{errors.password}</div>
+                  <div className="form-error">{t(errors.password)}</div>
                 )}
               </div>
 
@@ -153,7 +153,7 @@ export function Login() {
             {/* Error */}
             {errors.form && (
               <div className="alert alert-danger text-center mt-3">
-                {errors.form}
+                {t(errors.form)}
               </div>
             )}
 

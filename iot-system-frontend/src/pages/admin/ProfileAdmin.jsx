@@ -118,28 +118,28 @@ export function ProfileAdmin() {
     const newErrors = {};
 
     if (!form.fullname.trim()) {
-      newErrors.fullname = t("errors.fullname_required"); // trỏ đến tên key trong file translation.json
+      newErrors.fullname = "errors.fullname_required";
     }
 
     if (!form.email.trim()) {
-      newErrors.email = t("errors.email_required");
+      newErrors.email = "errors.email_required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = t("errors.email_invalid");
+      newErrors.email = "errors.email_invalid";
     }
 
     // nếu có password thì mới validate
     if (form.password.trim() !== "") {
       if (form.oldPassword.trim() === "") {
-        newErrors.oldPassword = t("errors.old_password_required");
+        newErrors.oldPassword = "errors.old_password_required";
       }
       if (form.password.length < 6) {
-        newErrors.password = t("errors.password_min");
+        newErrors.password = "errors.password_min";
       } else if (!/(?=.*[a-z])/.test(form.password)) {
-        newErrors.password = t("errors.password_lowercase");
+        newErrors.password = "errors.password_lowercase";
       } else if (!/(?=.*[A-Z])/.test(form.password)) {
-        newErrors.password = t("errors.password_uppercase");
+        newErrors.password = "errors.password_uppercase";
       } else if (!/(?=.*\d)/.test(form.password)) {
-        newErrors.password = t("errors.password_number");
+        newErrors.password = "errors.password_number";
       }
     }
 
@@ -154,7 +154,7 @@ export function ProfileAdmin() {
       return response?.status >= 200 && response?.status < 300;
     } catch (error) {
       console.error("Error confirming password:", error);
-      setErrors({ oldPassword: t("errors.old_password_incorrect") });
+      setErrors({ oldPassword: "errors.old_password_incorrect" });
       return false;
     }
   };
@@ -190,7 +190,7 @@ export function ProfileAdmin() {
 
       const response = await UpdateAdminProfile(payload);
       if (!response?.data) {
-        setErrors({ form: t("errors.update_failed") });
+        setErrors({ form: "errors.update_failed" });
         return;
       }
 
@@ -220,14 +220,14 @@ export function ProfileAdmin() {
         localStorage.setItem("lang", nextLanguage);
       }
 
-      setDone(i18n.t("admin_profile:messages.update_success"));
+      setDone("messages.update_success");
       // sau khi set done thì đợi 2s set về chuỗi rỗng
       setTimeout(() => {
         setDone("");
       }, 2000);
     } catch (error) {
       console.error("Error updating profile:", error);
-      setErrors({ form: t("errors.update_failed") });
+      setErrors({ form: "errors.update_failed" });
     }
   };
 
@@ -241,7 +241,7 @@ export function ProfileAdmin() {
         }
 
         if (!response?.data) {
-          setLoad(i18n.t("admin_profile:errors.profile_unavailable"));
+          setLoad("errors.profile_unavailable");
           return;
         }
 
@@ -269,7 +269,7 @@ export function ProfileAdmin() {
         }
 
         console.error("Error fetching profile:", error);
-        setLoad(i18n.t("admin_profile:errors.load_failed"));
+        setLoad("errors.load_failed");
       });
 
     return () => {
@@ -279,8 +279,16 @@ export function ProfileAdmin() {
 
   return (
     <main className="admin-dashboard admin-profile">
-      {load ? <span className="alert text-center bg-danger">{load}</span> : ""}
-      {done ? <span className="alert text-center bg-success">{done}</span> : ""}
+      {load ? (
+        <span className="alert text-center bg-danger">{t(load)}</span>
+      ) : (
+        ""
+      )}
+      {done ? (
+        <span className="alert text-center bg-success">{t(done)}</span>
+      ) : (
+        ""
+      )}
       <section className="profile-card glass-panel">
         <aside className="profile-summary">
           {/* <div className="profile-avatar">
@@ -407,7 +415,7 @@ export function ProfileAdmin() {
                   )}
                   {/* field.id chính là đag trỏ đến name, bung profileFields ra sẽ thấy */}
                   {errors[field.id] && (
-                    <span className="text-danger">{errors[field.id]}</span>
+                    <span className="text-danger">{t(errors[field.id])}</span>
                   )}
                 </div>
               ))}
@@ -420,7 +428,9 @@ export function ProfileAdmin() {
               </button>
             </form>
             {errors.form && (
-              <span className="text-danger text-center">{errors.form}</span>
+              <span className="text-danger text-center">
+                {t(errors.form)}
+              </span>
             )}
           </div>
         </section>
