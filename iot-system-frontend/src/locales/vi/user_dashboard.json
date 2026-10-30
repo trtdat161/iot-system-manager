@@ -18,9 +18,6 @@
     "connect": "Kết nối",
     "disconnect": "Ngắt kết nối"
   },
-  "alert": {
-    "confirm": "OK, đã đọc"
-  },
   "sensors": {
     "gas_safe": "Ngưỡng gas an toàn",
     "air_stable": "Không khí ổn định"

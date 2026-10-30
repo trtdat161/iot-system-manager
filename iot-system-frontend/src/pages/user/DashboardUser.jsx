@@ -267,9 +267,6 @@ export function DashboardUser({ mac }) {
           </div>
         </div>
 
-        <button type="button" className="user-read-btn">
-          {t("alert.confirm")}
-        </button>
       </section>
     </main>
   );

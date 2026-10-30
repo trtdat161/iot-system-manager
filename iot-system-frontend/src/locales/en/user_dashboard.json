@@ -18,9 +18,6 @@
     "connect": "Connect",
     "disconnect": "Disconnect"
   },
-  "alert": {
-    "confirm": "OK, marked as read"
-  },
   "sensors": {
     "gas_safe": "Gas threshold safe",
     "air_stable": "Air condition stable"
