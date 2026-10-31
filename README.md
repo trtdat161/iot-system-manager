@@ -30,11 +30,13 @@ The system currently supports gas, temperature, and humidity sensor payloads. Em
 | Real-time updates | SignalR |
 | Device messaging | MQTTnet |
 | Localization | i18next, English and Vietnamese |
+| Embedded device | ESP8266 Arduino libraries, MQTT |
+| Hardware referenced by firmware | ESP8266, DHT11, analog gas sensor, 16x4 I2C LCD |
 
 ## System Architecture and Workflow
 
 ```text
-ESP8266
+ESP8266 + sensors + LCD
    │  Sensor readings and device announcements (MQTT)
    ▼
 MQTT Broker
@@ -52,15 +54,26 @@ React Frontend
 
 1. **Device to broker:** An ESP8266 publishes its MAC address when announcing itself and sends sensor readings, such as gas, temperature, and humidity, over MQTT.
 2. **Broker to backend:** The backend subscribes to `devices/announce` and `devices/{MAC}/data`. It registers newly announced devices, processes incoming readings, and updates the device's last-seen time.
-3. **Backend processing:** Sensor readings are sent to connected dashboards in real time. When a reading indicates an alert, the backend creates notification records for users associated with the device and avoids generating another unread notification of the same type for that device.
+3. **Backend processing:** Sensor readings are sent to connected dashboards in real time. When a reading indicates an alert, the backend creates notification records for users associated with the device and avoids repeating notifications for each user during the same active alert incident.
 4. **Backend to frontend:** The backend emits `ReceiveSensorData` and, when applicable, `ReceiveAlert` through SignalR. The frontend joins a SignalR group for the device MAC and updates the dashboard as events arrive.
-5. **Review and acknowledgement:** Users can view saved notifications in their history and mark them as read. The backend also publishes device claim or unclaim commands to `devices/{MAC}/command` when device ownership changes.
+5. **Review and acknowledgement:** Users can view saved notifications in their history and mark them as read. On the initial claim flow, the backend publishes `claimed` to `devices/{MAC}/command`; the firmware also recognizes `unclaim`, `on`, and `off`, but the backend currently does not publish those commands.
+
+## Firmware and Hardware
+
+The ESP8266 firmware reads a DHT11 temperature/humidity sensor and an analog gas sensor, displays status on a 16x4 I2C LCD, and exchanges announcements, readings, and commands with the backend over MQTT. The code and hardware pin mapping are documented in [firmware/esp8266/README.md](./firmware/esp8266/README.md).
+
+The hardware list and pin mapping in the firmware README are inferred from the source code; the repository does not include a schematic, bill of materials, or a specific gas sensor model. Check the ESP8266 board's analog-input voltage limits and sensor supply requirements before wiring. Firmware currently uses the public HiveMQ broker on port `1883` without TLS or broker credentials; treat this as a development configuration.
 
 ## Project Structure
 
 ```text
 .
 ├── README.md
+├── firmware/
+│   └── esp8266/
+│       ├── README.md            # Firmware behavior, dependencies, and hardware wiring
+│       └── src/
+│           └── device.cpp       # ESP8266 device firmware
 ├── iot-system-backend/
 │   ├── IoT-system.slnx
 │   └── IoT-system/

@@ -1,18 +1,28 @@
-# React + Vite
+# IoT System Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React single-page application built with Vite. The frontend provides public, authentication, user, and administrator pages and uses the backend HTTP API and SignalR for live device updates.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js and npm
+- The IoT System Manager backend running and reachable
 
-## React Compiler
+## Setup and development
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Install dependencies and start the Vite development server:
 
-Note: This will impact Vite dev & build performances.
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Set `VITE_BASE_URL` in a local `.env` file to the backend API base URL before running the app. The frontend also connects to the SignalR hub at `https://localhost:7115/hubs/notification` in `src/hooks/useDeviceSignalR.jsx`; update that endpoint if the backend uses a different address.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Available scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the local Vite development server. |
+| `npm run build` | Create a production build in `dist/`. |
+| `npm run preview` | Preview the production build locally. |
+| `npm run lint` | Run ESLint. |
