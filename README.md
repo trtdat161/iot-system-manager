@@ -21,17 +21,17 @@ The system currently supports gas, temperature, and humidity sensor payloads. Em
 
 ## Technology Stack
 
-| Area | Technologies |
-|---|---|
-| Frontend | React 19, Vite 8, React Router, Axios |
-| Backend | ASP.NET Core Web API, .NET 10, C# |
-| Data access and storage | Entity Framework Core, SQL Server |
-| Authentication and authorization | JWT stored in cookies, role-based access |
-| Real-time updates | SignalR |
-| Device messaging | MQTTnet |
-| Localization | i18next, English and Vietnamese |
-| Embedded device | ESP8266 Arduino libraries, MQTT |
-| Hardware referenced by firmware | ESP8266, DHT11, analog gas sensor, 16x4 I2C LCD |
+| Area                             | Technologies                                 |
+| -------------------------------- | -------------------------------------------- |
+| Frontend                         | React 19, Vite 8, React Router, Axios        |
+| Backend                          | ASP.NET Core Web API, .NET 10, C#            |
+| Data access and storage          | Entity Framework Core, SQL Server            |
+| Authentication and authorization | JWT stored in cookies, role-based access     |
+| Real-time updates                | SignalR                                      |
+| Device messaging                 | MQTTnet                                      |
+| Localization                     | i18next, English and Vietnamese              |
+| Embedded device                  | ESP8266 Arduino libraries, MQTT              |
+| Hardware referenced by firmware  | ESP8266, DHT11, MQ2 gas sensor, 16x4 I2C LCD |
 
 ## System Architecture and Workflow
 
