@@ -37,7 +37,7 @@ const MENU_ITEMS = [
   },
 ];
 
-export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
+export function Sidebar({ collapsed, setCollapsed }) {
   const [_error, setError] = useState("");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
@@ -109,15 +109,6 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
             >
               <span className="user-sidebar-icon">
                 {item.icon}
-                {item.key === "device_notifications" && unreadCount > 0 && (
-                  <span
-                    className="notification-count-badge"
-                    title={`${t("unread_notifications")}: ${unreadCount}`}
-                    aria-label={`${t("unread_notifications")}: ${unreadCount}`}
-                  >
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
               </span>
               {!collapsed && <span>{t(item.key)}</span>}
             </button>

@@ -8,6 +8,7 @@ import {
   FaCheckCircle,
   FaInfoCircle,
   FaTimesCircle,
+  FaSyncAlt,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
@@ -124,15 +125,22 @@ export function DeviceNotificationHistory() {
           <div>
             <h2>{t("title")}</h2>
           </div>
-          <div className="notification-history-stats">
-            <div className="stat-badge">
-              <FaBell size={14} />
-              <span>
-                {t("total")}:{" "}
-                <span className="stat-value">{totalNotifications}</span>
-              </span>
-            </div>
+        </div>
+        <div className="notification-history-stats mb-3">
+          <div className="stat-badge">
+            <FaBell size={14} />
+            <span>
+              {t("total")}:{" "}
+              <span className="stat-value">{totalNotifications}</span>
+            </span>
           </div>
+          <button
+            onClick={() => fetchNotifications(pages)}
+            disabled={loading}
+            className="btn btn-info"
+          >
+            <FaSyncAlt size={17} />
+          </button>
         </div>
 
         {/* Error Message */}
@@ -242,14 +250,10 @@ export function DeviceNotificationHistory() {
                         </span>
                         <button
                           className={`btn btn-sm mt-2 ${
-                            isRead
-                              ? "btn-success"
-                              : "btn-primary"
+                            isRead ? "btn-success" : "btn-primary"
                           }`}
                           onClick={() => markAsRead(notificationId)}
-                          disabled={
-                            isRead || markingNotificationId !== null
-                          }
+                          disabled={isRead || markingNotificationId !== null}
                         >
                           {markingNotificationId === notificationId
                             ? t("marking_read")

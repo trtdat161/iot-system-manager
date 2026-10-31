@@ -9,7 +9,7 @@ import {
   FaTimesCircle,
   FaTint,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../css/user/Dashboard.css";
 import { useDeviceSignalR } from "../../hooks/useDeviceSignalR";
 import {
@@ -76,26 +76,26 @@ export function DashboardUser({ mac }) {
     });
   };
 
-  // const groupedAlerts = useMemo(() => {
-  //   const groups = [];
-  //   alerts.forEach((alert) => {
-  //     const last = groups[groups.length - 1];
-  //     const shouldGroup =
-  //       alert.type === "gas_danger" || alert.type === "heartbeat";
-  //     if (
-  //       shouldGroup &&
-  //       last &&
-  //       last.type === alert.type &&
-  //       last.message === alert.message
-  //     ) {
-  //       last.count += 1;
-  //       last.createdAt = alert.createdAt;
-  //     } else {
-  //       groups.push({ ...alert, count: 1 });
-  //     }
-  //   });
-  //   return groups;
-  // }, [alerts]);
+  const groupedAlerts = useMemo(() => {
+    const groups = [];
+    alerts.forEach((alert) => {
+      const last = groups[groups.length - 1];
+      const shouldGroup =
+        alert.type === "gas_danger" || alert.type === "heartbeat";
+      if (
+        shouldGroup &&
+        last &&
+        last.type === alert.type &&
+        last.message === alert.message
+      ) {
+        last.count += 1;
+        last.createdAt = alert.createdAt;
+      } else {
+        groups.push({ ...alert, count: 1 });
+      }
+    });
+    return groups;
+  }, [alerts]);
 
   const GetDeviceConnected = async () => {
     try {
@@ -160,7 +160,7 @@ export function DashboardUser({ mac }) {
         </div>
       </div>
       {/* test realtime */}
-      {/* <div className="test-realtime user-glass-panel">
+      <div className="test-realtime user-glass-panel">
         <div className="sensor-grid">
           <div className="update-row">
             <span>Cập nhật lúc</span>
@@ -192,7 +192,7 @@ export function DashboardUser({ mac }) {
             ))}
           </div>
         </div>
-      </div> */}
+      </div>
 
       <section className="user-device-panel user-glass-panel">
         {/* xử lý connect */}
@@ -266,7 +266,6 @@ export function DashboardUser({ mac }) {
             <small>{sensorData.humidity ?? "--"}%</small>
           </div>
         </div>
-
       </section>
     </main>
   );

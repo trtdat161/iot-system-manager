@@ -25,7 +25,7 @@ export function FrameLayoutUser() {
   const [fullname, setFullname] = useState("");
   const [deviceMac, setDeviceMac] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [liveAlertCount, setLiveAlertCount] = useState(0);
+  const [, setLiveAlertCount] = useState(0);
   const unreadCountDelta = useRef(0);
   const location = useLocation();
   const { t } = useTranslation("user_frame_layout");
@@ -174,14 +174,8 @@ export function FrameLayoutUser() {
                     <span
                       className="user-frame-notice-bell"
                       aria-label={t("notification")}
-                      title={`${t("live_alert_count")}: ${liveAlertCount}`}
                     >
                       <FaBell className="user-frame-notice-icon" />
-                      {liveAlertCount > 0 && (
-                        <span className="notification-count-badge">
-                          {liveAlertCount > 99 ? "99+" : liveAlertCount}
-                        </span>
-                      )}
                     </span>
 
                     <nav
