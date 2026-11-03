@@ -18,17 +18,18 @@ import {
   GetConnectedDevice,
 } from "../../api/user/connectDevice";
 
-export function DashboardUser({ mac }) {
+export function DashboardUser() {
   const { t } = useTranslation("user_dashboard");
   const [isConnect, setIsConnect] = useState(false);
+  const [isBusy, setIsBusy] = useState(false); // SỬA: đang gọi API thì khóa cả 2 nút
   const [errorConnect, setErrorConnect] = useState("");
   const [errorDisconnect, setErrorDisconnect] = useState("");
   const [errorDevice, setErrorDevice] = useState("");
   const [isLoadingDevice, setIsLoadingDevice] = useState(true);
   const [device, setDevice] = useState(null); // object do BE đag trả về first chỉ 1 device liên kết với user hiện tại
-  // const connection = useDeviceSignalR(mac);
-  const testMac = "E098060E87C0"; // TẠM thời, thay bằng MAC thật của ESP đang có trong DB
-  const connection = useDeviceSignalR(testMac);
+
+  // SỬA: chỉ nghe realtime khi đang connected, disconnect thì hook tự dừng (nhờ "if (!mac) return;")
+  const connection = useDeviceSignalR(isConnect ? device?.macAddress : null);
 
   // State riêng cho trạng thái hiện tại - luôn bị ghi đè bởi data mới nhất
   const [sensorData, setSensorData] = useState({
@@ -100,11 +101,15 @@ export function DashboardUser({ mac }) {
   const GetDeviceConnected = async () => {
     try {
       const response = await GetConnectedDevice();
-      setDevice(response.data);
+      // khi user chưa có device, BE trả 204 (data là chuỗi rỗng) -> chuẩn hóa về null
+      const connectedDevice = response.data || null;
+      setDevice(connectedDevice);
+      setIsConnect(connectedDevice !== null); // SỬA: BE trả về device nghĩa là user ĐANG connected
       setErrorDevice("");
     } catch (err) {
       console.error("Failed to load the connected device:", err);
       setDevice(null);
+      setIsConnect(false);
       setErrorDevice(t("connection.errors.loadDevice"));
     } finally {
       setIsLoadingDevice(false);
@@ -114,24 +119,30 @@ export function DashboardUser({ mac }) {
   const HandleConnectDevice = async (deviceId) => {
     setErrorConnect("");
     setErrorDisconnect("");
+    setIsBusy(true); // SỬA
     try {
       await ConnectDevice(deviceId);
       setIsConnect(true);
     } catch (err) {
       console.error("Failed to connect to the device:", err);
       setErrorConnect(t("connection.errors.connect"));
+    } finally {
+      setIsBusy(false); // SỬA
     }
   };
 
   const HandleDisconnectDevice = async (deviceId) => {
     setErrorConnect("");
     setErrorDisconnect("");
+    setIsBusy(true); // SỬA
     try {
       await DisconnectDevice(deviceId);
-      setIsConnect(false);
+      setIsConnect(false); // giữ nguyên device để nút Connect còn dùng được trong phiên này
     } catch (err) {
       console.error("Failed to disconnect from the device:", err);
       setErrorDisconnect(t("connection.errors.disconnect"));
+    } finally {
+      setIsBusy(false); // SỬA
     }
   };
 
@@ -196,7 +207,9 @@ export function DashboardUser({ mac }) {
 
       <section className="user-device-panel user-glass-panel">
         {/* xử lý connect */}
-        <div className="user-connect-box">
+        <div
+          className={`user-connect-box ${isConnect ? "connected" : "disconnected"}`}
+        >
           {isConnect ? (
             <>
               <FaCheckCircle />
@@ -215,7 +228,7 @@ export function DashboardUser({ mac }) {
               type="button"
               className="user-action-btn connect"
               onClick={() => HandleConnectDevice(device.id)}
-              disabled={!device}
+              disabled={!device || isConnect || isBusy} // SỬA: đã connected thì khóa
             >
               <FaPlug />
               {t("connection.connect")}
@@ -224,7 +237,7 @@ export function DashboardUser({ mac }) {
               type="button"
               className="user-action-btn disconnect"
               onClick={() => HandleDisconnectDevice(device.id)}
-              disabled={!device}
+              disabled={!device || !isConnect || isBusy} // SỬA: chưa connected thì khóa
             >
               <FaPowerOff />
               {t("connection.disconnect")}
@@ -257,7 +270,8 @@ export function DashboardUser({ mac }) {
             <FaFire />
             <span>MQ-2</span>
             <strong>{t("sensors.gas_safe")}</strong>
-            <small>{sensorData.gas ?? "--"}%</small>
+            <small>{sensorData.gas ?? "--"}</small>{" "}
+            {/* SỬA: bỏ dấu % vì đây là giá trị thô của cảm biến */}
           </div>
           <div className="user-sensor-item">
             <FaTint />

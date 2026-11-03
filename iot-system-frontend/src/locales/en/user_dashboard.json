@@ -26,9 +26,13 @@
     "title": "Waiting for Connection",
     "subtitle": "Devices pending connection",
     "loading": "Loading devices...",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "connect_success": "Device connected successfully.",
     "errors": {
       "fetch": "Unable to load devices. Please try again.",
-      "connect": "Unable to connect to the device. Please try again."
+      "connect": "Device connection failed. Please try again.",
+      "claim_failed": "Unable to connect. The device may be offline or already connected."
     },
     "model": "Model",
     "mac_address": "MAC Address",

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IoT_system.Configurations.mqtt;
 using IoT_system.DTOS.Devices;
+using IoT_system.Helper;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
 namespace IoT_system.Services.Devices
@@ -10,6 +11,7 @@ namespace IoT_system.Services.Devices
         private readonly DatabaseContext db;
         private readonly MqttClient mqtt;
         private readonly IMapper mapper;
+        private readonly int onlineWindowSeconds = 30; // ESP im lặng quá 30 giây thì coi là offline
 
         public DeviceServiceImpl(DatabaseContext _db, MqttClient _mqtt, IMapper _mapper)
         {
@@ -17,22 +19,45 @@ namespace IoT_system.Services.Devices
             mqtt = _mqtt;
             mapper = _mapper;
         }
+
+        // kiểm tra device có đang online không (dựa vào lần cuối ESP gửi tin lên)
+        private bool IsOnline(DateTime? lastSeenAt)
+        {
+            // Chưa từng nghe thấy ESP kêu lần nào
+            if (lastSeenAt == null)
+            {
+                return false;
+            }
+
+            // Mốc giới hạn = bây giờ trừ 30 giây
+            DateTime limitTime = TimeHelper.VnNow().AddSeconds(-onlineWindowSeconds);
+
+            return lastSeenAt.Value >= limitTime;
+        }
+
         public async Task<List<PendingDeviceDto>> GetPendingDevices(int userId)
         {
             if (userId <= 0)
             {
                 throw new BadHttpRequestException("userId invalid!");
             }
-            // Lấy danh sách thiết bị chưa được liên kết với tài khoản
+
+            // Mốc giới hạn = bây giờ trừ 30 giây
+            DateTime limitTime = TimeHelper.VnNow().AddSeconds(-onlineWindowSeconds);
+
+            // Lấy danh sách thiết bị đang online và chưa được liên kết với tài khoản này
             return await db.Devices
                 .AsNoTracking()
                 .Where(d =>
                     d.DeletedAt == null &&
+                    d.LastSeenAt != null &&
+                    d.LastSeenAt >= limitTime &&
                     !d.Accounts.Any(a => a.Id == userId)) // phủ đinh lại kiểu nếu user có rồi thì sẽ true => false muc đích để lọc và hiển thị ra thiết bị chưa được liên kết với tài khoản 
                 .Select(d => new PendingDeviceDto
                 {
                     Id = d.Id,
-                    MacAddress = d.MacAddress
+                    MacAddress = d.MacAddress,
+                    IsClaimed = d.IsClaimed // để FE biết gọi Claim (lần đầu) hay Connect (tham gia lại)
                 })
                 .ToListAsync();
         }
@@ -54,6 +79,12 @@ namespace IoT_system.Services.Devices
             if (device == null)
                 return false;
 
+            // Device offline sẽ không nhận được lệnh "claimed" -> không cho claim
+            if (!IsOnline(device.LastSeenAt))
+            {
+                return false;
+            }
+
             // User đã kết nối device này rồi
             if (user.DeviceId == deviceId)
                 return false;
@@ -69,6 +100,7 @@ namespace IoT_system.Services.Devices
 
             device.IsClaimed = true;
             user.DeviceId = deviceId;
+            user.LastDeviceId = deviceId; // MỚI: ghi nhớ thiết bị gần nhất
 
             await db.SaveChangesAsync();
 
@@ -133,6 +165,7 @@ namespace IoT_system.Services.Devices
             }
 
             account.DeviceId = deviceId;
+            account.LastDeviceId = deviceId; // MỚI: ghi nhớ thiết bị gần nhất
             await db.SaveChangesAsync();
 
             return mapper.Map<DeviceResponseDtos>(device);
@@ -170,29 +203,55 @@ namespace IoT_system.Services.Devices
                 throw new BadHttpRequestException("The user is not connected to this device!");
             }
 
+            // Chỉ xóa DeviceId (ngừng nhận cảnh báo), KHÔNG xóa LastDeviceId để còn nối lại được
             account.DeviceId = null;
             await db.SaveChangesAsync();
 
             return mapper.Map<DeviceResponseDtos>(device);
         }
 
-        // Hàm hiẻn thị device mà user đã chọn vào để connectd dẻ trả về cho FE lấy id gắn vào hàm connect và disconnect
+        // Trả về thiết bị của user: đang connected thì lấy thiết bị hiện tại, đã disconnect thì lấy thiết bị gần nhất
         public async Task<DeviceResponseDtos?> GetConnectedDeviceAsync(int userId)
         {
             if (userId <= 0)
             {
                 throw new BadHttpRequestException("userId invalid!");
             }
-            // tìm thiết bị mà user đang kết nối, ta chỉ cần tìm account của user đó rồi đọc DeviceId
-            return await db.Accounts
+
+            // MỚI: đọc account trước để biết đang connected hay không
+            var account = await db.Accounts
                 .AsNoTracking()
-                .Where(a => a.Id == userId && a.DeviceId != null)
-                .Select(a => new DeviceResponseDtos // Lấy thông tin thiết bị liên kết với account đag login
-                {
-                    Id = a.Device!.Id, 
-                    MacAddress = a.Device.MacAddress
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(a => a.Id == userId && a.DeletedAt == null);
+
+            if (account == null)
+            {
+                return null;
+            }
+
+            // Đang connected thì dùng DeviceId, đã disconnect thì dùng LastDeviceId
+            int? deviceId = account.DeviceId ?? account.LastDeviceId;
+
+            // User chưa từng có thiết bị nào
+            if (deviceId == null)
+            {
+                return null;
+            }
+
+            var device = await db.Devices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == deviceId.Value && d.DeletedAt == null);
+
+            if (device == null)
+            {
+                return null;
+            }
+
+            return new DeviceResponseDtos
+            {
+                Id = device.Id,
+                MacAddress = device.MacAddress,
+                IsConnected = account.DeviceId != null // FE dựa vào cờ này để khóa/mở nút
+            };
         }
 
     }

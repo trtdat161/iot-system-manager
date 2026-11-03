@@ -207,6 +207,16 @@
   transform: translateY(-2px);
 }
 
+.user-connect-box.disconnected {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+.user-connect-box.disconnected:hover {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
 .user-connect-box > svg {
   color: #86efac;
   font-size: 3rem;

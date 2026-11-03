@@ -31,7 +31,7 @@ The system currently supports gas, temperature, and humidity sensor payloads. Em
 | Device messaging                 | MQTTnet                                      |
 | Localization                     | i18next, English and Vietnamese              |
 | Embedded device                  | ESP8266 Arduino libraries, MQTT              |
-| Hardware referenced by firmware  | ESP8266, DHT11, MQ2 gas sensor, 16x4 I2C LCD |
+| Hardware referenced by firmware  | ESP8266, DHT11, MQ2 gas sensor, 16x2 I2C LCD |
 
 ## System Architecture and Workflow
 

@@ -126,20 +126,33 @@ namespace IoT_system.Services.Mqtt
 
         private async Task HandleAnnounce(DatabaseContext db, string payload)
         {
-            // DTO AnnouncePayload
-            var data = JsonSerializer.Deserialize<AnnouncePayload>(payload);// JSON -> Object
-            if (data == null) return;
-
-            var exists = await db.Devices.FirstOrDefaultAsync(x => x.MacAddress == data.Mac);
-            if (exists != null) return;
-
-            db.Devices.Add(new Device // tự động thêm vào db device mới online 
+            var data = JsonSerializer.Deserialize<AnnouncePayload>(payload);
+            if (data == null || string.IsNullOrWhiteSpace(data.Mac))
             {
-                MacAddress = data.Mac.ToUpperInvariant(), // chuẩn hóa ngay từ lúc lưu DB
-                Name = $"Device_{data.Mac}",
-                IsClaimed = false, // thiết bị tự gán là false, sau user connect thì mới là true 
-                //CreatedAt = DateTime.UtcNow
-                CreatedAt = TimeHelper.VnNow()// fix giờ
+                return;
+            }
+
+            var mac = data.Mac.ToUpperInvariant();
+            var now = TimeHelper.VnNow();
+
+            // Device đã có trong DB: chỉ cập nhật LastSeenAt rồi thoát
+            var updated = await db.Devices
+                .Where(x => x.MacAddress == mac)
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, now));
+
+            if (updated > 0)
+            {
+                return;
+            }
+
+            // Device mới: thêm vào DB
+            db.Devices.Add(new Device
+            {
+                MacAddress = mac,
+                Name = $"Device_{mac}",
+                IsClaimed = false,
+                CreatedAt = now,
+                LastSeenAt = now
             });
 
             try
@@ -148,11 +161,7 @@ namespace IoT_system.Services.Mqtt
             }
             catch (DbUpdateException)
             {
-                // Trường hợp 2 announce cùng MAC gửi gần như đồng thời (network retry, mất gói)
-                // -> 2 request cùng pass qua check "exists == null" trước khi insert kịp commit.
-                // Nếu cột MacAddress có unique constraint ở DB, đây sẽ là tuyến phòng thủ cuối,
-                // record trùng bị DB từ chối thay vì tạo ra 2 device cho cùng 1 thiết bị vật lý.
-                logger.LogWarning("Device {Mac} This message has already been inserted by another message, ignore it.", data.Mac);
+                logger.LogWarning("Device {Mac} This message has already been inserted by another message, ignore it.", mac);
             }
         }
 

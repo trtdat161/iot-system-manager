@@ -2,6 +2,8 @@
   "title": "Device Notification History",
   "total": "Total Notifications",
   "loading": "Loading notifications...",
+  "refresh": "Refresh",
+  "refreshing": "Refreshing...",
   "empty": "No notifications yet",
   "empty_desc": "You haven't received any notifications from devices.",
   "errors": {

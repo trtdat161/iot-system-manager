@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaMicrochip, FaPlug } from "react-icons/fa";
+import { FaMicrochip, FaPlug, FaSyncAlt } from "react-icons/fa";
 import "../../css/user/WaitingConnection.css";
 import { ClaimDevice, DeviceDepending } from "../../api/user/connectDevice";
 
 export function WaitingConnection() {
   const { t } = useTranslation("user_dashboard");
   const [errorConnect, setErrorConnect] = useState("");
+  const [connectionSuccess, setConnectionSuccess] = useState("");
   const [errorFetch, setErrorFetch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Mock data - tạm thời hashcode = html
+  // Danh sách thiết bị ĐANG ONLINE do BE trả về (BE đã lọc, FE chỉ hiển thị)
   const [pendingDevices, setPendingDevices] = useState([]);
 
   const fetchDevices = async () => {
@@ -27,28 +29,50 @@ export function WaitingConnection() {
     }
   };
 
-  // connect device
-  const handleConnect = async (deviceId) => {
-    setErrorConnect("");
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
     try {
-      await ClaimDevice(deviceId);
       await fetchDevices();
-    } catch (err) {
-      console.error("Failed to claim the device:", err);
-      setErrorConnect(t("waiting_connection.errors.connect"));
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  const signalStrength = (rssi) => {
-    if (rssi > -50) return "Excellent";
-    if (rssi > -60) return "Good";
-    if (rssi > -70) return "Fair";
-    return "Weak";
+  // claim device
+  const handleConnect = async (deviceId) => {
+    setErrorConnect("");
+    setConnectionSuccess("");
+    try {
+      await ClaimDevice(deviceId);
+      setConnectionSuccess(t("waiting_connection.connect_success"));
+      await fetchDevices();
+    } catch (err) {
+      console.error("Failed to claim the device:", err);
+
+      // BE trả 404 khi device đã offline (hoặc đã bị claim) -> báo rõ cho user
+      if (err.response?.status === 404) {
+        setErrorConnect(
+          t("waiting_connection.errors.claim_failed"),
+        );
+      } else {
+        setErrorConnect(t("waiting_connection.errors.connect"));
+      }
+
+      // Làm mới danh sách để thiết bị offline biến mất ngay
+      await fetchDevices();
+    }
   };
 
+  // Polling 5 giây: BE coi device offline sau 30 giây không có tin,
+  // nên FE phải hỏi lại liên tục thì danh sách mới phản ánh đúng thực tế
   useEffect(() => {
     fetchDevices();
+    const intervalId = setInterval(fetchDevices, 5000);
+
+    // Cleanup bắt buộc: rời trang thì dừng polling, tránh gọi API vô hạn
+    return () => clearInterval(intervalId);
   }, []);
+
   return (
     <main className="user-dashboard">
       <div className="user-dashboard-top user-glass-panel">
@@ -59,17 +83,42 @@ export function WaitingConnection() {
           </span>
           <h1>{t("waiting_connection.title")}</h1>
         </div>
-        <div className="waiting-device-count">{pendingDevices.length}</div>
+        <div className="waiting-header-actions">
+          <button
+            type="button"
+            className="user-action-btn waiting-refresh-btn"
+            onClick={handleRefresh}
+            disabled={isLoading || isRefreshing}
+            aria-label={t("waiting_connection.refresh")}
+          >
+            <FaSyncAlt
+              className={
+                isRefreshing
+                  ? "waiting-refresh-icon spinning"
+                  : "waiting-refresh-icon"
+              }
+            />
+            {isRefreshing
+              ? t("waiting_connection.refreshing")
+              : t("waiting_connection.refresh")}
+          </button>
+          <div className="waiting-device-count">{pendingDevices.length}</div>
+        </div>
       </div>
 
       <section className="user-device-panel user-glass-panel">
+        {connectionSuccess && (
+          <p className="waiting-connection-alert success" role="status">
+            {connectionSuccess}
+          </p>
+        )}
         {errorConnect && (
-          <p className="waiting-error-message" role="alert">
+          <p className="waiting-connection-alert error" role="alert">
             {errorConnect}
           </p>
         )}
         {errorFetch ? (
-          <p className="waiting-error-message" role="alert">
+          <p className="waiting-connection-alert error" role="alert">
             {errorFetch}
           </p>
         ) : isLoading ? (
@@ -93,10 +142,10 @@ export function WaitingConnection() {
                     <FaMicrochip size={20} />
                   </div>
                   <div>
-                    <div className="waiting-device-name">{device.name}</div>
-                    <div className="waiting-device-meta">
-                      {t("waiting_connection.model")}: {device.model}
-                    </div>
+                    {/* BE hiện chưa trả name, có thì mới hiển thị */}
+                    {device.name && (
+                      <div className="waiting-device-name">{device.name}</div>
+                    )}
                     <div className="waiting-device-meta-mac">
                       {t("waiting_connection.mac_address")}: {device.macAddress}
                     </div>
@@ -111,10 +160,9 @@ export function WaitingConnection() {
                     <div className="waiting-signal-indicator">
                       <span className="waiting-signal-dot"></span>
                       <span className="waiting-signal-strength">
-                        {signalStrength(device.rssi)}
+                        {t("waiting_connection.online", "Online")}
                       </span>
                     </div>
-                    <div className="waiting-rssi">RSSI: {device.rssi} dBm</div>
                   </div>
 
                   <button

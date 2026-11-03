@@ -21,6 +21,8 @@ public partial class Account
 
     public int? DeviceId { get; set; }
 
+    public int? LastDeviceId { get; set; } // để sau khi disconnect còn biết thiết bị liên kết user nào 
+
     public int LanguageId { get; set; }
 
     public DateTime CreatedAt { get; set; }

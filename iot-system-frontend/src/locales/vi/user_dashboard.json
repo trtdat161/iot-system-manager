@@ -26,9 +26,13 @@
     "title": "Chờ kết nối",
     "subtitle": "Thiết bị đang chờ kết nối",
     "loading": "Đang tải thiết bị...",
+    "refresh": "Làm mới",
+    "refreshing": "Đang làm mới...",
+    "connect_success": "Kết nối thiết bị thành công.",
     "errors": {
       "fetch": "Không thể tải danh sách thiết bị. Vui lòng thử lại.",
-      "connect": "Không thể kết nối với thiết bị. Vui lòng thử lại."
+      "connect": "Kết nối thiết bị thất bại. Vui lòng thử lại.",
+      "claim_failed": "Không thể kết nối. Thiết bị có thể đã ngoại tuyến hoặc đã được kết nối."
     },
     "model": "Model",
     "mac_address": "Địa chỉ MAC",

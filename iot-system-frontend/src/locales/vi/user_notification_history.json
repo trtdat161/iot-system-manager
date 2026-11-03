@@ -2,6 +2,8 @@
   "title": "Lịch Sử Thông Báo Thiết Bị",
   "total": "Tổng Thông Báo",
   "loading": "Đang tải thông báo...",
+  "refresh": "Làm mới",
+  "refreshing": "Đang làm mới...",
   "empty": "Chưa có thông báo nào",
   "empty_desc": "Bạn chưa nhận được thông báo nào từ các thiết bị.",
   "errors": {

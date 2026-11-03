@@ -135,11 +135,20 @@ export function DeviceNotificationHistory() {
             </span>
           </div>
           <button
+            type="button"
             onClick={() => fetchNotifications(pages)}
             disabled={loading}
-            className="btn btn-info"
+            className="notification-refresh-btn"
+            aria-label={t("refresh")}
           >
-            <FaSyncAlt size={17} />
+            <FaSyncAlt
+              className={
+                loading
+                  ? "notification-refresh-icon spinning"
+                  : "notification-refresh-icon"
+              }
+            />
+            {loading ? t("refreshing") : t("refresh")}
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 import { axiosInstance } from "../axiosInstance";
 
-// hiển thị thiết bị đã connect wifi nhưng chưa connect với app của user
+// hiển thị thiết bị đang online (ESP vừa gửi tin trong 30s gần đây) nhưng chưa liên kết với user
 export const DeviceDepending = () => axiosInstance.get("device/pending");
 
 // claim với device lần đầu
@@ -17,4 +17,4 @@ export const DisconnectDevice = (deviceId) =>
 
 // thiết bị user đã chọn vào để connectd dẻ trả về id gắn vào hàm connect và disconnect
 export const GetConnectedDevice = () =>
-  axiosInstance.get(`get-connected-device`);
+  axiosInstance.get("device/get-connected-device"); // SỬA: thêm tiền tố device/
