@@ -109,13 +109,6 @@ namespace IoT_system.Services.Devices
                 "claimed",
                 retained: true);
 
-            await Task.Delay(500);
-
-            await mqtt.PublishAsync(
-                $"devices/{device.MacAddress}/command",
-                "",
-                retained: true);
-
             return true;
         }
 
@@ -167,6 +160,11 @@ namespace IoT_system.Services.Devices
             account.DeviceId = deviceId;
             account.LastDeviceId = deviceId; // MỚI: ghi nhớ thiết bị gần nhất
             await db.SaveChangesAsync();
+            // Đồng bộ trạng thái CLAIMED xuống ESP qua MQTT
+            await mqtt.PublishAsync(
+                $"devices/{device.MacAddress}/command",
+                "claimed",
+                retained: true);
 
             return mapper.Map<DeviceResponseDtos>(device);
         }

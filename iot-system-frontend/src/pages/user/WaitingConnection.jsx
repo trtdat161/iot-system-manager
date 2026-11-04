@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaMicrochip, FaPlug, FaSyncAlt } from "react-icons/fa";
 import "../../css/user/WaitingConnection.css";
-import { ClaimDevice, DeviceDepending } from "../../api/user/connectDevice";
+import {
+  ClaimDevice,
+  ConnectDevice, // MỚI
+  DeviceDepending,
+} from "../../api/user/connectDevice";
 
 export function WaitingConnection() {
   const { t } = useTranslation("user_dashboard");
@@ -38,22 +42,26 @@ export function WaitingConnection() {
     }
   };
 
-  // claim device
-  const handleConnect = async (deviceId) => {
+  // MỚI: nhận cả object device (không chỉ id) để biết máy đã claim hay chưa
+  const handleConnect = async (device) => {
     setErrorConnect("");
     setConnectionSuccess("");
     try {
-      await ClaimDevice(deviceId);
+      if (device.isClaimed) {
+        // Máy đã có chủ -> tham gia (chỉ đổi liên kết trong DB, không gửi lệnh cho ESP)
+        await ConnectDevice(device.id);
+      } else {
+        // Máy chưa có chủ -> claim lần đầu (BE gửi lệnh "claimed" cho ESP)
+        await ClaimDevice(device.id);
+      }
       setConnectionSuccess(t("waiting_connection.connect_success"));
       await fetchDevices();
     } catch (err) {
-      console.error("Failed to claim the device:", err);
+      console.error("Failed to claim/connect the device:", err);
 
-      // BE trả 404 khi device đã offline (hoặc đã bị claim) -> báo rõ cho user
-      if (err.response?.status === 404) {
-        setErrorConnect(
-          t("waiting_connection.errors.claim_failed"),
-        );
+      // BE trả 404 khi claim thất bại (device offline hoặc đã bị claim)
+      if (!device.isClaimed && err.response?.status === 404) {
+        setErrorConnect(t("waiting_connection.errors.claim_failed"));
       } else {
         setErrorConnect(t("waiting_connection.errors.connect"));
       }
@@ -168,10 +176,13 @@ export function WaitingConnection() {
                   <button
                     type="button"
                     className="user-action-btn connect waiting-connect-btn"
-                    onClick={() => handleConnect(device.id)}
+                    onClick={() => handleConnect(device)} // MỚI: truyền cả device
                   >
                     <FaPlug />
-                    {t("waiting_connection.connect_btn")}
+                    {/* MỚI: đã claim thì ghi "Tham gia", chưa claim thì giữ nút cũ */}
+                    {device.isClaimed
+                      ? t("waiting_connection.join_btn", "Tham gia")
+                      : t("waiting_connection.connect_btn")}
                   </button>
                 </div>
               </div>

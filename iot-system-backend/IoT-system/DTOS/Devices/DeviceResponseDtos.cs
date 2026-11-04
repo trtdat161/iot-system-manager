@@ -9,6 +9,7 @@
         public bool IsClaimed { get; set; }
         public DateTime? LastSeenAt { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsConnected { get; set; }
 
     }
 }

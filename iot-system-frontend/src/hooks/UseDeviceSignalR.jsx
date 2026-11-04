@@ -1,34 +1,81 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-export function useDeviceSignalR(mac) {
+export function useDeviceSignalR(mac, handlers = {}) {
   const [connection, setConnection] = useState(null);
-  console.log("useDeviceSignalR called with mac:", mac); // thêm dòng này
+
+  // Luôn sử dụng callback mới nhất mà không phải khởi tạo lại SignalR
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
 
   useEffect(() => {
-    if (!mac) return;
-    const normalizedMac = mac.toUpperCase(); // chuẩn hóa 1 lần, dùng xuyên suốt effect
+    if (!mac) {
+      setConnection(null);
+      return;
+    }
+
+    let cancelled = false;
+    const normalizedMac = mac.trim().toUpperCase();
 
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7115/hubs/notification") // port BE
+      .withUrl("https://localhost:7115/hubs/notification")
       .withAutomaticReconnect()
       .build();
 
-    conn.onreconnected(() => {
-      conn.invoke("JoinDeviceGroup", normalizedMac);
+    // 1. Đăng ký listener TRƯỚC KHI start connection
+    conn.on("ReceiveSensorData", (data) => {
+      handlersRef.current.onSensorData?.(data);
     });
 
-    conn
-      .start()
-      .then(() => {
-        conn.invoke("JoinDeviceGroup", normalizedMac);
-        setConnection(conn);
-      })
-      .catch((err) => console.error("SignalR connect error:", err));
+    conn.on("ReceiveAlert", (data) => {
+      handlersRef.current.onAlert?.(data);
+    });
 
+    // 2. Reconnect xong phải join lại Group
+    conn.onreconnected(async () => {
+      try {
+        await conn.invoke("JoinDeviceGroup", normalizedMac);
+        console.log("[SignalR] Rejoined group:", normalizedMac);
+      } catch (err) {
+        console.error("[SignalR] Rejoin failed:", err);
+      }
+    });
+
+    // 3. Start -> Join -> xác nhận connection đã sẵn sàng
+    const startConnection = async () => {
+      try {
+        await conn.start();
+
+        console.log("[SignalR] Connected");
+
+        await conn.invoke("JoinDeviceGroup", normalizedMac);
+
+        console.log("[SignalR] Joined group:", normalizedMac);
+
+        if (!cancelled) {
+          setConnection(conn);
+        }
+      } catch (err) {
+        console.error("[SignalR] Connection error:", err);
+      }
+    };
+
+    startConnection();
+
+    // 4. Cleanup
     return () => {
-      conn.invoke("LeaveDeviceGroup", normalizedMac).catch(() => {});
-      conn.stop();
+      cancelled = true;
+
+      setConnection(null);
+
+      if (conn.state === signalR.HubConnectionState.Connected) {
+        conn
+          .invoke("LeaveDeviceGroup", normalizedMac)
+          .catch((err) => console.error("[SignalR] Leave error:", err))
+          .finally(() => conn.stop());
+      } else {
+        conn.stop();
+      }
     };
   }, [mac]);
 

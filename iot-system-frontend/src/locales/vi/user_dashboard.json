@@ -19,7 +19,7 @@
     "disconnect": "Ngắt kết nối"
   },
   "sensors": {
-    "gas_safe": "Ngưỡng gas an toàn",
+    "gas_safe": "Ngưỡng khí gas",
     "air_stable": "Không khí ổn định"
   },
   "waiting_connection": {

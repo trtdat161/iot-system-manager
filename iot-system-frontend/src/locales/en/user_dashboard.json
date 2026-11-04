@@ -19,7 +19,7 @@
     "disconnect": "Disconnect"
   },
   "sensors": {
-    "gas_safe": "Gas threshold safe",
+    "gas_safe": "Gas threshold",
     "air_stable": "Air condition stable"
   },
   "waiting_connection": {
