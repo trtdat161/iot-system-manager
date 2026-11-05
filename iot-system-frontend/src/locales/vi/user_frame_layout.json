@@ -1,5 +1,6 @@
 {
   "notification": "Thông báo",
+  "notification_count": "Thông báo, {{count}} mục chưa đọc",
   "live_alert_count": "Số cảnh báo mới trong phiên",
   "home": "Trang chủ",
   "profile": "Hồ sơ",

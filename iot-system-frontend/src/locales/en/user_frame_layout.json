@@ -1,5 +1,6 @@
 {
   "notification": "Notification",
+  "notification_count": "Notifications, {{count}} unread",
   "live_alert_count": "New alerts this session",
   "home": "Home",
   "profile": "Profile",

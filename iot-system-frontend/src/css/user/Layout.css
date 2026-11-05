@@ -294,9 +294,36 @@
     flex: 0 0 auto;
 }
 
+.user-frame-notice-bell.is-active .user-frame-notice-icon {
+    animation: user-bell-ring 1.4s ease-in-out infinite;
+    transform-origin: 50% 12%;
+}
+
+.user-sidebar-icon.has-unread svg {
+    animation: user-bell-ring 1.4s ease-in-out infinite;
+    transform-origin: 50% 12%;
+}
+
 .user-frame-notice-bell .notification-count-badge {
     top: -7px;
     right: -8px;
+}
+
+@keyframes user-bell-ring {
+    0%, 100% { transform: rotate(0); }
+    10%, 30%, 50% { transform: rotate(12deg); }
+    20%, 40%, 60% { transform: rotate(-12deg); }
+    70% { transform: rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-frame-notice-bell.is-active .user-frame-notice-icon {
+        animation: none;
+    }
+
+    .user-sidebar-icon.has-unread svg {
+        animation: none;
+    }
 }
 
 .user-frame-breadcrumb {

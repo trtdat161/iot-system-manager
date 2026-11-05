@@ -1,5 +1,24 @@
 {
   "title": "Device Notification History",
+  "latest": "Latest",
+  "alerts": {
+    "messages": {
+      "gas": "Gas warning: {{value}}. Check the area safely before confirming.",
+      "gas_danger": "Danger! Gas exceeds the limit: {{value}}. Leave if you suspect a leak; confirm only when safe.",
+      "temp_high": "High temperature: {{value}}°C (≥35°C). Turn on a fan/AC or move somewhere cooler.",
+      "humid_low": "Low humidity: {{value}}% (<30%). Try using a humidifier.",
+      "humid_high": "High humidity: {{value}}% (>70%). Ventilate or use dry mode.",
+      "unknown": "Device warning"
+    },
+    "labels": {
+      "gas": "Gas",
+      "gas_danger": "Dangerous gas level",
+      "temp_high": "High temperature",
+      "humid_low": "Low humidity",
+      "humid_high": "High humidity",
+      "unknown": "Other alert"
+    }
+  },
   "total": "Total Notifications",
   "loading": "Loading notifications...",
   "refresh": "Refresh",

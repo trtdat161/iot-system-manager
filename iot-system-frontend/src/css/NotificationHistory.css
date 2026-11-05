@@ -277,6 +277,47 @@
   transform: translateY(-1px);
 }
 
+.user-notification-history .notification-item.latest-notification {
+  background: linear-gradient(
+    110deg,
+    rgba(251, 191, 36, 0.2),
+    rgba(251, 191, 36, 0.09) 62%,
+    rgba(255, 255, 255, 0.08)
+  );
+  border-top-color: rgba(251, 191, 36, 0.52);
+  border-right-color: rgba(251, 191, 36, 0.52);
+  border-bottom-color: rgba(251, 191, 36, 0.52);
+  box-shadow:
+    0 0 24px rgba(251, 191, 36, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.user-notification-history .notification-item.latest-notification:hover {
+  background: linear-gradient(
+    110deg,
+    rgba(251, 191, 36, 0.25),
+    rgba(251, 191, 36, 0.12) 62%,
+    rgba(255, 255, 255, 0.1)
+  );
+  border-top-color: rgba(251, 191, 36, 0.68);
+  border-right-color: rgba(251, 191, 36, 0.68);
+  border-bottom-color: rgba(251, 191, 36, 0.68);
+}
+
+.notification-latest-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 999px;
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.12);
+  font-size: 10px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
 .notification-item-icon {
   width: 42px;
   height: 42px;

@@ -14,6 +14,7 @@ import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
 import dayjs from "dayjs";
 import { useOutletContext } from "react-router-dom";
+import { getDeviceAlertDetails } from "../../utils/deviceAlert";
 
 export function DeviceNotificationHistory() {
   const outletContext = useOutletContext() || {};
@@ -30,6 +31,34 @@ export function DeviceNotificationHistory() {
   const [markReadFeedback, setMarkReadFeedback] = useState(null);
   const [markingNotificationId, setMarkingNotificationId] = useState(null);
   const [readIds, setReadIds] = useState(new Set());
+
+  const latestNotificationId =
+    pages === 1
+      ? notifications.reduce((latest, notification) => {
+          const currentTime = new Date(
+            notification.createdAt ??
+              notification.CreatedAt ??
+              notification.timestamp ??
+              notification.Timestamp ??
+              "",
+          ).getTime();
+          const latestTime = latest
+            ? new Date(
+                latest.createdAt ??
+                  latest.CreatedAt ??
+                  latest.timestamp ??
+                  latest.Timestamp ??
+                  "",
+              ).getTime()
+            : Number.NEGATIVE_INFINITY;
+
+          return Number.isNaN(currentTime) || currentTime <= latestTime
+            ? latest
+            : notification;
+        }, null)
+      : null;
+  const latestNotificationIdValue =
+    latestNotificationId?.id ?? latestNotificationId?.Id;
 
   const fetchNotifications = async (currentPage) => {
     setLoading(true);
@@ -77,6 +106,13 @@ export function DeviceNotificationHistory() {
 
   const getNotificationIcon = (type) => {
     switch (type) {
+      case "gas":
+      case "gas_danger":
+      case "temp_high":
+      case "humid_low":
+      case "humid_high":
+      case "unknown":
+        return <FaExclamationTriangle className="notification-icon warning" />;
       case "success":
         return <FaCheckCircle className="notification-icon success" />;
       case "warning":
@@ -90,6 +126,13 @@ export function DeviceNotificationHistory() {
 
   const getAccentColor = (type) => {
     switch (type) {
+      case "gas":
+      case "gas_danger":
+      case "temp_high":
+      case "humid_low":
+      case "humid_high":
+      case "unknown":
+        return "#fbbf24";
       case "success":
         return "#22c55e";
       case "warning":
@@ -214,18 +257,25 @@ export function DeviceNotificationHistory() {
         {!loading && notifications.length > 0 && (
           <div className="notification-list">
             {notifications.map((notification) => {
-              const type = notification.type || "info";
               const sentAt = notification.timestamp || notification.createdAt;
               const notificationId = notification.id ?? notification.Id;
+              const alertDetails = getDeviceAlertDetails(
+                notification.message ?? notification.Message,
+                notification.type ?? notification.Type,
+              );
+              const type = alertDetails.kind;
               const isRead =
                 notification.isRead === true ||
                 notification.IsRead === true ||
                 readIds.has(notificationId);
+              const isLatest = notificationId === latestNotificationIdValue;
 
               return (
                 <div
                   key={notificationId}
-                  className="notification-item"
+                  className={`notification-item ${
+                    isLatest ? "latest-notification" : ""
+                  }`}
                   style={{ borderLeft: `4px solid ${getAccentColor(type)}` }}
                 >
                   <div className="notification-item-icon">
@@ -236,6 +286,11 @@ export function DeviceNotificationHistory() {
                       <div>
                         <p className="notification-item-title">
                           {notification.title || t("title")}
+                          {isLatest && (
+                            <span className="notification-latest-badge">
+                              {t("latest")}
+                            </span>
+                          )}
                         </p>
                         <p className="notification-item-subtitle">
                           {notification.deviceName || "System"}
@@ -273,10 +328,16 @@ export function DeviceNotificationHistory() {
                       </div>
                     </div>
                     <p className="notification-item-message">
-                      {notification.message}
+                      {alertDetails.value === null
+                        ? t(`alerts.messages.${alertDetails.kind}`)
+                        : t(`alerts.messages.${alertDetails.kind}`, {
+                            value: alertDetails.value,
+                          })}
                     </p>
                     <div className="notification-metadata">
-                      <span className="notification-type-chip">{type}</span>
+                      <span className="notification-type-chip">
+                        {t(`alerts.labels.${alertDetails.kind}`)}
+                      </span>
                     </div>
                   </div>
                 </div>

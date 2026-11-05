@@ -1,5 +1,24 @@
 {
   "title": "Lịch Sử Thông Báo Thiết Bị",
+  "latest": "Mới nhất",
+  "alerts": {
+    "messages": {
+      "gas": "Cảnh báo khí gas: {{value}}. Hãy kiểm tra an toàn trước khi xác nhận.",
+      "gas_danger": "Nguy hiểm! Khí gas vượt ngưỡng: {{value}}. Rời đi nếu nghi rò rỉ; chỉ xác nhận khi an toàn.",
+      "temp_high": "Nhiệt độ cao: {{value}}°C (≥35°C). Bật quạt/điều hòa hoặc đến nơi mát.",
+      "humid_low": "Độ ẩm thấp: {{value}}% (<30%). Thử bật máy tạo ẩm.",
+      "humid_high": "Độ ẩm cao: {{value}}% (>70%). Thông gió hoặc bật chế độ hút ẩm.",
+      "unknown": "Cảnh báo từ thiết bị"
+    },
+    "labels": {
+      "gas": "Khí gas",
+      "gas_danger": "Khí gas nguy hiểm",
+      "temp_high": "Nhiệt độ cao",
+      "humid_low": "Độ ẩm thấp",
+      "humid_high": "Độ ẩm cao",
+      "unknown": "Cảnh báo khác"
+    }
+  },
   "total": "Tổng Thông Báo",
   "loading": "Đang tải thông báo...",
   "refresh": "Làm mới",

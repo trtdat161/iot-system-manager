@@ -172,10 +172,20 @@ export function FrameLayoutUser() {
                 <div className="d-flex justify-content-between align-items-center user-frame-header-inner">
                   <div className="d-flex align-items-center gap-3 user-frame-left">
                     <span
-                      className="user-frame-notice-bell"
-                      aria-label={t("notification")}
+                      className={`user-frame-notice-bell ${
+                        unreadCount > 0 ? "is-active" : ""
+                      }`}
+                      role="img"
+                      aria-label={t("notification_count", {
+                        count: unreadCount,
+                      })}
                     >
                       <FaBell className="user-frame-notice-icon" />
+                      {unreadCount > 0 && (
+                        <span className="notification-count-badge">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
                     </span>
 
                     <nav

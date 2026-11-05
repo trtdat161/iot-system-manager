@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   FaBell,
@@ -17,9 +18,64 @@ import {
   DisconnectDevice,
   GetConnectedDevice,
 } from "../../api/user/connectDevice";
+import { UserGetHistory } from "../../api/user/notification";
+import { getDeviceAlertDetails } from "../../utils/deviceAlert";
+
+const NOTIFICATION_PAGE_SIZE = 100;
+const ALERT_HISTORY_BATCH_SIZE = 5;
+
+const isUnreadNotification = (notification) =>
+  notification.isRead === false || notification.IsRead === false;
+
+const getAlertField = (alert, lowerCaseKey, upperCaseKey) =>
+  alert[lowerCaseKey] ?? alert[upperCaseKey];
+
+const getAlertTimestamp = (alert) =>
+  getAlertField(alert, "createdAt", "CreatedAt") ??
+  getAlertField(alert, "timestamp", "Timestamp") ??
+  "";
+
+const sameAlert = (left, right) => {
+  const leftId = getAlertField(left, "id", "Id");
+  const rightId = getAlertField(right, "id", "Id");
+
+  if (leftId != null && rightId != null) {
+    return leftId === rightId;
+  }
+
+  return (
+    getAlertField(left, "type", "Type") ===
+      getAlertField(right, "type", "Type") &&
+    getAlertField(left, "message", "Message") ===
+      getAlertField(right, "message", "Message") &&
+    new Date(getAlertTimestamp(left)).getTime() ===
+      new Date(getAlertTimestamp(right)).getTime()
+  );
+};
+
+const mergeAlerts = (currentAlerts, incomingAlerts) => {
+  const merged = [...currentAlerts];
+
+  incomingAlerts.forEach((incomingAlert) => {
+    const existingIndex = merged.findIndex((alert) =>
+      sameAlert(alert, incomingAlert),
+    );
+
+    if (existingIndex === -1) {
+      merged.push(incomingAlert);
+    } else if (
+      getAlertField(incomingAlert, "id", "Id") != null &&
+      getAlertField(merged[existingIndex], "id", "Id") == null
+    ) {
+      merged[existingIndex] = incomingAlert;
+    }
+  });
+
+  return merged;
+};
 
 export function DashboardUser() {
-  const { t } = useTranslation("user_dashboard");
+  const { t, i18n } = useTranslation("user_dashboard");
   const [isConnect, setIsConnect] = useState(false);
   const [isBusy, setIsBusy] = useState(false); // đang gọi API thì khóa cả 2 nút
   const [errorConnect, setErrorConnect] = useState("");
@@ -29,7 +85,7 @@ export function DashboardUser() {
   const [device, setDevice] = useState(null); // thiết bị gần nhất của user (id, macAddress, isConnected)
 
   // chỉ nghe realtime khi đang connected, disconnect thì hook tự dừng (nhờ "if (!mac) return;")
-  const connection = useDeviceSignalR(isConnect ? device?.macAddress : null, {
+  useDeviceSignalR(isConnect ? device?.macAddress : null, {
     onSensorData: (data) => {
       setSensorData({
         gas: data.gas,
@@ -40,7 +96,7 @@ export function DashboardUser() {
     },
 
     onAlert: (data) => {
-      setAlerts((prev) => [data, ...prev].slice(0, 20));
+      setAlerts((prev) => mergeAlerts(prev, [data]));
     },
   });
 
@@ -51,27 +107,77 @@ export function DashboardUser() {
     humidity: null,
     timestamp: null,
   });
-  //State riêng cho danh sách cảnh báo - cộng dồn, không ghi đè
+  // Keep unread alerts in sync with notification history across dashboard visits.
   const [alerts, setAlerts] = useState([]);
+  const [isLoadingAlerts, setIsLoadingAlerts] = useState(true);
+  const [errorAlerts, setErrorAlerts] = useState("");
+
   useEffect(() => {
-    if (!connection) return;
+    let isMounted = true;
 
-    connection.on("ReceiveAlert", (data) => {
-      setAlerts((prev) => [data, ...prev].slice(0, 20)); // giữ tối đa 20 cảnh báo gần nhất, tránh phình state
-    });
+    const loadUnreadAlerts = async () => {
+      try {
+        const firstResponse = await UserGetHistory(1, NOTIFICATION_PAGE_SIZE);
+        const firstPage = firstResponse.data;
+        const unreadAlerts = (Array.isArray(firstPage.data) ? firstPage.data : [])
+          .filter(isUnreadNotification);
+        const totalPages = firstPage.totalPages ?? 1;
 
-    // Cleanup bắt buộc, tránh đăng ký listener trùng khi effect chạy lại
-    return () => {
-      connection.off("ReceiveSensorData");
-      connection.off("ReceiveAlert");
+        for (
+          let firstPageNumber = 2;
+          firstPageNumber <= totalPages;
+          firstPageNumber += ALERT_HISTORY_BATCH_SIZE
+        ) {
+          const pageNumbers = Array.from(
+            {
+              length: Math.min(
+                ALERT_HISTORY_BATCH_SIZE,
+                totalPages - firstPageNumber + 1,
+              ),
+            },
+            (_, index) => firstPageNumber + index,
+          );
+          const responses = await Promise.all(
+            pageNumbers.map((pageNumber) =>
+              UserGetHistory(pageNumber, NOTIFICATION_PAGE_SIZE),
+            ),
+          );
+
+          responses.forEach((response) => {
+            const items = Array.isArray(response.data.data)
+              ? response.data.data
+              : [];
+            unreadAlerts.push(...items.filter(isUnreadNotification));
+          });
+        }
+
+        if (isMounted) {
+          setAlerts((currentAlerts) => mergeAlerts(currentAlerts, unreadAlerts));
+          setErrorAlerts("");
+        }
+      } catch (err) {
+        console.error("Failed to load unread device alerts:", err);
+        if (isMounted) {
+          setErrorAlerts(t("alerts.load_error"));
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingAlerts(false);
+        }
+      }
     };
-  }, [connection]);
+
+    loadUnreadAlerts();
+    return () => {
+      isMounted = false;
+    };
+  }, [t]);
 
   const formatTime = (timestamp) => {
     if (!timestamp) return "--";
     const date = new Date(timestamp);
     if (Number.isNaN(date.getTime())) return timestamp;
-    return date.toLocaleString("vi-VN", {
+    return date.toLocaleString(i18n.language === "vi-VN" ? "vi-VN" : "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -82,24 +188,33 @@ export function DashboardUser() {
   };
 
   const groupedAlerts = useMemo(() => {
-    const groups = [];
+    const groups = new Map();
     alerts.forEach((alert) => {
-      const last = groups[groups.length - 1];
-      const shouldGroup =
-        alert.type === "gas_danger" || alert.type === "heartbeat";
-      if (
-        shouldGroup &&
-        last &&
-        last.type === alert.type &&
-        last.message === alert.message
-      ) {
-        last.count += 1;
-        last.createdAt = alert.createdAt;
+      const details = getDeviceAlertDetails(
+        getAlertField(alert, "message", "Message"),
+        getAlertField(alert, "type", "Type"),
+      );
+      const group = groups.get(details.kind);
+
+      if (group) {
+        group.count += 1;
+        if (
+          new Date(getAlertTimestamp(alert)).getTime() >
+          new Date(getAlertTimestamp(group.alert)).getTime()
+        ) {
+          group.alert = alert;
+          group.details = details;
+        }
       } else {
-        groups.push({ ...alert, count: 1 });
+        groups.set(details.kind, { alert, details, count: 1 });
       }
     });
-    return groups;
+
+    return Array.from(groups.values()).sort(
+      (left, right) =>
+        new Date(getAlertTimestamp(right.alert)).getTime() -
+        new Date(getAlertTimestamp(left.alert)).getTime(),
+    );
   }, [alerts]);
 
   const GetDeviceConnected = async () => {
@@ -185,24 +300,65 @@ export function DashboardUser() {
 
         <div className="alerts-panel">
           <div className="alerts-header">
-            <h3>Cảnh báo gần đây</h3>
-            <span className="alerts-count">
-              {alerts.length} mục · {groupedAlerts.length} nhóm
-            </span>
+            <div>
+              <h3>{t("alerts.title")}</h3>
+              <span className="alerts-count">
+                {t("alerts.summary", {
+                  count: alerts.length,
+                  groups: groupedAlerts.length,
+                })}
+              </span>
+            </div>
+            {groupedAlerts.length > 0 && (
+              <Link
+                to="/user-frame-layout/device-notifications"
+                className="alerts-history-button"
+              >
+                <FaBell aria-hidden="true" />
+                {t("alerts.open_history")}
+              </Link>
+            )}
           </div>
+          {errorAlerts && (
+            <p className="alerts-error" role="alert">
+              {errorAlerts}
+            </p>
+          )}
           <div className="alerts-list">
-            {groupedAlerts.map((a, idx) => (
-              <div key={idx} className="alert-item">
+            {isLoadingAlerts && (
+              <p className="alerts-empty" role="status">
+                {t("alerts.loading")}
+              </p>
+            )}
+            {!isLoadingAlerts &&
+              !errorAlerts &&
+              groupedAlerts.length === 0 && (
+                <p className="alerts-empty">{t("alerts.empty")}</p>
+              )}
+            {groupedAlerts.map(({ alert, details, count }) => (
+              <div key={details.kind} className="alert-item">
                 <div className="alert-body">
                   <div className="alert-label">
-                    <span className={`alert-type ${a.type}`}>[{a.type}]</span>
-                    {a.count > 1 && (
-                      <span className="alert-count-badge">x{a.count}</span>
+                    <span className={`alert-type ${details.kind}`}>
+                      {details.value === null
+                        ? t(`alerts.labels.${details.kind}`)
+                        : t(`alerts.messages.${details.kind}`, {
+                            value: details.value,
+                          })}
+                    </span>
+                    {count > 1 && (
+                      <span
+                        className="alert-count-badge"
+                        aria-label={t("alerts.repeated", { count })}
+                      >
+                        {count}
+                      </span>
                     )}
                   </div>
-                  <div className="alert-message">{a.message}</div>
                 </div>
-                <span className="alert-time">{formatTime(a.createdAt)}</span>
+                <span className="alert-time">
+                  {formatTime(getAlertTimestamp(alert))}
+                </span>
               </div>
             ))}
           </div>
