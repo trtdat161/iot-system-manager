@@ -269,14 +269,19 @@ export function DeviceNotificationHistory() {
                 notification.IsRead === true ||
                 readIds.has(notificationId);
               const isLatest = notificationId === latestNotificationIdValue;
+              const isRecent = pages === 1;
 
               return (
                 <div
                   key={notificationId}
                   className={`notification-item ${
-                    isLatest ? "latest-notification" : ""
+                    isRecent ? "latest-notification" : ""
                   }`}
-                  style={{ borderLeft: `4px solid ${getAccentColor(type)}` }}
+                  style={{
+                    borderLeft: `4px solid ${
+                      isRecent ? "#fbbf24" : getAccentColor(type)
+                    }`,
+                  }}
                 >
                   <div className="notification-item-icon">
                     {getNotificationIcon(type)}

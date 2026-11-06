@@ -114,8 +114,12 @@ export function DashboardUser() {
 
   useEffect(() => {
     let isMounted = true;
+    let isLoading = false;
 
     const loadUnreadAlerts = async () => {
+      if (isLoading) return;
+      isLoading = true;
+
       try {
         const firstResponse = await UserGetHistory(1, NOTIFICATION_PAGE_SIZE);
         const firstPage = firstResponse.data;
@@ -152,7 +156,7 @@ export function DashboardUser() {
         }
 
         if (isMounted) {
-          setAlerts((currentAlerts) => mergeAlerts(currentAlerts, unreadAlerts));
+          setAlerts(unreadAlerts);
           setErrorAlerts("");
         }
       } catch (err) {
@@ -161,15 +165,31 @@ export function DashboardUser() {
           setErrorAlerts(t("alerts.load_error"));
         }
       } finally {
+        isLoading = false;
         if (isMounted) {
           setIsLoadingAlerts(false);
         }
       }
     };
 
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadUnreadAlerts();
+      }
+    };
+
     loadUnreadAlerts();
+    const intervalId = window.setInterval(loadUnreadAlerts, 30000);
+    window.addEventListener("focus", loadUnreadAlerts);
+    window.addEventListener("pageshow", loadUnreadAlerts);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
     return () => {
       isMounted = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", loadUnreadAlerts);
+      window.removeEventListener("pageshow", loadUnreadAlerts);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [t]);
 

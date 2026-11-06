@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   FaBell,
   FaChevronRight,
@@ -25,8 +25,6 @@ export function FrameLayoutUser() {
   const [fullname, setFullname] = useState("");
   const [deviceMac, setDeviceMac] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [, setLiveAlertCount] = useState(0);
-  const unreadCountDelta = useRef(0);
   const location = useLocation();
   const { t } = useTranslation("user_frame_layout");
   const connection = useDeviceSignalR(deviceMac);
@@ -59,7 +57,31 @@ export function FrameLayoutUser() {
         console.log("error:", err?.message || err);
       });
 
+    GetConnectedDevice()
+      .then((response) => {
+        if (isMounted) {
+          setDeviceMac(
+            response.data?.macAddress ?? response.data?.MacAddress ?? null,
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load connected device for notifications:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    let isLoading = false;
+
     const loadNotificationCounts = async () => {
+      if (isLoading) return;
+      isLoading = true;
+
       try {
         const firstResponse = await UserGetHistory(1, NOTIFICATION_PAGE_SIZE);
         const firstPage = firstResponse.data;
@@ -91,38 +113,41 @@ export function FrameLayoutUser() {
         }
 
         if (isMounted) {
-          setUnreadCount(Math.max(0, count + unreadCountDelta.current));
+          setUnreadCount(count);
         }
       } catch (err) {
         console.error("Failed to load unread notification count:", err);
+      } finally {
+        isLoading = false;
+      }
+    };
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadNotificationCounts();
       }
     };
 
     loadNotificationCounts();
-    GetConnectedDevice()
-      .then((response) => {
-        if (isMounted) {
-          setDeviceMac(
-            response.data?.macAddress ?? response.data?.MacAddress ?? null,
-          );
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load connected device for notifications:", err);
-      });
+    const intervalId = window.setInterval(loadNotificationCounts, 30000);
+    window.addEventListener("focus", loadNotificationCounts);
+    window.addEventListener("pageshow", loadNotificationCounts);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
 
     return () => {
       isMounted = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", loadNotificationCounts);
+      window.removeEventListener("pageshow", loadNotificationCounts);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!connection) return;
 
     const handleReceiveAlert = () => {
-      unreadCountDelta.current += 1;
       setUnreadCount((count) => count + 1);
-      setLiveAlertCount((count) => count + 1);
     };
 
     connection.on("ReceiveAlert", handleReceiveAlert);
@@ -130,7 +155,6 @@ export function FrameLayoutUser() {
   }, [connection]);
 
   const handleNotificationRead = useCallback(() => {
-    unreadCountDelta.current -= 1;
     setUnreadCount((count) => Math.max(0, count - 1));
   }, []);
 

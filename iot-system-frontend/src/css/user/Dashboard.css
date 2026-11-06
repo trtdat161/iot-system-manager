@@ -14,9 +14,11 @@
 .user-dashboard {
   min-height: calc(100vh - 40px);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: 14px;
   padding: 14px;
+  min-width: 0;
   color: var(--user-text);
   position: relative;
   isolation: isolate;
@@ -54,6 +56,7 @@
 .user-dashboard > * {
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .user-glass-panel {
@@ -468,14 +471,16 @@
 .alert-type {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: max-content;
+  justify-content: flex-start;
+  min-width: 0;
+  max-width: 100%;
   padding: 4px 8px;
   border-radius: 999px;
   background: rgba(251, 113, 133, 0.18);
   color: #fecdd3;
   font-size: 0.82rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .alert-count-badge {
@@ -507,6 +512,14 @@
     padding: 10px;
   }
 
+  .test-realtime,
+  .alerts-panel,
+  .alerts-list,
+  .alert-item,
+  .alert-body {
+    min-width: 0;
+  }
+
   .user-dashboard-top,
   .title-info {
     align-items: flex-start;
@@ -535,6 +548,12 @@
   .alert-item {
     grid-template-columns: 1fr;
     gap: 10px;
+    padding: 10px;
+  }
+
+  .alert-type {
+    border-radius: 10px;
+    font-size: 0.78rem;
   }
 
   .alerts-header {
@@ -542,8 +561,20 @@
     flex-direction: column;
   }
 
+  .update-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .update-row strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
   .alert-time {
     justify-self: flex-start;
+    white-space: normal;
   }
 }
 

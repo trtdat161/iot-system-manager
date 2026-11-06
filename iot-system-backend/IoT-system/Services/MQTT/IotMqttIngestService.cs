@@ -61,40 +61,50 @@ namespace IoT_system.Services.Mqtt
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // khởi tạo mqtt client, đóng vai trò như “xưởng sản xuất” để tạo ra các thành phần MQTT
             var factory = new MqttFactory();
             client = factory.CreateMqttClient();
 
             var options = new MqttClientOptionsBuilder()
-                .WithTcpServer("broker.hivemq.com", 1883)// đăng ký vào địa chỉ máy chủ, broker public
-                .WithClientId("backend_subscriber")// hiểu như là tài khoản của BE trong hệ thống
+                .WithTcpServer("broker.hivemq.com", 1883)
+                .WithClientId("backend_subscriber_" + Guid.NewGuid().ToString("N"))
                 .Build();
 
-            // ConnectedAsync => khi client connect ok thì chạy code trong này
             client.ConnectedAsync += async e =>
             {
-                /* đăng ký thành công tự động subscrice topic */
                 await client.SubscribeAsync("devices/announce");
                 await client.SubscribeAsync("devices/+/data");
 
                 logger.LogInformation("Subscribed topics");
             };
 
-            client.ApplicationMessageReceivedAsync += HandleMessage;// Khi MQTT Client nhận được một message từ Broker thì gọi HandleMessage (tức khi nhận đc data từ esp thì chạy).
+            client.DisconnectedAsync += e =>
+            {
+                logger.LogWarning("MQTT subscriber disconnected. Reason: {Reason}", e.Reason);
+                return Task.CompletedTask;
+            };
 
-            await client.ConnectAsync(options, stoppingToken);// Thiết lập kết nối TCP + MQTT session với broker, hiểu như là đag đăng nhập vào broker
+            client.ApplicationMessageReceivedAsync += HandleMessage;
 
-            /* xử lý dừng ở while tức là cho hệ thống chay liên tục để đảm bảo puslish,..
-             * và stoppingToken hay vì kiểu nếu sau bị dừng cho biên bản, môi trường deloy,... khiến app bị dừng thì
-             * while lúc này nó sẽ là false và thoát lặp ko lắng nghe gì ko chạy liên tục nữa */
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(1000, stoppingToken);// stoppingToken hệ thống chưa yêu cầu dừng thì cứ mỗi 1 giây thức dậy một lần
-            }   
+                if (!client.IsConnected)
+                {
+                    try
+                    {
+                        await client.ConnectAsync(options, stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "MQTT subscriber connect failed, retry in 5s");
+                    }
+                }
+
+                await Task.Delay(5000, stoppingToken);
+            }
         }
 
         /* ------------------------------------- XỬ LÝ CHÍNH ---------------------------------- */
-              /* =============> backend nhận dữ liệu ESP gửi lên và xử lý <============= */
+        /* =============> backend nhận dữ liệu ESP gửi lên và xử lý <============= */
         private async Task HandleMessage(MqttApplicationMessageReceivedEventArgs e)
         {
             var topic = e.ApplicationMessage.Topic;// lấy topic
