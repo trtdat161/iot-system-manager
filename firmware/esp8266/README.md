@@ -1,55 +1,61 @@
 # ESP8266 Firmware
 
-This folder contains the embedded device source at [`src/device.cpp`](./src/device.cpp). It connects an ESP8266 to Wi-Fi, announces the device over MQTT, reads environmental sensors after the device is claimed, and displays its state on an LCD.
+Firmware for the DTECH IoT device. The ESP8266 connects to Wi-Fi and the MQTT broker, announces itself until claimed by the backend, then reports sensor data and displays its status on an LCD.
 
-## Hardware referenced by the source
+## Hardware
 
-| Component | Connection in source | Notes |
+| Component | Connection | Notes |
 |---|---|---|
 | ESP8266 development board | — | The exact board variant is not specified. |
-| DHT11 temperature/humidity sensor | DATA → `D5` | Firmware uses the DHT11 sensor type. |
-| Analog gas sensor/module | Analog output → `A0` | The sensor model is not specified; readings are raw ADC values. |
-| 16x4 I2C LCD | SDA → `D2`, SCL → `D1` | I2C address is `0x27`. |
+| DHT11 temperature/humidity sensor | DATA → `D5` | Uses the DHT11 sensor type. |
+| Analog gas sensor/module | Analog output → `A0` | The model is not specified; readings are raw ADC values. |
+| 16×2 I2C LCD | SDA → `D2`, SCL → `D1` | I2C address is `0x27`. |
 
-Use a common ground between the board and peripherals. Confirm the board's `A0` input range, sensor supply voltage, and LCD logic-level requirements before connecting hardware; ESP8266 board variants do not all expose the same analog-input range. The repository has no schematic or bill of materials.
+Use a common ground. Before wiring, confirm the board's `A0` input range, sensor supply voltage, and LCD logic-level requirements. ESP8266 board variants differ, and the repository does not include a schematic or bill of materials.
 
-## Firmware behavior
+## Setup and operation
 
-- On first Wi-Fi setup, WiFiManager opens a configuration access point named `ESP_SETUP`.
-- The device identifier is its Wi-Fi MAC address with colons removed.
-- While unclaimed, the device publishes an announcement every 10 seconds.
-- After receiving `claimed`, it waits 5 seconds, then publishes sensor readings every 5 seconds while enabled.
-- Claim state is persisted in EEPROM. MQTT commands on the device command topic are `claimed`, `unclaim`, `on`, and `off`.
-- Gas readings above `70` are reported as `gas`; readings above `100` are reported as `gas_danger`. Otherwise the gas type is `heartbeat`.
-- Temperature at or above `35°C`, humidity below `30%`, and humidity above `70%` set separate environmental alert fields.
-- If a DHT11 read fails after a valid reading, the last valid temperature and humidity are reused.
+1. Power on the ESP8266. If it has no saved Wi-Fi configuration, WiFiManager starts the `ESP_SETUP` access point so Wi-Fi credentials can be configured.
+2. The device identifier is its Wi-Fi MAC address with colons removed.
+3. Until claimed, the device publishes its MAC address every 10 seconds on `devices/announce`.
+4. The backend claims the device by publishing `claimed` to its command topic. Claim state is saved in EEPROM and restored on restart. The firmware waits 5 seconds after a new claim before sending sensor data.
+5. While claimed and enabled, the device reads sensors and publishes data every 5 seconds. `on` and `off` MQTT commands enable or disable reporting; `unclaim` clears the saved claim state.
+6. The LCD rotates between system status, temperature/humidity, and gas status.
 
-Gas thresholds are raw ADC values, not calibrated concentration units. Calibrate them for the selected sensor and board before relying on alerts.
+Gas readings are filtered using the median of five ADC samples. A warning is confirmed at or above `500`, danger at or above `800`, and the gas alert clears after readings fall below `450`. Two consecutive readings are required to confirm or clear a state. These are raw ADC values, not calibrated gas concentration units; calibrate for the selected sensor and board before relying on alerts.
+
+Environmental alerts use these thresholds:
+
+- Temperature: `>= 35°C`
+- Low humidity: `<= 30%`
+- High humidity: `>= 70%`
+
+If a DHT11 read fails after a valid reading, the last valid temperature and humidity are reused. Until the first valid reading, those fields are omitted from the MQTT payload.
 
 ## MQTT interface
 
-The current source uses `broker.hivemq.com:1883`.
+The broker is `broker.hivemq.com:1883` (plain MQTT, no authentication or TLS).
 
 | Direction | Topic | Payload |
 |---|---|---|
 | Device → broker | `devices/announce` | `{"mac":"<MAC-without-colons>"}` |
-| Device → broker | `devices/<MAC>/data` | JSON containing `temperature`, `humidity`, `gas`, `tempAlert`, `humidLowAlert`, `humidHighAlert`, `type`, `alert`, and `systemStatus` |
-| Firmware subscribes to | `devices/<MAC>/command` | Recognizes `claimed`, `unclaim`, `on`, and `off`. The backend currently publishes `claimed` during the initial claim flow; publishing the other commands is not implemented there. |
+| Device → broker | `devices/<MAC>/data` | JSON sensor data and alert state |
+| Firmware subscribes to | `devices/<MAC>/command` | `claimed`, `unclaim`, `on`, or `off` |
 
-`type` is `gas`, `gas_danger`, or `heartbeat`; the `alert` boolean describes gas alerts. Environmental alerts are conveyed by the three DHT-related boolean fields. The backend subscribes to the announcement and data topics.
+The data payload can include `temperature`, `humidity`, `gas`, `tempAlert`, `humidLowAlert`, `humidHighAlert`, `alert`, `systemStatus`, and `type`. Temperature and humidity are sent after a valid DHT11 reading; `gas` is sent only while a gas alert is active. `type` is `gas_danger`, `gas`, `environment`, or `heartbeat`. Environmental alert booleans are separate from the gas `type`. The backend subscribes to `devices/announce` and `devices/+/data`.
 
-## Dependencies and build status
+The public broker connection is not suitable for production without appropriate broker authentication, transport security, and topic access controls.
 
-The source includes these Arduino/ESP8266 libraries:
+## Build and flash
 
-- ESP8266 Arduino core (`ESP8266WiFi`, `EEPROM`)
+The source is [`src/iot_device.ino`](./src/iot_device.ino). This directory does not currently include an Arduino project configuration or a pinned dependency manifest, so a reproducible build command is not available.
+
+To build in Arduino IDE, install the ESP8266 board platform and these libraries, then open the source in a sketch configured for the correct ESP8266 board:
+
 - PubSubClient
 - WiFiManager
 - ArduinoJson
 - LiquidCrystal_I2C
-- DHT sensor library (`DHT`)
-- Wire (provided by the Arduino core)
+- DHT sensor library
 
-The repository currently contains only `src/device.cpp`; it does not contain an Arduino sketch entry point, `platformio.ini`, or other board/build configuration. In addition, `device.cpp` currently declares the globals `isClaimed`, `deviceEnabled`, and `claimedAt` twice, which prevents compilation until the duplicate declarations are removed. A reproducible build and flash command cannot yet be provided from this folder alone. Add the source to a configured ESP8266 Arduino project, resolve the duplicate declarations, and select the board and required libraries before compiling.
-
-The broker address, port, and thresholds are hard-coded in the source. The public broker connection uses plain MQTT without authentication or TLS, so it should not be treated as a production-ready configuration.
+`ESP8266WiFi`, `Wire`, and `EEPROM` are provided by the ESP8266 Arduino core. Select the correct board and upload port in Arduino IDE before compiling and flashing. The broker address, port, and sensor thresholds are currently hard-coded in the source.
