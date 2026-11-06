@@ -1,3 +1,4 @@
+
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <WiFiManager.h>
@@ -22,12 +23,17 @@ PubSubClient mqttClient(espClient);
 #define DHT_TYPE DHT11
 #define GAS_PIN A0
 
-#define GAS_THRESHOLD 70
-#define GAS_DANGER 100
+// ================= MQ-2 CONFIG =================
+#define GAS_THRESHOLD 500
+#define GAS_DANGER 800
+#define GAS_RECOVERY 450
+
+#define GAS_CONFIRM_COUNT 2
+#define GAS_CLEAR_COUNT 2
 
 #define EEPROM_CLAIMED_ADDR 0
 
-// ------ DHT11 ALERT ------
+// ================= DHT11 ALERT =================
 #define TEMP_THRESHOLD 35
 #define HUMID_DRY_LOW 30
 #define HUMID_WET_HIGH 70
@@ -54,25 +60,24 @@ unsigned long lastAnnounce = 0;
 const unsigned long SENSOR_INTERVAL = 5000;
 const unsigned long ANNOUNCE_INTERVAL = 10000;
 
+// Thời gian chờ sau khi claim, không phải MQ-2 warmup
 const unsigned long WARMUP_TIME = 5000;
 
 // ================= DHT STATE =================
-
 float lastTemp = 0;
 float lastHumid = 0;
 
 bool hasValidDht = false;
 
-// ================= MQ2 WARMUP =================
+// ================= MQ-2 ALERT STATE =================
+int gasWarningCount = 0;
+int gasDangerCount = 0;
+int gasNormalCount = 0;
 
-unsigned long mq2StartedAt = 0;
-
-const unsigned long MQ2_WARMUP_TIME = 120000; // 2 phút
-
-bool mq2Ready = false;
+bool gasAlertState = false;
+bool gasDangerState = false;
 
 // ================= LCD DISPLAY =================
-
 unsigned long lastLcdUpdate = 0;
 
 const unsigned long LCD_INTERVAL = 2000;
@@ -90,7 +95,6 @@ bool currentGasDanger = false;
 String currentSystemStatus = "normal";
 
 // ================= WIFI =================
-
 void setupWiFi()
 {
     WiFiManager wm;
@@ -109,11 +113,9 @@ void setupWiFi()
     }
 
     deviceMac = WiFi.macAddress();
-
     deviceMac.replace(":", "");
 
     topicData = "devices/" + deviceMac + "/data";
-
     topicCommand = "devices/" + deviceMac + "/command";
 
     lcd.setCursor(0, 0);
@@ -124,59 +126,61 @@ void setupWiFi()
 }
 
 // ================= MQTT CALLBACK =================
-
 void callback(char* topic, byte* payload, unsigned int length)
 {
     String msg = "";
 
-    for (int i = 0; i < length; i++)
+    for (unsigned int i = 0; i < length; i++)
+    {
         msg += (char)payload[i];
+    }
 
     Serial.print(">>> MQTT CMD received: ");
     Serial.println(msg);
 
     if (msg == "claimed")
     {
-        isClaimed = true;
+        if (!isClaimed)
+        {
+            isClaimed = true;
+            claimedAt = millis();
 
-        claimedAt = millis();
+            EEPROM.write(EEPROM_CLAIMED_ADDR, 1);
+            EEPROM.commit();
 
-        EEPROM.write(EEPROM_CLAIMED_ADDR, 1);
-
-        EEPROM.commit();
+            Serial.println("DEVICE CLAIMED SUCCESSFULLY");
+        }
 
         lastAnnounce = 0;
 
         lcd.setCursor(0, 1);
         lcd.print("STATUS: CLAIMED ");
-
     }
     else if (msg == "unclaim")
     {
         isClaimed = false;
 
         EEPROM.write(EEPROM_CLAIMED_ADDR, 0);
-
         EEPROM.commit();
 
         lastAnnounce = 0;
 
         lcd.setCursor(0, 1);
         lcd.print("STATUS: UNCLAIM ");
-
     }
     else if (msg == "on")
     {
         deviceEnabled = true;
+        Serial.println("DEVICE ENABLED");
     }
     else if (msg == "off")
     {
         deviceEnabled = false;
+        Serial.println("DEVICE DISABLED");
     }
 }
 
 // ================= MQTT RECONNECT =================
-
 void reconnectMQTT()
 {
     while (!mqttClient.connected())
@@ -200,7 +204,6 @@ void reconnectMQTT()
         else
         {
             Serial.print("FAILED, rc=");
-
             Serial.println(mqttClient.state());
 
             delay(3000);
@@ -209,7 +212,6 @@ void reconnectMQTT()
 }
 
 // ================= ANNOUNCE =================
-
 void sendAnnounce()
 {
     StaticJsonDocument<64> doc;
@@ -223,14 +225,11 @@ void sendAnnounce()
     bool sent = mqttClient.publish(topicAnnounce, buf);
 
     Serial.print("Announce sent: ");
-
     Serial.print(sent ? "OK -> " : "FAILED -> ");
-
     Serial.println(buf);
 }
 
 // ================= LCD HELPER =================
-
 void printLCDLine(int row, String content)
 {
     lcd.setCursor(0, row);
@@ -249,7 +248,6 @@ void printLCDLine(int row, String content)
 }
 
 // ================= LCD DISPLAY =================
-
 void updateLCD()
 {
     unsigned long now = millis();
@@ -326,247 +324,268 @@ void updateLCD()
         // ================= PAGE 3 =================
         case 2:
 
-            if (!mq2Ready)
+            if (currentGasDanger)
             {
-                printLCDLine(0, "MQ2 WARMING UP");
-
-                printLCDLine(1, "Please wait...");
+                printLCDLine(0, "GAS: DANGER!");
+            }
+            else if (currentGasAlert)
+            {
+                printLCDLine(0, "GAS: WARNING!");
             }
             else
             {
-                if (currentGasDanger)
-                {
-                    printLCDLine(0, "GAS: DANGER!");
-                }
-                else if (currentGasAlert)
-                {
-                    printLCDLine(0, "GAS: WARNING!");
-                }
-                else
-                {
-                    printLCDLine(0, "GAS: NORMAL");
-                }
-
-                printLCDLine(
-                    1,
-                    "ADC: " + String(currentGas)
-                );
+                printLCDLine(0, "GAS: NORMAL");
             }
+
+            printLCDLine(
+                1,
+                "ADC: " + String(currentGas)
+            );
 
             break;
     }
 }
 
-// ================= SENSOR =================
+// ================= MQ-2 FILTER =================
+int readGasFiltered()
+{
+    int samples[5];
 
+    // Read 5 samples
+    for (int i = 0; i < 5; i++)
+    {
+        samples[i] = analogRead(GAS_PIN);
+        delay(20);
+    }
+
+    // Sort samples ascending
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = i + 1; j < 5; j++)
+        {
+            if (samples[i] > samples[j])
+            {
+                int temp = samples[i];
+                samples[i] = samples[j];
+                samples[j] = temp;
+            }
+        }
+    }
+
+    // Return median value
+    return samples[2];
+}
+
+// ================= SENSOR =================
 void sendSensor()
 {
-    float t = dht.readTemperature();
+    // ================= DHT11 =================
 
+    float t = dht.readTemperature();
     float h = dht.readHumidity();
 
-    int gas = analogRead(GAS_PIN);
-
-    // ================= DHT VALIDATION =================
-
-    if (isnan(t) || isnan(h))
-    {
-        t = lastTemp;
-
-        h = lastHumid;
-    }
-    else
+    // Keep the latest valid values if DHT11 read fails
+    if (!isnan(t) && !isnan(h))
     {
         lastTemp = t;
-
         lastHumid = h;
-
         hasValidDht = true;
+    }
+    else if (hasValidDht)
+    {
+        t = lastTemp;
+        h = lastHumid;
     }
 
     currentTemp = t;
-
     currentHumid = h;
 
+    // ================= MQ-2 =================
+
+    int gas = readGasFiltered();
+
+    // GAS DANGER
+    if (gas >= GAS_DANGER)
+    {
+        gasDangerCount++;
+        gasWarningCount = 0;
+        gasNormalCount = 0;
+
+        if (gasDangerCount >= GAS_CONFIRM_COUNT)
+        {
+            gasDangerState = true;
+            gasAlertState = true;
+        }
+    }
+
+    // GAS WARNING
+    else if (gas >= GAS_THRESHOLD)
+    {
+        gasWarningCount++;
+        gasDangerCount = 0;
+        gasNormalCount = 0;
+
+        if (gasWarningCount >= GAS_CONFIRM_COUNT)
+        {
+            gasAlertState = true;
+            gasDangerState = false;
+        }
+    }
+
+    // GAS NORMAL - HYSTERESIS
+    else if (gas < GAS_RECOVERY)
+    {
+        gasNormalCount++;
+        gasWarningCount = 0;
+        gasDangerCount = 0;
+
+        if (gasNormalCount >= GAS_CLEAR_COUNT)
+        {
+            gasAlertState = false;
+            gasDangerState = false;
+        }
+    }
+
+    // HOLD CURRENT STATE: 180-249
+    else
+    {
+        gasWarningCount = 0;
+        gasDangerCount = 0;
+        gasNormalCount = 0;
+    }
+
+    // Final gas alert states
+    bool gasAlert = gasAlertState;
+    bool gasDanger = gasDangerState;
+
+    // Update LCD data
     currentGas = gas;
-
-    // ================= MQ2 WARMUP =================
-
-    mq2Ready = (
-        millis() - mq2StartedAt >= MQ2_WARMUP_TIME
-    );
-
-    // ================= DHT ALERT =================
-
-    bool tempAlert =
-        hasValidDht && (t >= TEMP_THRESHOLD);
-
-    bool humidLowAlert =
-        hasValidDht && (h < HUMID_DRY_LOW);
-
-    bool humidHighAlert =
-        hasValidDht && (h > HUMID_WET_HIGH);
-
-    bool envAlert =
-        tempAlert || humidLowAlert || humidHighAlert;
-
-    // ================= GAS ALERT =================
-
-    bool gasAlert =
-        mq2Ready && (gas > GAS_THRESHOLD);
-
-    bool gasDanger =
-        mq2Ready && (gas > GAS_DANGER);
-
     currentGasAlert = gasAlert;
-
     currentGasDanger = gasDanger;
+
+    // ================= DHT11 ALERT =================
+
+    bool tempAlert = hasValidDht && (t >= TEMP_THRESHOLD);
+    bool humidLowAlert = hasValidDht && (h <= HUMID_DRY_LOW);
+    bool humidHighAlert = hasValidDht && (h >= HUMID_WET_HIGH);
+
+    bool envAlert = tempAlert || humidLowAlert || humidHighAlert;
+    bool alert = gasAlert || envAlert;
 
     // ================= SYSTEM STATUS =================
 
-    String systemStatus = "normal";
-
-    if (gasDanger)
-    {
-        systemStatus = "gas_danger";
-    }
-    else if (gasAlert)
-    {
-        systemStatus = "gas_alert";
-    }
-    else if (envAlert)
-    {
-        systemStatus = "env_warning";
-    }
-
+    String systemStatus = alert ? "danger" : "normal";
     currentSystemStatus = systemStatus;
 
-    // ================= DEBUG SERIAL =================
-
-    Serial.println();
-
-    Serial.println("===== SENSOR DATA =====");
-
-    Serial.print("Temperature: ");
-
-    Serial.println(t);
-
-    Serial.print("Humidity: ");
-
-    Serial.println(h);
-
-    Serial.print("Gas ADC: ");
-
-    Serial.println(gas);
-
-    Serial.print("MQ2 Ready: ");
-
-    Serial.println(mq2Ready);
-
-    Serial.print("Gas Alert: ");
-
-    Serial.println(gasAlert);
-
-    Serial.print("Gas Danger: ");
-
-    Serial.println(gasDanger);
-
-    Serial.print("Environment Alert: ");
-
-    Serial.println(envAlert);
-
-    Serial.print("System Status: ");
-
-    Serial.println(systemStatus);
-
-    // ================= MQTT PUBLISH =================
-
-    // NO ALERT -> SKIP PUBLISH
-
-    if (!gasAlert && !envAlert)
-    {
-        Serial.println("MQTT: No alert - Skip publishing");
-
-        return;
-    }
-
-    // ================= JSON PAYLOAD =================
-
-    String type;
-
-    if (gasDanger)
-    {
-        type = "gas_danger";
-    }
-    else if (gasAlert)
-    {
-        type = "gas";
-    }
-    else
-    {
-        type = "heartbeat";
-    }
+    // ================= JSON =================
 
     StaticJsonDocument<256> doc;
 
-    doc["temperature"] = t;
+    // Send DHT11 data in every 5-second heartbeat
+    if (hasValidDht)
+    {
+        doc["temperature"] = t;
+        doc["humidity"] = h;
+    }
 
-    doc["humidity"] = h;
-
-    // Chỉ gửi ADC gas khi MQ2 đã qua warmup
-    if (mq2Ready)
+    // Send gas value only when MQ-2 gas alert is confirmed
+    if (gasAlert)
     {
         doc["gas"] = gas;
     }
 
     doc["tempAlert"] = tempAlert;
-
     doc["humidLowAlert"] = humidLowAlert;
-
     doc["humidHighAlert"] = humidHighAlert;
 
-    doc["type"] = type;
-
-    // Giữ nguyên logic alert gas như firmware ban đầu
-    doc["alert"] = gasAlert;
-
+    doc["alert"] = alert;
     doc["systemStatus"] = systemStatus;
 
-    char buf[256];
+    if (gasDanger)
+    {
+        doc["type"] = "gas_danger";
+    }
+    else if (gasAlert)
+    {
+        doc["type"] = "gas";
+    }
+    else if (envAlert)
+    {
+        doc["type"] = "environment";
+    }
+    else
+    {
+        doc["type"] = "heartbeat";
+    }
 
-    serializeJson(doc, buf);
+    // ================= MQTT PUBLISH =================
 
-    bool published = mqttClient.publish(
+    char buffer[256];
+    size_t n = serializeJson(doc, buffer);
+
+    bool success = mqttClient.publish(
         topicData.c_str(),
-        buf
+        (const uint8_t*)buffer,
+        n
     );
 
+    Serial.println("--------------------------------");
     Serial.print("MQTT PUBLISH: ");
+    Serial.println(success ? "SUCCESS" : "FAILED");
 
-    Serial.println(published ? "SUCCESS" : "FAILED");
+    if (hasValidDht)
+    {
+        Serial.print("Temperature: ");
+        Serial.println(t);
 
-    Serial.println(buf);
+        Serial.print("Humidity: ");
+        Serial.println(h);
+    }
+    else
+    {
+        Serial.println("DHT11: READ FAILED");
+    }
+
+    Serial.print("Gas ADC: ");
+    Serial.println(gas);
+
+    Serial.print("Gas status: ");
+
+    if (gasDanger)
+    {
+        Serial.println("DANGER");
+    }
+    else if (gasAlert)
+    {
+        Serial.println("WARNING");
+    }
+    else
+    {
+        Serial.println("NORMAL");
+    }
+
+    Serial.print("Alert: ");
+    Serial.println(alert);
+
+    Serial.print("System status: ");
+    Serial.println(systemStatus);
+
+    Serial.println("--------------------------------");
 }
 
 // ================= SETUP =================
-
 void setup()
 {
     Serial.begin(115200);
 
     Serial.println();
 
-    // MQ2 START TIME
-    mq2StartedAt = millis();
-
     Wire.begin(D2, D1);
 
     lcd.init();
-
     lcd.backlight();
 
     lcd.setCursor(0, 0);
-
     lcd.print("DTECH IOT SYSTEM");
 
     dht.begin();
@@ -577,30 +596,35 @@ void setup()
 
     EEPROM.begin(4);
 
-    isClaimed = EEPROM.read(EEPROM_CLAIMED_ADDR) == 1;
+    byte claimedValue = EEPROM.read(EEPROM_CLAIMED_ADDR);
+
+    isClaimed = (claimedValue == 1);
+
+    Serial.print("EEPROM CLAIMED: ");
+    Serial.println(isClaimed);
 
     if (isClaimed)
     {
         claimedAt = millis() - WARMUP_TIME - 1000;
 
-        Serial.println("EEPROM: already claimed, skip warmup");
-
         lcd.setCursor(0, 1);
-
         lcd.print("STATUS: CLAIMED ");
+    }
+    else
+    {
+        lcd.setCursor(0, 1);
+        lcd.print("WAITING CLAIM   ");
     }
 
     // ================= MQTT =================
 
     mqttClient.setServer(mqtt_broker, mqtt_port);
-
     mqttClient.setCallback(callback);
 
     reconnectMQTT();
 }
 
 // ================= LOOP =================
-
 void loop()
 {
     if (!mqttClient.connected())
@@ -621,7 +645,6 @@ void loop()
         lastAnnounce = now;
 
         lcd.setCursor(0, 1);
-
         lcd.print("WAITING CLAIM   ");
     }
 
@@ -634,23 +657,18 @@ void loop()
     )
     {
         Serial.print("isClaimed=");
-
         Serial.print(isClaimed);
 
         Serial.print(" deviceEnabled=");
-
         Serial.print(deviceEnabled);
 
         Serial.print(" now=");
-
         Serial.print(now);
 
         Serial.print(" claimedAt=");
-
         Serial.print(claimedAt);
 
         Serial.print(" diff=");
-
         Serial.println(now - claimedAt);
 
         if (now - claimedAt > WARMUP_TIME)
@@ -658,13 +676,11 @@ void loop()
             sendSensor();
 
             lcd.setCursor(0, 0);
-
             lcd.print("SENDING DATA    ");
         }
         else
         {
             lcd.setCursor(0, 1);
-
             lcd.print("WARMING UP...   ");
         }
 
