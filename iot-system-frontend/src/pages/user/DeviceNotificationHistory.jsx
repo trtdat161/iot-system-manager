@@ -257,7 +257,11 @@ export function DeviceNotificationHistory() {
         {!loading && notifications.length > 0 && (
           <div className="notification-list">
             {notifications.map((notification) => {
-              const sentAt = notification.timestamp || notification.createdAt;
+              const sentAt =
+                notification.createdAt ??
+                notification.CreatedAt ??
+                notification.timestamp ??
+                notification.Timestamp;
               const notificationId = notification.id ?? notification.Id;
               const alertDetails = getDeviceAlertDetails(
                 notification.message ?? notification.Message,
@@ -269,17 +273,20 @@ export function DeviceNotificationHistory() {
                 notification.IsRead === true ||
                 readIds.has(notificationId);
               const isLatest = notificationId === latestNotificationIdValue;
-              const isRecent = pages === 1;
+              const isToday =
+                sentAt &&
+                dayjs(sentAt).isValid() &&
+                dayjs(sentAt).isSame(dayjs(), "day");
 
               return (
                 <div
                   key={notificationId}
                   className={`notification-item ${
-                    isRecent ? "latest-notification" : ""
+                    isToday ? "latest-notification" : ""
                   }`}
                   style={{
                     borderLeft: `4px solid ${
-                      isRecent ? "#fbbf24" : getAccentColor(type)
+                      isToday ? "#fbbf24" : getAccentColor(type)
                     }`,
                   }}
                 >

@@ -83,6 +83,7 @@ export function DashboardUser() {
   const [errorDevice, setErrorDevice] = useState("");
   const [isLoadingDevice, setIsLoadingDevice] = useState(true);
   const [device, setDevice] = useState(null); // thiết bị gần nhất của user (id, macAddress, isConnected)
+  const [alertCounts, setAlertCounts] = useState({});
 
   // chỉ nghe realtime khi đang connected, disconnect thì hook tự dừng (nhờ "if (!mac) return;")
   useDeviceSignalR(isConnect ? device?.macAddress : null, {
@@ -93,6 +94,7 @@ export function DashboardUser() {
         humidity: data.humidity,
         timestamp: data.timestamp,
       });
+      setAlertCounts(data.alertCounts ?? {});
     },
 
     onAlert: (data) => {
@@ -123,8 +125,9 @@ export function DashboardUser() {
       try {
         const firstResponse = await UserGetHistory(1, NOTIFICATION_PAGE_SIZE);
         const firstPage = firstResponse.data;
-        const unreadAlerts = (Array.isArray(firstPage.data) ? firstPage.data : [])
-          .filter(isUnreadNotification);
+        const unreadAlerts = (
+          Array.isArray(firstPage.data) ? firstPage.data : []
+        ).filter(isUnreadNotification);
         const totalPages = firstPage.totalPages ?? 1;
 
         for (
@@ -277,6 +280,7 @@ export function DashboardUser() {
     try {
       await DisconnectDevice(deviceId);
       setIsConnect(false); // giữ nguyên device để nút Connect còn dùng được
+      setAlertCounts({});
     } catch (err) {
       console.error("Failed to disconnect from the device:", err);
       setErrorDisconnect(t("connection.errors.disconnect"));
@@ -350,37 +354,44 @@ export function DashboardUser() {
                 {t("alerts.loading")}
               </p>
             )}
-            {!isLoadingAlerts &&
-              !errorAlerts &&
-              groupedAlerts.length === 0 && (
-                <p className="alerts-empty">{t("alerts.empty")}</p>
-              )}
-            {groupedAlerts.map(({ alert, details, count }) => (
-              <div key={details.kind} className="alert-item">
-                <div className="alert-body">
-                  <div className="alert-label">
-                    <span className={`alert-type ${details.kind}`}>
-                      {details.value === null
-                        ? t(`alerts.labels.${details.kind}`)
-                        : t(`alerts.messages.${details.kind}`, {
-                            value: details.value,
-                          })}
-                    </span>
-                    {count > 1 && (
-                      <span
-                        className="alert-count-badge"
-                        aria-label={t("alerts.repeated", { count })}
-                      >
-                        {count}
+            {!isLoadingAlerts && !errorAlerts && groupedAlerts.length === 0 && (
+              <p className="alerts-empty">{t("alerts.empty")}</p>
+            )}
+            {groupedAlerts.map(({ alert, details, count }) => {
+              const totalCount = Math.max(
+                count,
+                alertCounts[details.kind] ?? 0,
+              );
+
+              return (
+                <div key={details.kind} className="alert-item">
+                  <div className="alert-body">
+                    <div className="alert-label">
+                      <span className={`alert-type ${details.kind}`}>
+                        {details.value === null
+                          ? t(`alerts.labels.${details.kind}`)
+                          : t(`alerts.messages.${details.kind}`, {
+                              value: details.value,
+                            })}
                       </span>
-                    )}
+                      {totalCount > 1 && (
+                        <span
+                          className="alert-count-badge"
+                          aria-label={t("alerts.repeated", {
+                            count: totalCount,
+                          })}
+                        >
+                          {totalCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <span className="alert-time">
+                    {formatTime(getAlertTimestamp(alert))}
+                  </span>
                 </div>
-                <span className="alert-time">
-                  {formatTime(getAlertTimestamp(alert))}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

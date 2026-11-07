@@ -46,6 +46,9 @@ namespace IoT_system.Services.Mqtt
          * Mất key => sensor đã về bình thường, lần vượt ngưỡng sau là đợt mới
          * Dùng ConcurrentDictionary vì service này là singleton. */
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), ConcurrentDictionary<int, byte>> incidents = new();
+        /* Đếm số lần ESP push lên trong đợt cảnh báo đang diễn ra.
+         * Reset (TryRemove) cùng lúc với incidents khi sensor về bình thường. */
+        private readonly ConcurrentDictionary<(int DeviceId, string Kind), int> alertCounts = new();
 
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
@@ -206,6 +209,8 @@ namespace IoT_system.Services.Mqtt
 
             // ============ 1. LUÔN BẮN TRẠNG THÁI HIỆN TẠI - MỖI LẦN ESP GỬI LÊN ============
             // Type: "gas" | "gas_danger" | "heartbeat" (phần gas của payload)
+            var result = UpdateIncidents(device.Id, sensor);
+
             await hubContext.Clients.Group(mac).SendAsync("ReceiveSensorData", new
             {
                 Mac = mac,
@@ -214,57 +219,46 @@ namespace IoT_system.Services.Mqtt
                 Gas = sensor.Gas,
                 Temperature = sensor.Temperature,
                 Humidity = sensor.Humidity,
-                Timestamp = TimeHelper.VnNow()
+                Timestamp = TimeHelper.VnNow(),
+                AlertCounts = result.counts
             });
 
-            // ============ 2. XỬ LÝ CẢNH BÁO (tách loại + tách user) ============
-            await ProcessAlerts(db, device.Id, mac, sensor);
+            foreach (var kind in result.activeKinds)
+            {
+                await NotifyUsers(db, device.Id, mac, sensor, kind);
+            }
         }
 
-        /// <summary>
-        /// ESP gửi 1 payload chứa cả gas lẫn DHT11, nên mỗi payload xử lý cả 2 phần.
-        /// Bước 1: xác định loại nào đang vượt ngưỡng, loại nào đã bình thường (reset đợt).
-        /// Bước 2: với mỗi loại đang vượt ngưỡng -> thông báo cho từng user.
-        /// </summary>
-        private async Task ProcessAlerts(DatabaseContext db, int deviceId, string mac, SensorPayload sensor)
+        private (List<string> activeKinds, Dictionary<string, int> counts) UpdateIncidents(int deviceId, SensorPayload sensor)
         {
-            var activeKinds = new List<string>();   // các loại đang vượt ngưỡng
+            var activeKinds = new List<string>();
 
-            // ----- GAS: type = "gas" | "gas_danger" khi alert = true, "heartbeat" khi bình thường -----
             string? gasType = sensor.Type;
             bool gasAlert = sensor.Alert && gasType != null && GasKinds.Contains(gasType);
             if (gasAlert) activeKinds.Add(gasType!);
 
-            // ----- DHT11: 3 điều kiện độc lập -----
             if (sensor.TempAlert) activeKinds.Add("temp_high");
             if (sensor.HumidLowAlert) activeKinds.Add("humid_low");
             if (sensor.HumidHighAlert) activeKinds.Add("humid_high");
 
-            // Loại DHT nào không còn vượt ngưỡng -> kết thúc đợt
             IEnumerable<string> kindsToReset = DhtKinds.Except(activeKinds);
-
-            // Gas chỉ reset khi về HẲN bình thường (alert = false).
-            // Nếu chỉ dao động giữa "gas" và "gas_danger" thì giữ nguyên đợt,
-            // user đã xác nhận không bị báo lại.
             if (!gasAlert) kindsToReset = kindsToReset.Concat(GasKinds);
 
             foreach (var kind in kindsToReset)
             {
                 incidents.TryRemove((deviceId, kind), out _);
+                alertCounts.TryRemove((deviceId, kind), out _);
             }
 
+            var counts = new Dictionary<string, int>();
             foreach (var kind in activeKinds)
             {
-                await NotifyUsers(db, deviceId, mac, sensor, kind);
+                counts[kind] = alertCounts.AddOrUpdate((deviceId, kind), 1, (key, old) => old + 1);
             }
+
+            return (activeKinds, counts);
         }
 
-        /// <summary>
-        /// Thông báo 1 loại cảnh báo cho các user của thiết bị, xét TỪNG USER:
-        ///  - user đã được xử lý trong đợt này           -> bỏ qua
-        ///  - user còn thông báo CHƯA ĐỌC cùng loại      -> bỏ qua (không chồng)
-        ///  - còn lại                                    -> insert DB + realtime
-        /// </summary>
         private async Task NotifyUsers(DatabaseContext db, int deviceId, string mac, SensorPayload sensor, string kind)
         {
             var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, byte>());
