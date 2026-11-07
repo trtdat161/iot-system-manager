@@ -35,6 +35,9 @@ const getAlertTimestamp = (alert) =>
   getAlertField(alert, "timestamp", "Timestamp") ??
   "";
 
+const getAlertCount = (alert) =>
+  getAlertField(alert, "alertCount", "AlertCount") ?? 1;
+
 const sameAlert = (left, right) => {
   const leftId = getAlertField(left, "id", "Id");
   const rightId = getAlertField(right, "id", "Id");
@@ -220,7 +223,7 @@ export function DashboardUser() {
       const group = groups.get(details.kind);
 
       if (group) {
-        group.count += 1;
+        group.count += getAlertCount(alert);
         if (
           new Date(getAlertTimestamp(alert)).getTime() >
           new Date(getAlertTimestamp(group.alert)).getTime()
@@ -229,7 +232,11 @@ export function DashboardUser() {
           group.details = details;
         }
       } else {
-        groups.set(details.kind, { alert, details, count: 1 });
+        groups.set(details.kind, {
+          alert,
+          details,
+          count: getAlertCount(alert),
+        });
       }
     });
 

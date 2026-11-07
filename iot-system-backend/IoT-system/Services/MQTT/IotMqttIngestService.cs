@@ -227,6 +227,7 @@ namespace IoT_system.Services.Mqtt
             {
                 await NotifyUsers(db, device.Id, mac, sensor, kind);
             }
+            await SaveAlertCounts(db, device.Id, result.counts);
         }
 
         private (List<string> activeKinds, Dictionary<string, int> counts) UpdateIncidents(int deviceId, SensorPayload sensor)
@@ -317,6 +318,23 @@ namespace IoT_system.Services.Mqtt
             }
         }
 
+        // update thông báo từng lần esp push lên
+        private async Task SaveAlertCounts(DatabaseContext db, int deviceId, Dictionary<string, int> counts)
+        {
+            foreach (var item in counts)
+            {
+                string kind = item.Key;
+                int count = item.Value;
+
+                // Chỉ cập nhật thông báo CHƯA ĐỌC, chỉ tăng không giảm
+                await db.Notifications
+                    .Where(n => n.DeviceId == deviceId
+                             && n.Type == kind
+                             && n.IsRead == false
+                             && n.AlertCount < count)
+                    .ExecuteUpdateAsync(s => s.SetProperty(n => n.AlertCount, count));
+            }
+        }
         private static string BuildMessage(string kind, SensorPayload s) => kind switch
         {
             "gas" => $"Gas detected! Value: {s.Gas}",

@@ -101,6 +101,7 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Notification");
 
+            entity.Property(e => e.AlertCount).HasDefaultValue(1, "DF_Notification_AlertCount"); // <-- THÊM
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Message).HasMaxLength(255);
             entity.Property(e => e.Type)

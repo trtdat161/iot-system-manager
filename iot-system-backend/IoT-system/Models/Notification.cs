@@ -15,6 +15,8 @@ public partial class Notification
 
     public bool IsRead { get; set; }
 
+    public int AlertCount { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public int Id { get; set; }
