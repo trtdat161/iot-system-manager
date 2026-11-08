@@ -5,6 +5,8 @@ using IoT_system.DTOS.Notification;
 using IoT_system.Helpers;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace IoT_system.Services.Notifications
 {
@@ -119,6 +121,24 @@ namespace IoT_system.Services.Notifications
             await dbContext.SaveChangesAsync();
             return mapper.Map<NotificationIsreadResponseDtos>(notification);
 
+        }
+
+        public async Task<PagedResponseDtos<NotificationResponseDtos>> FilterSensor(int page, int pageSize, string? gas, string? temp)
+        {
+            var query = dbContext.Notifications.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(gas))
+            {
+                query = query.Where(n => n.Type == gas);
+            }
+
+            if (!string.IsNullOrWhiteSpace(temp))
+            {
+                query = query.Where(n => n.Type == temp);
+            }
+
+            return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(
+                query, page, pageSize, mapper);
         }
     }
 }

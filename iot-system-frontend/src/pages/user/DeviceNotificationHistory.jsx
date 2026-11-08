@@ -267,6 +267,8 @@ export function DeviceNotificationHistory() {
                 notification.message ?? notification.Message,
                 notification.type ?? notification.Type,
               );
+              const alertCount =
+                notification.alertCount ?? notification.AlertCount ?? 1;
               const type = alertDetails.kind;
               const isRead =
                 notification.isRead === true ||
@@ -339,13 +341,25 @@ export function DeviceNotificationHistory() {
                         </button>
                       </div>
                     </div>
-                    <p className="notification-item-message">
-                      {alertDetails.value === null
-                        ? t(`alerts.messages.${alertDetails.kind}`)
-                        : t(`alerts.messages.${alertDetails.kind}`, {
-                            value: alertDetails.value,
+                    <div className="notification-alert-summary">
+                      <p className="notification-item-message">
+                        {alertDetails.value === null
+                          ? t(`alerts.messages.${alertDetails.kind}`)
+                          : t(`alerts.messages.${alertDetails.kind}`, {
+                              value: alertDetails.value,
+                            })}
+                      </p>
+                      {alertCount >= 1 && (
+                        <span
+                          className="notification-alert-count"
+                          aria-label={t("alerts.repeated", {
+                            count: alertCount,
                           })}
-                    </p>
+                        >
+                          {alertCount}
+                        </span>
+                      )}
+                    </div>
                     <div className="notification-metadata">
                       <span className="notification-type-chip">
                         {t(`alerts.labels.${alertDetails.kind}`)}

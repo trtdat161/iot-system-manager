@@ -381,7 +381,7 @@ export function DashboardUser() {
                               value: details.value,
                             })}
                       </span>
-                      {totalCount > 1 && (
+                      {totalCount >= 1 && (
                         <span
                           className="alert-count-badge"
                           aria-label={t("alerts.repeated", {

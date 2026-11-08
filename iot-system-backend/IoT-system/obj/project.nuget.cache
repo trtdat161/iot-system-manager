@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "g0cpG9BnI8s=",
+  "dgSpecHash": "5ltQqt/rBn4=",
   "success": true,
-  "projectFilePath": "D:\\personal project\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
+  "projectFilePath": "D:\\personal projects\\iot-system-manager\\iot-system-backend\\IoT-system\\IoT-system.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

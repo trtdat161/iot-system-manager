@@ -2,6 +2,7 @@
   "title": "Lịch Sử Thông Báo Thiết Bị",
   "latest": "Mới nhất",
   "alerts": {
+    "repeated": "Lặp lại {{count}} lần",
     "messages": {
       "gas": "Cảnh báo khí gas: {{value}}. Hãy kiểm tra an toàn trước khi xác nhận.",
       "gas_danger": "Nguy hiểm! Khí gas vượt ngưỡng: {{value}}. Rời đi nếu nghi rò rỉ; chỉ xác nhận khi an toàn.",

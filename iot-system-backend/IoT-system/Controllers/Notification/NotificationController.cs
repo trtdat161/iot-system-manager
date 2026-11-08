@@ -1,4 +1,5 @@
-﻿using IoT_system.Services.Notifications;
+﻿using IoT_system.Services.Accounts;
+using IoT_system.Services.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +70,19 @@ namespace IoT_system.Controllers.Notification
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await notificationServices.IsReadAction(notificationId, userId);
             return Ok(result);
-        } 
+        }
+
+        // filter 
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("filter-sensor")]
+        public async Task<IActionResult> FilterSensor([FromQuery] int page = 1,
+                                                      [FromQuery] int pageSize = 10,
+                                                      [FromQuery] string? gas = null,
+                                                      [FromQuery] string? temp = null)
+        {
+            var result = await notificationServices.FilterSensor(page, pageSize, gas, temp);
+            return Ok(result);
+        }
     }
 }

@@ -2,6 +2,7 @@
   "title": "Device Notification History",
   "latest": "Latest",
   "alerts": {
+    "repeated": "Repeated {{count}} times",
     "messages": {
       "gas": "Gas warning: {{value}}. Check the area safely before confirming.",
       "gas_danger": "Danger! Gas exceeds the limit: {{value}}. Leave if you suspect a leak; confirm only when safe.",
