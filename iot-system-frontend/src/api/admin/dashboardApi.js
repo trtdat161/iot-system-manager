@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "../common/axiosInstance";
 
 export const DashboardSummary = () =>
   axiosInstance.get("dashboard-admin/overview");

@@ -1,8 +1,8 @@
 import {
   FaBolt,
+  FaBell,
   FaCloudSun,
   FaMicrochip,
-  FaServer,
   FaShieldAlt,
   FaUserCheck,
   FaUserLock,
@@ -55,10 +55,10 @@ export function DashboardAdmin() {
           tone: "cyan",
         },
         {
-          label: t("summary.offline_devices"),
-          value: dataOverview.deviceOffline ?? 0,
-          note: t("summary.offline_devices_note"),
-          icon: <FaServer />,
+          label: t("summary.total_alerts"),
+          value: dataOverview.totalAlerts ?? 0,
+          note: t("summary.total_alerts_note"),
+          icon: <FaBell />,
           tone: "danger",
         },
       ]

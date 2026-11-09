@@ -26,6 +26,7 @@ namespace IoT_system.Services.DashboardAdmin
 
             var deviceOnl = await dbContext.Devices.Where(d => d.DeletedAt == null && d.Status == true).CountAsync();
             var deviceOff = await dbContext.Devices.Where(d => d.DeletedAt == null && d.Status == false).CountAsync();
+            var totalAlerts = await dbContext.Notifications.CountAsync();
 
             // Thống kê user mới trong 1 tháng qua
             var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);// -1 lùi về 1 tháng
@@ -42,6 +43,7 @@ namespace IoT_system.Services.DashboardAdmin
                 UserLock = userLock,// dùng để làm biểu đồ tròn user bị khoá
                 DeviceOnline = deviceOnl,
                 DeviceOffline = deviceOff,
+                TotalAlerts = totalAlerts,
                 CountUserOneMonth = countUserOneMonth
             };
         }

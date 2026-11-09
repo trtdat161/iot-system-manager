@@ -19,7 +19,18 @@
   "yes": "Có",
   "no": "Không",
   "detail": "Chi Tiết",
+  "device_id": "Thiết bị #{{id}}",
   "pending": "Đang Xử Lý",
   "filter_time": "Lọc Thời Gian",
-  "filter_status": "Lọc Trạng Thái"
+  "from_date": "Từ ngày",
+  "to_date": "Đến ngày",
+  "choose_date": "Chọn ngày",
+  "calendar": "Lịch chọn ngày",
+  "previous_month": "Tháng trước",
+  "next_month": "Tháng sau",
+  "clear_date": "Xóa",
+  "today": "Hôm nay",
+  "errors": {
+    "load": "Không thể tải lịch sử thông báo. Vui lòng thử lại."
+  }
 }

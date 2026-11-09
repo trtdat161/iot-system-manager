@@ -223,11 +223,26 @@ namespace IoT_system.Services.Mqtt
                 AlertCounts = result.counts
             });
 
+            var newNotificationCounts = new Dictionary<string, int>();
             foreach (var kind in result.activeKinds)
             {
-                await NotifyUsers(db, device.Id, mac, sensor, kind);
+                newNotificationCounts[kind] = await NotifyUsers(db, device.Id, mac, sensor, kind);
             }
             await SaveAlertCounts(db, device.Id, result.counts);
+
+            foreach (var kind in result.activeKinds)
+            {
+                await hubContext.Clients.Group(NotificationHub.AdminGroup).SendAsync("ReceiveAdminAlert", new
+                {
+                    Mac = mac,
+                    DeviceId = device.Id,
+                    Message = BuildMessage(kind, sensor),
+                    Type = kind,
+                    CreatedAt = TimeHelper.VnNow(),
+                    AlertCount = result.counts[kind],
+                    NewNotificationCount = newNotificationCounts[kind]
+                });
+            }
         }
 
         private (List<string> activeKinds, Dictionary<string, int> counts) UpdateIncidents(int deviceId, SensorPayload sensor)
@@ -260,7 +275,7 @@ namespace IoT_system.Services.Mqtt
             return (activeKinds, counts);
         }
 
-        private async Task NotifyUsers(DatabaseContext db, int deviceId, string mac, SensorPayload sensor, string kind)
+        private async Task<int> NotifyUsers(DatabaseContext db, int deviceId, string mac, SensorPayload sensor, string kind)
         {
             var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, byte>());
 
@@ -273,7 +288,7 @@ namespace IoT_system.Services.Mqtt
             // User chưa được xử lý trong đợt này.
             // Khi mọi người đã được xử lý -> rỗng -> return, không đụng DB thêm.
             var pending = userIds.Where(id => !handledUsers.ContainsKey(id)).ToList();
-            if (pending.Count == 0) return;
+            if (pending.Count == 0) return 0;
 
             // Check chưa đọc THEO TỪNG USER (không chỉ theo thiết bị)
             var hasUnreadUserIds = await db.Notifications
@@ -316,6 +331,8 @@ namespace IoT_system.Services.Mqtt
             {
                 handledUsers.TryAdd(id, 0);
             }
+
+            return targets.Count;
         }
 
         // update thông báo từng lần esp push lên

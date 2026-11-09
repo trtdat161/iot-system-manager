@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "../common/axiosInstance";
 
 export const GetAdminProfile = () => axiosInstance.get("action/me");
 

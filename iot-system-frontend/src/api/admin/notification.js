@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "../common/axiosInstance";
 
 export const adminGetHistory = (page, pageSize) =>
   axiosInstance.get(
@@ -15,7 +15,18 @@ export const SearchAndFilterHistory = (
   toDate,
   isRead,
   type,
-) =>
-  axiosInstance.get(
-    `notification/search-history?page=${page}&pageSize=${pageSize}&fromDate=${fromDate ?? ""}&toDate=${toDate ?? ""}&isRead=${isRead ?? ""}&type=${type ?? ""}`,
-  );
+) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+
+  if (fromDate) params.set("fromDate", fromDate);
+  if (toDate) params.set("toDate", toDate);
+  if (isRead !== "" && isRead !== undefined && isRead !== null) {
+    params.set("isRead", isRead);
+  }
+  if (type) params.set("type", type);
+
+  return axiosInstance.get(`notification/search-history?${params.toString()}`);
+};

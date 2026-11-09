@@ -78,9 +78,14 @@ namespace IoT_system.Services.Notifications
             return result;
         }
 
-        public async Task<PagedResponseDtos<NotificationResponseDtos>> SearchHistory(DateTime? fromDate, DateTime? toDate, bool? isRead, string? type, int page, int pageSize)
+        public async Task<PagedResponseDtos<NotificationResponseDtos>> SearchHistory(DateTime? fromDate, DateTime? toDate, bool? isRead, string? type, int page, int pageSize, int? userId = null)
         {
             var query = dbContext.Notifications.AsNoTracking().AsQueryable();
+
+            if (userId.HasValue)
+            {
+                query = query.Where(x => x.UserId == userId.Value);
+            }
 
             if (fromDate.HasValue)
             {
@@ -122,24 +127,5 @@ namespace IoT_system.Services.Notifications
             return mapper.Map<NotificationIsreadResponseDtos>(notification);
 
         }
-
-        public async Task<PagedResponseDtos<NotificationResponseDtos>> FilterSensor(int page, int pageSize, string? gas, string? temp)
-        {
-            var query = dbContext.Notifications.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(gas))
-            {
-                query = query.Where(n => n.Type == gas);
-            }
-
-            if (!string.IsNullOrWhiteSpace(temp))
-            {
-                query = query.Where(n => n.Type == temp);
-            }
-
-            return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(
-                query, page, pageSize, mapper);
-        }
     }
 }
-

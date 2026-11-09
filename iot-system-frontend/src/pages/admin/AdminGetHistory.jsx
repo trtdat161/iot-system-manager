@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminGetHistory,
@@ -8,21 +8,21 @@ import {
   FaBell,
   FaClock,
   FaExclamationTriangle,
-  FaCheckCircle,
-  FaInfoCircle,
-  FaTimesCircle,
-  FaSpinner,
   FaSearch,
-  FaFilter,
   FaRedoAlt,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { getDeviceAlertDetails } from "../../utils/deviceAlert";
+import { DateRangePicker } from "../../components/common/DateRangePicker";
 
 export function AdminGetHistory() {
-  const { t } = useTranslation("admin_notification_history");
+  const { t, i18n } = useTranslation("admin_notification_history");
+  const { t: tAlert } = useTranslation("user_notification_history");
+  const outletContext = useOutletContext() || {};
+  const connection = outletContext.connection;
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
@@ -35,58 +35,124 @@ export function AdminGetHistory() {
   // search - filter
   const [toDate, setToDate] = useState("");
   const [fromDate, setFromDate] = useState("");
-  const [read, setRead] = useState("");
   const [type, setType] = useState("");
+  const [activeFilters, setActiveFilters] = useState({
+    fromDate: "",
+    toDate: "",
+    type: "",
+  });
 
   const navigate = useNavigate();
 
-  const fetchNotifications = async (currentPage) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await adminGetHistory(currentPage, PAGE_SIZE);
-      const paged = response.data;
-      setTotalNotifications(paged.totalItems ?? 0);
-      setNotifications(Array.isArray(paged.data) ? paged.data : []);
-      setTotalPages(paged.totalPages ?? 1);
-    } catch (err) {
-      console.log("error:", err?.message || err);
-      setNotifications([]);
-      setError(err?.message || "Failed to load notifications");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchNotifications = useCallback(
+    async (currentPage, filters) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const hasFilters = Object.values(filters).some(Boolean);
+        const response = hasFilters
+          ? await SearchAndFilterHistory(
+              currentPage,
+              PAGE_SIZE,
+              filters.fromDate,
+              filters.toDate,
+              "",
+              filters.type,
+            )
+          : await adminGetHistory(currentPage, PAGE_SIZE);
+        const paged = response.data;
+        setTotalNotifications(paged.totalItems ?? 0);
+        setNotifications(Array.isArray(paged.data) ? paged.data : []);
+        setTotalPages(paged.totalPages ?? 1);
+      } catch (err) {
+        console.error("Failed to load admin notification history:", err);
+        setNotifications([]);
+        setError(t("errors.load"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
-    fetchNotifications(pages);
-  }, [pages]);
+    fetchNotifications(pages, activeFilters);
+  }, [pages, activeFilters, fetchNotifications]);
 
-  const handleSearch = async () => {
-    try {
-      const response = await SearchAndFilterHistory(
-        pages, // page
-        PAGE_SIZE, // pageSize
-        fromDate,
-        toDate,
-        read,
-        type,
-      );
-      const paged = response.data;
-      setNotifications(Array.isArray(paged.data) ? paged.data : []);
-      setTotalPages(paged.totalPages ?? 1);
-      setTotalNotifications(paged.totalItems ?? 0);
-    } catch (err) {
-      console.log("error:", err?.message || err);
-    }
+  useEffect(() => {
+    if (!connection) return;
+
+    const handleAdminAlert = (alert) => {
+      const newNotifications = Number(alert?.newNotificationCount) || 0;
+      if (newNotifications > 0) {
+        fetchNotifications(pages, activeFilters);
+        return;
+      }
+
+      const deviceId = alert?.deviceId ?? alert?.DeviceId;
+      const alertType = alert?.type ?? alert?.Type;
+      const alertCount = Number(alert?.alertCount ?? alert?.AlertCount) || 1;
+      if (deviceId == null || !alertType) return;
+
+      setNotifications((current) => {
+        const matching = current.filter(
+          (notification) =>
+            (notification.deviceId ?? notification.DeviceId) === deviceId &&
+            (notification.type ?? notification.Type) === alertType,
+        );
+        if (matching.length === 0) return current;
+
+        const newestTime = Math.max(
+          ...matching.map((notification) =>
+            new Date(
+              notification.createdAt ?? notification.CreatedAt ?? "",
+            ).getTime(),
+          ),
+        );
+        const newestIncident = matching.find(
+          (notification) =>
+            new Date(
+              notification.createdAt ?? notification.CreatedAt ?? "",
+            ).getTime() === newestTime,
+        );
+        const incidentTime =
+          newestIncident?.createdAt ?? newestIncident?.CreatedAt;
+
+        return current.map((notification) => {
+          if (
+            (notification.deviceId ?? notification.DeviceId) !== deviceId ||
+            (notification.type ?? notification.Type) !== alertType ||
+            (notification.createdAt ?? notification.CreatedAt) !== incidentTime
+          ) {
+            return notification;
+          }
+
+          return {
+            ...notification,
+            alertCount: Math.max(
+              notification.alertCount ?? notification.AlertCount ?? 1,
+              alertCount,
+            ),
+          };
+        });
+      });
+    };
+
+    connection.on("ReceiveAdminAlert", handleAdminAlert);
+    return () => connection.off("ReceiveAdminAlert", handleAdminAlert);
+  }, [connection, fetchNotifications, pages, activeFilters]);
+
+  const handleSearch = () => {
+    setActiveFilters({ fromDate, toDate, type });
+    setPages(1);
   };
 
   const handleReload = () => {
     setFromDate("");
     setToDate("");
-    setRead("");
     setType("");
-    pages === 1 ? fetchNotifications(1) : setPages(1);
+    setActiveFilters({ fromDate: "", toDate: "", type: "" });
+    setPages(1);
   };
 
   return (
@@ -95,43 +161,17 @@ export function AdminGetHistory() {
       <div className="notification-search-filter-container mb-4">
         <div className="notification-search-filter-left">
           <span className="filter-label-text">{t("filter_time")}</span>
-          <div className="notification-date-group">
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="notification-date-input"
-              title={t("date_range")}
-            />
-            <span className="notification-date-separator">─</span>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="notification-date-input"
-              title={t("date_range")}
-            />
-          </div>
+          <DateRangePicker
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+            locale={i18n.resolvedLanguage ?? i18n.language}
+            t={t}
+          />
         </div>
 
         <div className="notification-search-filter-right">
-          <span className="filter-label-text">{t("filter_status")}</span>
-          <select
-            className="filter-select"
-            value={read}
-            onChange={(e) => setRead(e.target.value)}
-            title={t("read_status")}
-          >
-            <option value="" className="text-center">
-              {t("read_status")}
-            </option>
-            <option value="true" className="text-center">
-              ✓ {t("read")}
-            </option>
-            <option value="false" className="text-center">
-              ✗ {t("unread")}
-            </option>
-          </select>
           <select
             className="filter-select"
             value={type}
@@ -141,24 +181,39 @@ export function AdminGetHistory() {
             <option value="" className="text-center">
               {t("notification_type")}
             </option>
-            <option value="gas" className="text-center">
-              💨 {t("gas")}
+            <option value="gas">
+              {tAlert("alerts.labels.gas")}
             </option>
-            <option value="heartbeat" className="text-center">
-              💧 {t("humidity")}
+            <option value="gas_danger">
+              {tAlert("alerts.labels.gas_danger")}
+            </option>
+            <option value="temp_high">
+              {tAlert("alerts.labels.temp_high")}
+            </option>
+            <option value="humid_low">
+              {tAlert("alerts.labels.humid_low")}
+            </option>
+            <option value="humid_high">
+              {tAlert("alerts.labels.humid_high")}
             </option>
           </select>
           <button
+            type="button"
             className="btn btn-search"
-            onClick={() => handleSearch()}
+            onClick={handleSearch}
+            disabled={loading}
             title={t("search")}
+            aria-label={t("search")}
           >
             <FaSearch size={13} />
           </button>
           <button
+            type="button"
             className="btn btn-reset"
             onClick={handleReload}
+            disabled={loading}
             title={t("reset")}
+            aria-label={t("reset")}
           >
             <FaRedoAlt size={13} />
           </button>
@@ -217,58 +272,65 @@ export function AdminGetHistory() {
 
         {/* Notification List */}
         {!loading && notifications.length > 0 && (
-          <>
-            <div style={{ maxHeight: "600px", overflowY: "auto" }}>
-              {notifications.map((notification, index) => (
+          <div className="notification-list">
+            {notifications.map((notification) => {
+              const notificationId = notification.id ?? notification.Id;
+              const type = notification.type ?? notification.Type;
+              const alertDetails = getDeviceAlertDetails(
+                notification.message ?? notification.Message,
+                type,
+              );
+              const alertCount =
+                notification.alertCount ?? notification.AlertCount ?? 1;
+              const sentAt =
+                notification.createdAt ?? notification.CreatedAt;
+              const deviceId = notification.deviceId ?? notification.DeviceId;
+
+              return (
                 <div
-                  key={index}
-                  className={`notification-item`}
+                  key={notificationId}
+                  className="notification-item notification-admin-item"
                   style={{
-                    borderLeft: `3px solid ${
-                      notification.type === "success"
-                        ? "#22c55e"
-                        : notification.type === "warning"
-                          ? "#fbbf24"
-                          : notification.type === "error"
-                            ? "#fb7185"
-                            : "#38bdf8"
+                    borderLeft: `4px solid ${
+                      alertDetails.kind === "unknown" ? "#72f0ce" : "#fbbf24"
                     }`,
                   }}
                 >
-                  <div className="notification-content">
-                    <div className="notification-header">
-                      {/* <div>
-                        <h3 className="notification-title">
-                          {notification.title}
-                        </h3>
-                        <p className="notification-device">
-                          🔧 {notification.deviceName || "Unknown Device"}
-                        </p>
-                      </div> */}
-                    </div>
-                    <p className="notification-message">
-                      {notification.message}
-                    </p>
-                    <div className="notification-metadata">
-                      <span>📍 {notification.type || "N/A"}</span>
-                      <span>•</span>
-                      <span>{notification.IsRead ? t("yes") : t("no")}</span>
-                    </div>
+                  <div className="notification-item-icon">
+                    <FaExclamationTriangle className="notification-icon warning" />
                   </div>
-                  <div className="notification-time">
-                    <div className="time-badge">
-                      <FaClock size={11} style={{ marginRight: "4px" }} />
-                      <span>
-                        {dayjs(notification.createdAt).format(
-                          "DD/MM/YYYY HH:mm:ss",
-                        ) || t("pending")}
-                      </span>
-                    </div>
+                  <div className="notification-item-content">
+                    <p className="notification-item-title">
+                      {tAlert(`alerts.labels.${alertDetails.kind}`)}
+                    </p>
+                    <span
+                      className="notification-repeat-badge"
+                      aria-label={tAlert("alerts.repeated", {
+                        count: alertCount,
+                      })}
+                    >
+                      <strong>{alertCount}</strong>
+                      <span>{tAlert("alerts.repeated", { count: alertCount })}</span>
+                    </span>
+                    {deviceId != null && (
+                      <p className="notification-item-subtitle">
+                        {t("device_id", { id: deviceId })}
+                      </p>
+                    )}
+                  </div>
+                  <div className="notification-item-trailing">
+                    <span className="notification-time-badge">
+                      <FaClock aria-hidden="true" />
+                      {sentAt && dayjs(sentAt).isValid()
+                        ? dayjs(sentAt).format("DD/MM/YYYY HH:mm")
+                        : t("pending")}
+                    </span>
                     <button
-                      className="ms-2 btn btn-success"
+                      type="button"
+                      className="notification-detail-button"
                       onClick={() =>
                         navigate(
-                          `/frame-layout/history-detail/${notification.id}`,
+                          `/frame-layout/history-detail/${notificationId}`,
                         )
                       }
                     >
@@ -276,9 +338,9 @@ export function AdminGetHistory() {
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </>
+              );
+            })}
+          </div>
         )}
         {/* Pagination — dùng lại ở bất kỳ đâu chỉ cần 3 props */}
         <Pagination

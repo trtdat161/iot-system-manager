@@ -148,7 +148,7 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   background: rgba(114, 240, 206, 0.12);
-  color: #87e4ff;
+  color: #a3ffe8;
   border: 1px solid rgba(114, 240, 206, 0.24);
 }
 
@@ -161,10 +161,15 @@
 }
 
 .history-detail-message {
-  margin: 0 0 16px;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #f4f8ff;
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(114, 240, 206, 0.12);
+  border-left: 3px solid #72f0ce;
+  border-radius: 10px;
+  background: rgba(5, 18, 15, 0.32);
+  font-size: 15px;
+  line-height: 1.65;
+  color: #e5f4ee;
   overflow-wrap: anywhere;
 }
 

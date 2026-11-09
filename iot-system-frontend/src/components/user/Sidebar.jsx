@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { LogoutAccount } from "../../api/authApi";
+import { LogoutAccount } from "../../api/common/authApi";
 import "../../css/user/Layout.css";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 

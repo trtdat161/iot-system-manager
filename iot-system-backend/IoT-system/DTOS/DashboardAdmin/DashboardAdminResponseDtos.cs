@@ -18,6 +18,7 @@ namespace IoT_system.DTOS.DashboardAdmin
         /* thiết bị hoạt động thiết bị offline */
         public int DeviceOnline { get; set; }
         public int DeviceOffline { get; set; }
+        public int TotalAlerts { get; set; }
 
 
         /* thống kê bao nhiêu user trong 1 tháng qua */

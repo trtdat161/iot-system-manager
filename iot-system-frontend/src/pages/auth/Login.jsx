@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/Auth.css";
 import { useTranslation } from "react-i18next";
-import { LoginAction } from "../../api/authApi";
+import { LoginAction } from "../../api/common/authApi";
 
 export function Login() {
   const { t, i18n } = useTranslation("register_login");

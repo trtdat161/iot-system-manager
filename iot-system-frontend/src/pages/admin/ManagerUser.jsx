@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LogoutAccount } from "../../api/authApi";
+import { LogoutAccount } from "../../api/common/authApi";
 import dayjs from "dayjs";
 import "../../css/admin/ManagerUserAndDevice.css";
 import { Sidebar } from "../../components/admin/Sidebar";

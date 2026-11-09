@@ -19,7 +19,18 @@
   "yes": "Yes",
   "no": "No",
   "detail": "Detail",
+  "device_id": "Device #{{id}}",
   "pending": "Pending",
   "filter_time": "Filter Time",
-  "filter_status": "Filter Status"
+  "from_date": "From date",
+  "to_date": "To date",
+  "choose_date": "Choose date",
+  "calendar": "Date picker",
+  "previous_month": "Previous month",
+  "next_month": "Next month",
+  "clear_date": "Clear",
+  "today": "Today",
+  "errors": {
+    "load": "Unable to load notification history. Please try again."
+  }
 }

@@ -3,6 +3,7 @@
   "home": "Home",
   "user": "Users",
   "devices": "Devices",
+  "notification_count": "Unread notifications: {{count}}",
   "profile": "Profile",
   "welcome_admin": "Welcome admin:",
   "admin_avatar_alt": "Admin avatar"

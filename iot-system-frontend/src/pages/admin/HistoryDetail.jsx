@@ -1,19 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaArrowLeft, FaBell, FaClock, FaUsers } from "react-icons/fa";
+import { FaArrowLeft, FaBell, FaClock, FaUsers, FaExclamationTriangle } from "react-icons/fa";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import { HistoryDetailForAdmin } from "../../api/admin/notification";
 import "../../css/admin/HistoryDetail.css";
+import { getDeviceAlertDetails } from "../../utils/deviceAlert";
 
 export function HistoryDetail() {
   const [historyDetail, setHistoryDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { t } = useTranslation("admin_history_detail");
+  const { t: tAlert } = useTranslation("user_notification_history");
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const detailIsRead = historyDetail?.isRead ?? historyDetail?.IsRead;
+  const recipients = historyDetail?.users ?? historyDetail?.Users ?? [];
+  const alertDetails = historyDetail
+    ? getDeviceAlertDetails(
+        historyDetail.message ?? historyDetail.Message,
+        historyDetail.type ?? historyDetail.Type,
+      )
+    : null;
 
   useEffect(() => {
     const fetchHistoryDetail = async () => {
@@ -80,23 +90,32 @@ export function HistoryDetail() {
           <section className="history-detail-card">
             <div className="history-detail-topbar">
               <span className="history-detail-badge">
-                {historyDetail.type || t("notification")}
+                <FaExclamationTriangle aria-hidden="true" />
+                {tAlert(`alerts.labels.${alertDetails.kind}`)}
               </span>
               <span className="history-detail-time">
                 <FaClock size={13} />
-                {dayjs(historyDetail.createdAt).format("DD/MM/YYYY HH:mm:ss")}
+                {dayjs(
+                  historyDetail.createdAt ?? historyDetail.CreatedAt,
+                ).format("DD/MM/YYYY HH:mm:ss")}
               </span>
             </div>
 
-            <p className="history-detail-message">{historyDetail.message}</p>
+            <p className="history-detail-message">
+              {alertDetails.value === null
+                ? tAlert(`alerts.messages.${alertDetails.kind}`)
+                : tAlert(`alerts.messages.${alertDetails.kind}`, {
+                    value: alertDetails.value,
+                  })}
+            </p>
 
             <div className="history-detail-meta-grid">
               <div className="history-detail-meta-item">
                 <span className="history-detail-meta-label">{t("status")}</span>
                 <span
-                  className={`history-detail-meta-value ${historyDetail.isRead ? "is-read" : "is-unread"}`}
+                  className={`history-detail-meta-value ${detailIsRead ? "is-read" : "is-unread"}`}
                 >
-                  {historyDetail.isRead ? t("read") : t("unread")}
+                  {detailIsRead ? t("read") : t("unread")}
                 </span>
               </div>
               <div className="history-detail-meta-item">
@@ -104,7 +123,7 @@ export function HistoryDetail() {
                   {t("recipients")}
                 </span>
                 <span className="history-detail-meta-value">
-                  {historyDetail.users?.length || 0}
+                  {recipients.length}
                 </span>
               </div>
             </div>
@@ -115,17 +134,20 @@ export function HistoryDetail() {
                 {t("recipient_list")}
               </h3>
 
-              {historyDetail.users?.length > 0 ? (
+              {recipients.length > 0 ? (
                 <ul className="history-detail-users-list">
-                  {historyDetail.users.map((user) => (
-                    <li key={user.userId} className="history-detail-user-item">
+                  {recipients.map((user) => (
+                    <li
+                      key={user.userId ?? user.UserId}
+                      className="history-detail-user-item"
+                    >
                       <span className="history-detail-user-name">
-                        {user.fullname}
+                        {user.fullname ?? user.Fullname}
                       </span>
                       <span
-                        className={`history-detail-user-status ${user.isRead ? "read" : "unread"}`}
+                        className={`history-detail-user-status ${(user.isRead ?? user.IsRead) ? "read" : "unread"}`}
                       >
-                        {user.isRead ? t("read") : t("unread")}
+                        {(user.isRead ?? user.IsRead) ? t("read") : t("unread")}
                       </span>
                     </li>
                   ))}

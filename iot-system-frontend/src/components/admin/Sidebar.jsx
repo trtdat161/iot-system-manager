@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { MdDashboard, MdDevices } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { LogoutAccount } from "../../api/authApi";
+import { LogoutAccount } from "../../api/common/authApi";
 import { ConfirmDialog } from "../common/ConfirmDialog";
 
 // --- config menu items ---
@@ -45,7 +45,7 @@ const MENU_ITEMS = [
   },
 ];
 
-export function Sidebar({ collapsed, setCollapsed }) {
+export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
   // nhận collapsed
   const [_error, setError] = useState("");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -214,7 +214,41 @@ export function Sidebar({ collapsed, setCollapsed }) {
                 }
               }}
             >
-              <span style={{ flexShrink: 0 }}>{item.icon}</span>
+              <span
+                style={{
+                  position: "relative",
+                  flexShrink: 0,
+                  display: "inline-flex",
+                }}
+              >
+                {item.icon}
+                {item.key === "notifications" && unreadCount > 0 && (
+                  <span
+                    className="notification-count-badge"
+                    style={{
+                      position: "absolute",
+                      top: -9,
+                      right: -12,
+                      minWidth: 17,
+                      height: 17,
+                      padding: "0 4px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      background: "#ef4444",
+                      border: "1px solid #0c1b18",
+                      borderRadius: 999,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </span>
               <span
                 style={{
                   opacity: collapsed ? 0 : 1,

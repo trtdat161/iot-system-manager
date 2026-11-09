@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "../common/axiosInstance";
 
 // hiển thị thiết bị đang online (ESP vừa gửi tin trong 30s gần đây) nhưng chưa liên kết với user
 export const DeviceDepending = () => axiosInstance.get("device/pending");

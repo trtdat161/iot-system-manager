@@ -1,5 +1,4 @@
 import { axiosInstance } from "./axiosInstance";
-
 export const RegisterAction = (data) =>
   axiosInstance.post("auth/register", data);
 

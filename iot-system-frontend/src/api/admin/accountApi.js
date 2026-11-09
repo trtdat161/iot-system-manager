@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "../common/axiosInstance";
 
 // list account
 export const GetAccounts = (page = 1, pageSize = 10) =>

@@ -1,25 +1,27 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UserGetHistory, UserIsRead } from "../../api/user/notification";
 import {
   FaBell,
   FaClock,
   FaExclamationTriangle,
-  FaCheckCircle,
   FaInfoCircle,
-  FaTimesCircle,
-  FaSyncAlt,
+  FaSearch,
+  FaFilter,
+  FaRedoAlt,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
 import dayjs from "dayjs";
 import { useOutletContext } from "react-router-dom";
 import { getDeviceAlertDetails } from "../../utils/deviceAlert";
+import { SearchAndFilterHistory } from "../../api/common/searchHistory";
+import { DateRangePicker } from "../../components/common/DateRangePicker";
 
 export function DeviceNotificationHistory() {
   const outletContext = useOutletContext() || {};
   const onNotificationRead = outletContext.onNotificationRead;
-  const { t } = useTranslation("user_notification_history");
+  const { t, i18n } = useTranslation("user_notification_history");
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
@@ -31,6 +33,18 @@ export function DeviceNotificationHistory() {
   const [markReadFeedback, setMarkReadFeedback] = useState(null);
   const [markingNotificationId, setMarkingNotificationId] = useState(null);
   const [readIds, setReadIds] = useState(new Set());
+
+  // data cho việc filter
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [isRead, setIsRead] = useState("");
+  const [type, setType] = useState("");
+  const [activeFilters, setActiveFilters] = useState({
+    fromDate: "",
+    toDate: "",
+    isRead: "",
+    type: "",
+  });
 
   const latestNotificationId =
     pages === 1
@@ -60,39 +74,52 @@ export function DeviceNotificationHistory() {
   const latestNotificationIdValue =
     latestNotificationId?.id ?? latestNotificationId?.Id;
 
-  const fetchNotifications = async (currentPage) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await UserGetHistory(currentPage, PAGE_SIZE);
-      const paged = response.data;
-      const items = Array.isArray(paged.data) ? paged.data : [];
-      setTotalNotifications(paged.totalItems ?? 0);
-      setNotifications(items);
-      setReadIds(
-        new Set(
-          items
-            .filter(
-              (notification) =>
-                notification.isRead === true || notification.IsRead === true,
+  const fetchNotifications = useCallback(
+    async (currentPage, filters) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const hasFilters = Object.values(filters).some(Boolean);
+        const response = hasFilters
+          ? await SearchAndFilterHistory(
+              currentPage,
+              PAGE_SIZE,
+              filters.fromDate,
+              filters.toDate,
+              filters.isRead,
+              filters.type,
             )
-            .map((notification) => notification.id ?? notification.Id)
-            .filter((id) => id !== undefined && id !== null),
-        ),
-      );
-      setTotalPages(paged.totalPages ?? 1);
-    } catch (err) {
-      console.error("Failed to load notification history:", err);
-      setNotifications([]);
-      setError(t("errors.load"));
-    } finally {
-      setLoading(false);
-    }
-  };
+          : await UserGetHistory(currentPage, PAGE_SIZE);
+        const paged = response.data;
+        const items = Array.isArray(paged.data) ? paged.data : [];
+        setTotalNotifications(paged.totalItems ?? 0);
+        setNotifications(items);
+        setReadIds(
+          new Set(
+            items
+              .filter(
+                (notification) =>
+                  notification.isRead === true || notification.IsRead === true,
+              )
+              .map((notification) => notification.id ?? notification.Id)
+              .filter((id) => id !== undefined && id !== null),
+          ),
+        );
+        setTotalPages(paged.totalPages ?? 1);
+      } catch (err) {
+        console.error("Failed to load notification history:", err);
+        setNotifications([]);
+        setError(t("errors.load"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
-    fetchNotifications(pages);
-  }, [pages]);
+    fetchNotifications(pages, activeFilters);
+  }, [pages, activeFilters, fetchNotifications]);
 
   useEffect(() => {
     if (!markReadFeedback) return;
@@ -114,11 +141,11 @@ export function DeviceNotificationHistory() {
       case "unknown":
         return <FaExclamationTriangle className="notification-icon warning" />;
       case "success":
-        return <FaCheckCircle className="notification-icon success" />;
+        return <FaInfoCircle className="notification-icon info" />;
       case "warning":
         return <FaExclamationTriangle className="notification-icon warning" />;
       case "error":
-        return <FaTimesCircle className="notification-icon danger" />;
+        return <FaExclamationTriangle className="notification-icon warning" />;
       default:
         return <FaInfoCircle className="notification-icon info" />;
     }
@@ -160,8 +187,91 @@ export function DeviceNotificationHistory() {
     }
   };
 
+  const handleSearch = () => {
+    setActiveFilters({ fromDate, toDate, isRead, type });
+    setPages(1);
+  };
+
+  const handleReset = () => {
+    setFromDate("");
+    setToDate("");
+    setIsRead("");
+    setType("");
+    setActiveFilters({ fromDate: "", toDate: "", isRead: "", type: "" });
+    setPages(1);
+  };
+
   return (
     <main className="user-notification-history">
+      <div className="notification-search-filter-container mb-4">
+        <div className="notification-search-filter-left">
+          <FaFilter size={14} aria-hidden="true" />
+          <span className="filter-label-text">{t("filter_time")}</span>
+          <DateRangePicker
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+            locale={i18n.resolvedLanguage ?? i18n.language}
+            t={t}
+          />
+        </div>
+
+        <div className="notification-search-filter-right">
+          <label className="filter-label-text" htmlFor="notification-read-filter">
+            {t("filter_status")}
+          </label>
+          <select
+            id="notification-read-filter"
+            className="filter-select"
+            value={isRead}
+            onChange={(e) => setIsRead(e.target.value)}
+            title={t("read_status")}
+          >
+            <option value="">{t("read_status")}</option>
+            <option value="true">{t("read")}</option>
+            <option value="false">{t("unread")}</option>
+          </select>
+          <label className="filter-label-text" htmlFor="notification-type-filter">
+            {t("filter_type")}
+          </label>
+          <select
+            id="notification-type-filter"
+            className="filter-select"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            title={t("notification_type")}
+          >
+            <option value="">{t("notification_type")}</option>
+            <option value="gas">{t("alerts.labels.gas")}</option>
+            <option value="gas_danger">{t("alerts.labels.gas_danger")}</option>
+            <option value="temp_high">{t("alerts.labels.temp_high")}</option>
+            <option value="humid_low">{t("alerts.labels.humid_low")}</option>
+            <option value="humid_high">{t("alerts.labels.humid_high")}</option>
+          </select>
+          <button
+            type="button"
+            className="btn btn-search"
+            onClick={handleSearch}
+            disabled={loading}
+            title={t("search")}
+            aria-label={t("search")}
+          >
+            <FaSearch size={13} />
+          </button>
+          <button
+            type="button"
+            className="btn btn-reset"
+            onClick={handleReset}
+            disabled={loading}
+            title={t("reset")}
+            aria-label={t("reset")}
+          >
+            <FaRedoAlt size={13} />
+          </button>
+        </div>
+      </div>
+
       <div className="notification-glass-panel">
         {/* Header */}
         <div className="notification-history-header">
@@ -177,22 +287,6 @@ export function DeviceNotificationHistory() {
               <span className="stat-value">{totalNotifications}</span>
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => fetchNotifications(pages)}
-            disabled={loading}
-            className="notification-refresh-btn"
-            aria-label={t("refresh")}
-          >
-            <FaSyncAlt
-              className={
-                loading
-                  ? "notification-refresh-icon spinning"
-                  : "notification-refresh-icon"
-              }
-            />
-            {loading ? t("refreshing") : t("refresh")}
-          </button>
         </div>
 
         {/* Error Message */}
@@ -220,9 +314,9 @@ export function DeviceNotificationHistory() {
             aria-atomic="true"
           >
             {markReadFeedback === "error" ? (
-              <FaTimesCircle aria-hidden="true" />
+              <FaExclamationTriangle aria-hidden="true" />
             ) : (
-              <FaCheckCircle aria-hidden="true" />
+              <FaInfoCircle aria-hidden="true" />
             )}
             <span>
               {t(
@@ -283,7 +377,7 @@ export function DeviceNotificationHistory() {
               return (
                 <div
                   key={notificationId}
-                  className={`notification-item ${
+                  className={`notification-item notification-user-item ${
                     isToday ? "latest-notification" : ""
                   }`}
                   style={{
@@ -296,75 +390,57 @@ export function DeviceNotificationHistory() {
                     {getNotificationIcon(type)}
                   </div>
                   <div className="notification-item-content">
-                    <div className="notification-item-header">
-                      <div>
-                        <p className="notification-item-title">
-                          {notification.title || t("title")}
-                          {isLatest && (
-                            <span className="notification-latest-badge">
-                              {t("latest")}
-                            </span>
-                          )}
-                        </p>
-                        <p className="notification-item-subtitle">
-                          {notification.deviceName || "System"}
-                        </p>
-                      </div>
-                      <div className="notification-time d-flex flex-column align-items-end gap-2">
-                        <div className="time-badge">
-                          <FaClock size={11} style={{ marginRight: "4px" }} />
-                          <span>
-                            {sentAt
-                              ? dayjs(sentAt).format("DD/MM/YYYY HH:mm:ss")
-                              : "Pending"}
-                          </span>
-                        </div>
-                        <span
-                          className={`notification-read-status ${
-                            isRead ? "read" : "unread"
-                          }`}
-                        >
-                          {t(isRead ? "read" : "unread")}
-                        </span>
-                        <button
-                          className={`btn btn-sm mt-2 ${
-                            isRead ? "btn-success" : "btn-primary"
-                          }`}
-                          onClick={() => markAsRead(notificationId)}
-                          disabled={isRead || markingNotificationId !== null}
-                        >
-                          {markingNotificationId === notificationId
-                            ? t("marking_read")
-                            : isRead
-                              ? t("read")
-                              : t("mark_read")}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="notification-alert-summary">
-                      <p className="notification-item-message">
-                        {alertDetails.value === null
-                          ? t(`alerts.messages.${alertDetails.kind}`)
-                          : t(`alerts.messages.${alertDetails.kind}`, {
-                              value: alertDetails.value,
-                            })}
+                    <div className="notification-user-heading">
+                      <p className="notification-item-title">
+                        {t(`alerts.labels.${alertDetails.kind}`)}
                       </p>
-                      {alertCount >= 1 && (
-                        <span
-                          className="notification-alert-count"
-                          aria-label={t("alerts.repeated", {
-                            count: alertCount,
-                          })}
-                        >
-                          {alertCount}
+                      {isLatest && (
+                        <span className="notification-latest-badge">
+                          {t("latest")}
                         </span>
                       )}
                     </div>
-                    <div className="notification-metadata">
-                      <span className="notification-type-chip">
-                        {t(`alerts.labels.${alertDetails.kind}`)}
+                    <span
+                      className="notification-repeat-badge"
+                      aria-label={t("alerts.repeated", { count: alertCount })}
+                    >
+                      <strong>{alertCount}</strong>
+                      <span>{t("alerts.repeated", { count: alertCount })}</span>
+                    </span>
+                    <p className="notification-item-subtitle">
+                      {notification.deviceName || "System"}
+                    </p>
+                    <p className="notification-item-message">
+                      {alertDetails.value === null
+                        ? t(`alerts.messages.${alertDetails.kind}`)
+                        : t(`alerts.messages.${alertDetails.kind}`, {
+                            value: alertDetails.value,
+                          })}
+                    </p>
+                  </div>
+                  <div className="notification-item-trailing">
+                    <span className="notification-time-badge">
+                      <FaClock aria-hidden="true" />
+                      {sentAt && dayjs(sentAt).isValid()
+                        ? dayjs(sentAt).format("DD/MM/YYYY HH:mm")
+                        : t("pending")}
+                    </span>
+                    {isRead ? (
+                      <span className="notification-read-status read">
+                        {t("read")}
                       </span>
-                    </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="notification-mark-read-button"
+                        onClick={() => markAsRead(notificationId)}
+                        disabled={markingNotificationId !== null}
+                      >
+                        {markingNotificationId === notificationId
+                          ? t("marking_read")
+                          : t("mark_read")}
+                      </button>
+                    )}
                   </div>
                 </div>
               );

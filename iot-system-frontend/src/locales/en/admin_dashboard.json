@@ -3,11 +3,11 @@
     "active_users": "Active users",
     "locked_users": "Locked users",
     "online_devices": "Online devices",
-    "offline_devices": "Offline devices",
+    "total_alerts": "Total alerts",
     "active_users_note": "+12% in 7 days",
     "locked_users_note": "Needs review",
     "online_devices_note": "Realtime online",
-    "offline_devices_note": "-4% compared with yesterday"
+    "total_alerts_note": "All recorded alerts"
   },
   "health": {
     "stable": "Stable",

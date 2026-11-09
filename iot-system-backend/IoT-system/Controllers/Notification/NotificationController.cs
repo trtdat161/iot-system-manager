@@ -58,7 +58,26 @@ namespace IoT_system.Controllers.Notification
                                                           [FromQuery] int page = 1,
                                                           [FromQuery] int pageSize = 10)
         {
-            var result = await notificationServices.SearchHistory(fromDate, toDate, isRead, type, page, pageSize);
+            int? userId = null;
+            if (!User.IsInRole("admin"))
+            {
+                if (!User.IsInRole("user") ||
+                    !int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var authenticatedUserId))
+                {
+                    return Forbid();
+                }
+
+                userId = authenticatedUserId;
+            }
+
+            var result = await notificationServices.SearchHistory(
+                fromDate,
+                toDate,
+                isRead,
+                type,
+                page,
+                pageSize,
+                userId);
             return Ok(result);
         }
 
@@ -69,19 +88,6 @@ namespace IoT_system.Controllers.Notification
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await notificationServices.IsReadAction(notificationId, userId);
-            return Ok(result);
-        }
-
-        // filter 
-        [Authorize(Roles = "admin")]
-        [Produces("application/json")]
-        [HttpGet("filter-sensor")]
-        public async Task<IActionResult> FilterSensor([FromQuery] int page = 1,
-                                                      [FromQuery] int pageSize = 10,
-                                                      [FromQuery] string? gas = null,
-                                                      [FromQuery] string? temp = null)
-        {
-            var result = await notificationServices.FilterSensor(page, pageSize, gas, temp);
             return Ok(result);
         }
     }

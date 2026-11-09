@@ -10,6 +10,8 @@ namespace IoT_system.DTOS.Notification
 
         public string Type { get; set; } = null!;
 
+        public int DeviceId { get; set; }
+
         public bool IsRead { get; set; }
 
         public int AlertCount { get; set; }

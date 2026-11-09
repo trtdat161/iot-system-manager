@@ -3,14 +3,18 @@ import { Sidebar } from "./Sidebar";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "../switchLanguage/LanguageSwitch";
 import { useTranslation } from "react-i18next";
+import * as signalR from "@microsoft/signalr";
 
 // import icon
 import { FaHome, FaBell, FaChevronRight } from "react-icons/fa";
 import { AdminGetMe } from "../../api/admin/accountApi";
+import { SearchAndFilterHistory } from "../../api/admin/notification";
 
 export function FrameLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [fullname, setFullname] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [adminConnection, setAdminConnection] = useState(null);
   const location = useLocation();
   const { t } = useTranslation("frame_layout");
 
@@ -47,6 +51,90 @@ export function FrameLayout() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7115/hubs/notification")
+      .withAutomaticReconnect()
+      .build();
+
+    connection.onreconnected(async () => {
+      try {
+        await connection.invoke("JoinAdminGroup");
+      } catch (err) {
+        console.error("Failed to rejoin admin notification group:", err);
+      }
+    });
+
+    connection.on("ReceiveAdminAlert", (notification) => {
+      const newNotifications = Number(notification?.newNotificationCount) || 0;
+      if (newNotifications > 0) {
+        setUnreadCount((count) => count + newNotifications);
+      }
+    });
+
+    const startConnection = async () => {
+      try {
+        await connection.start();
+        await connection.invoke("JoinAdminGroup");
+        if (!cancelled) {
+          setAdminConnection(connection);
+        }
+      } catch (err) {
+        console.error("Failed to connect to admin notifications:", err);
+      }
+    };
+
+    startConnection();
+
+    return () => {
+      cancelled = true;
+      connection
+        .stop()
+        .catch((err) =>
+          console.error("Failed to stop admin notification connection:", err),
+        );
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    let isLoading = false;
+
+    const loadUnreadCount = async () => {
+      if (isLoading) return;
+      isLoading = true;
+      try {
+        const response = await SearchAndFilterHistory(1, 1, "", "", "false", "");
+        if (isMounted) {
+          setUnreadCount(response.data.totalItems ?? 0);
+        }
+      } catch (err) {
+        console.error("Failed to load unread admin notification count:", err);
+      } finally {
+        isLoading = false;
+      }
+    };
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") {
+        loadUnreadCount();
+      }
+    };
+
+    loadUnreadCount();
+    const intervalId = window.setInterval(loadUnreadCount, 30000);
+    window.addEventListener("focus", loadUnreadCount);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", loadUnreadCount);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
+
+  useEffect(() => {
     const syncSidebarWithViewport = () => {
       if (window.innerWidth <= 767) {
         setCollapsed(true);
@@ -69,7 +157,11 @@ export function FrameLayout() {
   return (
     <>
       {/* sidebar */}
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <Sidebar
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        unreadCount={unreadCount}
+      />
 
       {/* content */}
       <div className="app-page-frame admin-app-frame" style={styleFrame}>
@@ -81,10 +173,46 @@ export function FrameLayout() {
                 <div className="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                   {/* left */}
                   <div className="d-flex align-items-center gap-3 flex-wrap">
-                    <FaBell
-                      style={{ color: "#f87171", width: 20, height: 20 }}
-                      aria-label={t("notification")}
-                    />
+                    <Link
+                      to="/frame-layout/admin-history"
+                      aria-label={t("notification_count", {
+                        count: unreadCount,
+                      })}
+                      title={t("notification_count", { count: unreadCount })}
+                      style={{
+                        position: "relative",
+                        display: "inline-flex",
+                        color: "#f87171",
+                      }}
+                    >
+                      <FaBell style={{ width: 20, height: 20 }} />
+                      {unreadCount > 0 && (
+                        <span
+                          className="notification-count-badge"
+                          style={{
+                            position: "absolute",
+                            top: -7,
+                            right: -9,
+                            minWidth: 17,
+                            height: 17,
+                            padding: "0 4px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#fff",
+                            background: "#ef4444",
+                            border: "1px solid #0c1b18",
+                            borderRadius: 999,
+                            fontSize: 10,
+                            fontWeight: 700,
+                            lineHeight: 1,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
+                    </Link>
                     {/* break cum */}
                     <nav
                       aria-label="Breadcrumb"
@@ -187,7 +315,9 @@ export function FrameLayout() {
         {/* outlet */}
         <div className="container-fluid">
           <div className="row">
-            <div className="col-md-12">{<Outlet />}</div>
+            <div className="col-md-12">
+              <Outlet context={{ connection: adminConnection }} />
+            </div>
           </div>
         </div>
       </div>

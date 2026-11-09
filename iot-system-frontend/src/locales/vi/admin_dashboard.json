@@ -3,11 +3,11 @@
     "active_users": "Người dùng hoạt động",
     "locked_users": "Người dùng bị khóa",
     "online_devices": "Thiết bị hoạt động",
-    "offline_devices": "Thiết bị offline",
+    "total_alerts": "Tổng số cảnh báo",
     "active_users_note": "+12% trong 7 ngày",
     "locked_users_note": "Cần kiểm tra",
     "online_devices_note": "Online realtime",
-    "offline_devices_note": "-4% so với hôm qua"
+    "total_alerts_note": "Tất cả cảnh báo đã ghi nhận"
   },
   "health": {
     "stable": "Ổn định",

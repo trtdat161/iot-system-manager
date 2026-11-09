@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/Auth.css";
-import { GetLanguages } from "../../api/languageApi";
-import { RegisterAction } from "../../api/authApi";
+import { GetLanguages } from "../../api/common/languageApi";
+import { RegisterAction } from "../../api/common/authApi";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "../../components/switchLanguage/LanguageSwitch";
 

@@ -3,6 +3,7 @@
   "home": "Trang chủ",
   "user": "Người dùng",
   "devices": "Thiết bị",
+  "notification_count": "Thông báo chưa đọc: {{count}}",
   "profile": "Hồ sơ",
   "welcome_admin": "Chào mừng quản trị viên:",
   "admin_avatar_alt": "Ảnh đại diện admin"
