@@ -73,7 +73,7 @@ The hardware list and pin mapping in the firmware README are inferred from the s
 │   └── esp8266/
 │       ├── README.md            # Firmware behavior, dependencies, and hardware wiring
 │       └── src/
-│           └── device.cpp       # ESP8266 device firmware
+│           └── iot_device.ino   # ESP8266 device firmware
 ├── iot-system-backend/
 │   ├── IoT-system.slnx
 │   └── IoT-system/
@@ -91,16 +91,29 @@ The hardware list and pin mapping in the firmware README are inferred from the s
 └── iot-system-frontend/
     ├── public/                   # Static public assets
     ├── src/
-    │   ├── api/                  # Backend API clients
+    │   ├── api/
+    │   │   ├── admin/            # Administrator account, device, dashboard, and notification APIs
+    │   │   ├── common/           # Shared auth, profile, language, Axios, and history APIs
+    │   │   └── user/             # User account, device connection, and notification APIs
     │   ├── assets/               # Images and other frontend assets
-    │   ├── components/           # Shared layouts and interface components
-    │   ├── css/                  # Application styles
+    │   ├── components/
+    │   │   ├── admin/            # Administrator layout and sidebar
+    │   │   ├── common/           # Shared dialogs, date picker, pagination, and portal
+    │   │   ├── switchLanguage/   # Language switcher
+    │   │   └── user/             # User layout and sidebar
+    │   ├── css/                  # Shared, admin, and user stylesheets
     │   ├── hooks/                # Shared React hooks, including SignalR
     │   ├── locales/              # English and Vietnamese translations
-    │   ├── pages/                # Admin, user, authentication, and public pages
+    │   ├── pages/
+    │   │   ├── admin/            # Administrator dashboard, account, profile, and history pages
+    │   │   ├── auth/             # Login, registration, and protected routes
+    │   │   ├── public/           # Public landing page
+    │   │   └── user/             # User dashboard, profile, connection, and history pages
     │   ├── routes/               # Frontend route definitions
-    │   ├── App.jsx
-    │   └── main.jsx
+    │   ├── utils/                # Shared utility functions
+    │   ├── App.jsx               # Root application component
+    │   ├── i18n.js               # Localization setup
+    │   └── main.jsx              # Frontend entry point
     ├── index.html
     ├── package.json
     └── vite.config.js
