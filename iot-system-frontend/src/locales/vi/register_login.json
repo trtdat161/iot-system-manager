@@ -12,6 +12,8 @@
   "register_success": "Đăng ký thành công",
   "login": "Đăng nhập",
   "login_subtitle": "Đăng nhập vào hệ thống",
+  "forgot_password": "Quên mật khẩu?",
+  "forgot_password_unavailable": "Chức năng này đang được phát triển. Vui lòng thử lại sau.",
   "loading": "Loading...",
   "select_language": "Chọn ngôn ngữ",
   "placeholders": {

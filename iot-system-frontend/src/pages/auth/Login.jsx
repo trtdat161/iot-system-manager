@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/Auth.css";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,18 @@ export function Login() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showForgotPasswordNotice, setShowForgotPasswordNotice] =
+    useState(false);
+
+  useEffect(() => {
+    if (!showForgotPasswordNotice) return undefined;
+
+    const timeoutId = window.setTimeout(
+      () => setShowForgotPasswordNotice(false),
+      3000,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [showForgotPasswordNotice]);
 
   const [form, setForm] = useState({
     email: "",
@@ -127,9 +139,18 @@ export function Login() {
 
               {/* Password */}
               <div className="form-group">
-                <label htmlFor="password" className="form-label">
-                  {t("password")}
-                </label>
+                <div className="login-password-label">
+                  <label htmlFor="password" className="form-label">
+                    {t("password")}
+                  </label>
+                  <button
+                    type="button"
+                    className="auth-link"
+                    onClick={() => setShowForgotPasswordNotice(true)}
+                  >
+                    {t("forgot_password")}
+                  </button>
+                </div>
                 <input
                   id="password"
                   type="password"
@@ -139,6 +160,11 @@ export function Login() {
                   value={form.password}
                   onChange={handleChange}
                 />
+                {showForgotPasswordNotice && (
+                  <div className="alert alert-info" role="status">
+                    {t("forgot_password_unavailable")}
+                  </div>
+                )}
                 {errors.password && (
                   <div className="form-error">{t(errors.password)}</div>
                 )}

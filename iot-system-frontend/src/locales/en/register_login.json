@@ -12,6 +12,8 @@
   "register_success": "Register success",
   "login": "Login",
   "login_subtitle": "Log in to the system",
+  "forgot_password": "Forgot password?",
+  "forgot_password_unavailable": "This feature is under development. Please try again later.",
   "loading": "Loading...",
   "select_language": "Select language",
   "placeholders": {
