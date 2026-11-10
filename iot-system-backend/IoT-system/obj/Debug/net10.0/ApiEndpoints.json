@@ -164,6 +164,16 @@
   },
   {
     "ContainingType": "AccountAuthController",
+    "Method": "CheckAuth",
+    "RelativePath": "api/auth/check",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AccountAuthController",
     "Method": "LoginAccount",
     "RelativePath": "api/auth/login",
     "HttpMethod": "POST",

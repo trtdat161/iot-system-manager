@@ -47,6 +47,7 @@
   "load_user_failed": "Failed to load user information!",
   "lock_account_failed": "Failed to lock account!",
   "unlock_account_failed": "Failed to unlock account!",
+  "delete_account_success": "Account deleted successfully!",
   "lock_account_success": "Account locked successfully!",
   "unlock_account_success": "Account unlocked successfully!"
 }

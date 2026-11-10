@@ -12,9 +12,9 @@ import "../../css/admin/Dashboard.css";
 import "../../css/admin/ProfileAdmin.css";
 import {
   ConfirmPassword,
-  GetAdminProfile,
-  UpdateAdminProfile,
-} from "../../api/admin/profileApi";
+  GetProfile,
+  UpdateProfile,
+} from "../../api/common/profileApi";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
@@ -188,7 +188,7 @@ export function ProfileAdmin() {
         payload.password = form.password;
       }
 
-      const response = await UpdateAdminProfile(payload);
+      const response = await UpdateProfile(payload);
       if (!response?.data) {
         setErrors({ form: "errors.update_failed" });
         return;
@@ -234,7 +234,7 @@ export function ProfileAdmin() {
   useEffect(() => {
     let isMounted = true;
 
-    GetAdminProfile()
+    GetProfile()
       .then((response) => {
         if (!isMounted) {
           return;

@@ -66,7 +66,7 @@ export function LockAccount() {
         if (response.data) {
           setSuccess(t("lock_account_success"));
           setTimeout(() => {
-            navigate("/frame-layout/manager-user");
+            navigate("/admin-frame-layout/manager-user");
           }, 1500);
         } else {
           setError(t("lock_account_failed"));
@@ -76,7 +76,7 @@ export function LockAccount() {
         const response = await AdminUnlockAccount(id);
         if (response.data) {
           setSuccess(t("unlock_account_success"));
-          navigate("/frame-layout/manager-user");
+          navigate("/admin-frame-layout/manager-user");
         } else {
           setError(t("unlock_account_failed"));
         }
@@ -90,7 +90,7 @@ export function LockAccount() {
   };
 
   const handleCancel = () => {
-    navigate("/frame-layout/manager-user");
+    navigate("/admin-frame-layout/manager-user");
   };
 
   if (isLoadingUser) {
@@ -217,7 +217,6 @@ export function LockAccount() {
       {showConfirm && (
         <div className="lock-modal-overlay">
           <div className="lock-modal-content">
-            <div className="lock-modal-icon">🔒</div>
             <h2 className="lock-modal-title">
               {user.status === true
                 ? t("confirm_lock_account")

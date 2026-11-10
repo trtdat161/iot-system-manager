@@ -330,7 +330,7 @@ export function AdminGetHistory() {
                       className="notification-detail-button"
                       onClick={() =>
                         navigate(
-                          `/frame-layout/history-detail/${notificationId}`,
+                          `/admin-frame-layout/history-detail/${notificationId}`,
                         )
                       }
                     >

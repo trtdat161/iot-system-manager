@@ -2,6 +2,7 @@
 using IoT_system.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [ApiController]// đánh dấu controller này là 1 API, bật các tính năng hỗ trợ AP
 [Route("api/auth")]
@@ -45,5 +46,13 @@ public class AccountAuthController : ControllerBase
     {
         var result = await accountServices.Logout();   // thêm await
         return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("check")]
+    public IActionResult CheckAuth()
+    {
+        string role = User.FindFirst(ClaimTypes.Role)?.Value;
+        return Ok(new { role = role });
     }
 }

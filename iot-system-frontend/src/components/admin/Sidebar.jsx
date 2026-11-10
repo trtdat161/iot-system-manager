@@ -21,27 +21,27 @@ const MENU_ITEMS = [
   {
     key: "dashboard",
     icon: <MdDashboard size={18} />,
-    path: "/frame-layout/dashboard-admin",
+    path: "/admin-frame-layout/dashboard-admin",
   },
   {
     key: "users",
     icon: <FaUsers size={16} />,
-    path: "/frame-layout/manager-user",
+    path: "/admin-frame-layout/manager-user",
   },
   {
     key: "devices",
     icon: <MdDevices size={18} />,
-    path: "/frame-layout/",
+    path: "/admin-frame-layout/",
   },
   {
     key: "notifications", // lịch sử thiết bị gửi thông báo lên
     icon: <FaBell size={16} />,
-    path: "/frame-layout/admin-history",
+    path: "/admin-frame-layout/admin-history",
   },
   {
     key: "profile",
     icon: <FaUserCircle size={16} />,
-    path: "/frame-layout/profile",
+    path: "/admin-frame-layout/profile",
   },
 ];
 
@@ -83,7 +83,10 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
         style={{
           width: collapsed ? "35px" : "190px",
           minHeight: "100vh",
-          background: "#0c1b18",
+          background:
+            "linear-gradient(180deg, #12302a 0%, #0e2823 48%, #0b211d 100%)",
+          borderRight: "1px solid rgba(114, 240, 206, 0.16)",
+          boxShadow: "4px 0 18px rgba(0, 0, 0, 0.2)",
           display: "flex",
           flexDirection: "column",
           transition: "width 0.24s ease-out",
@@ -100,7 +103,7 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
             alignItems: "center",
             justifyContent: collapsed ? "center" : "space-between",
             padding: collapsed ? "18px 0" : "18px 16px",
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
+            borderBottom: "1px solid rgba(114, 240, 206, 0.14)",
           }}
         >
           {!collapsed && (
@@ -184,13 +187,13 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
               style={{
                 width: "100%",
                 background: isActive(item.path)
-                  ? "rgba(114,240,206,0.1)"
+                  ? "linear-gradient(90deg, rgba(114,240,206,0.22), rgba(114,240,206,0.09))"
                   : "none",
                 border: "none",
                 borderLeft: isActive(item.path)
                   ? "3px solid #72f0ce"
                   : "3px solid transparent",
-                color: isActive(item.path) ? "#72f0ce" : "#94a3b8",
+                color: isActive(item.path) ? "#8bffdf" : "#b2c5bf",
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
@@ -198,19 +201,23 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
                 justifyContent: collapsed ? "center" : "flex-start",
                 cursor: "pointer",
                 fontSize: "0.85rem",
-                fontWeight: isActive(item.path) ? 600 : 400,
-                transition: "all 0.15s",
+                fontWeight: isActive(item.path) ? 700 : 500,
+                boxShadow: isActive(item.path)
+                  ? "inset 0 0 18px rgba(114, 240, 206, 0.08)"
+                  : "none",
+                transition: "all 0.18s ease",
               }}
               onMouseEnter={(e) => {
                 if (!isActive(item.path)) {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                  e.currentTarget.style.color = "#e2e8f0";
+                  e.currentTarget.style.background =
+                    "rgba(114, 240, 206, 0.09)";
+                  e.currentTarget.style.color = "#e6fff7";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive(item.path)) {
                   e.currentTarget.style.background = "none";
-                  e.currentTarget.style.color = "#94a3b8";
+                  e.currentTarget.style.color = "#b2c5bf";
                 }
               }}
             >
@@ -267,7 +274,7 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
         {/* --- Logout --- */}
         <div
           style={{
-            borderTop: "1px solid rgba(255,255,255,0.07)",
+            borderTop: "1px solid rgba(114, 240, 206, 0.14)",
             padding: 8,
           }}
         >

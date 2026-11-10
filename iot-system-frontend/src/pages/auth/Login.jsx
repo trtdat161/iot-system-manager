@@ -58,7 +58,7 @@ export function Login() {
         i18n.changeLanguage(user.languageCode); // render lại đúng ngôn ngữ đã chọn ở lúc register
         localStorage.setItem("lang", user.languageCode);
         if (role === "admin") {
-          navigate("/frame-layout/dashboard-admin");
+          navigate("/admin-frame-layout/dashboard-admin");
         } else {
           navigate("/user-frame-layout/dashboard-user");
         }

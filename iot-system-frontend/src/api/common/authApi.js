@@ -8,3 +8,5 @@ export const LoginAction = (data) => axiosInstance.post("auth/login", data);
 export const LogoutAccount = () => axiosInstance.post("auth/logout");
 
 export const RefreshToken = () => axiosInstance.post("auth/refresh-token");
+
+export const CheckAuth = () => axiosInstance.get("auth/check");

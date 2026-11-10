@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import dayjs from "dayjs";
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -15,13 +16,31 @@ export function DateRangePicker({
 }) {
   const [openField, setOpenField] = useState(null);
   const [visibleMonth, setVisibleMonth] = useState(dayjs().startOf("month"));
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 480px)").matches,
+  );
   const pickerRef = useRef(null);
+  const calendarRef = useRef(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 480px)");
+    const handleViewportChange = () => setIsMobile(mediaQuery.matches);
+
+    mediaQuery.addEventListener("change", handleViewportChange);
+    return () =>
+      mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
 
   useEffect(() => {
     if (!openField) return undefined;
 
     const handlePointerDown = (event) => {
-      if (!pickerRef.current?.contains(event.target)) {
+      if (
+        !pickerRef.current?.contains(event.target) &&
+        !calendarRef.current?.contains(event.target)
+      ) {
         setOpenField(null);
       }
     };
@@ -75,6 +94,94 @@ export function DateRangePicker({
     setOpenField(null);
   };
 
+  const calendarPopover = openField ? (
+    <div
+      ref={calendarRef}
+      className="notification-calendar-popover"
+      role="dialog"
+      aria-label={t("calendar")}
+    >
+      <div className="notification-calendar-header">
+        <button
+          type="button"
+          className="notification-calendar-nav"
+          onClick={() => setVisibleMonth((month) => month.subtract(1, "month"))}
+          aria-label={t("previous_month")}
+        >
+          <FaChevronLeft aria-hidden="true" />
+        </button>
+        <span className="notification-calendar-month">{monthLabel}</span>
+        <button
+          type="button"
+          className="notification-calendar-nav"
+          onClick={() => setVisibleMonth((month) => month.add(1, "month"))}
+          aria-label={t("next_month")}
+        >
+          <FaChevronRight aria-hidden="true" />
+        </button>
+      </div>
+
+      <div className="notification-calendar-grid" role="grid">
+        {weekDays.map((weekDay, index) => (
+          <span
+            key={`${weekDay}-${index}`}
+            className="notification-calendar-weekday"
+            role="columnheader"
+          >
+            {weekDay}
+          </span>
+        ))}
+        {calendarDays.map((date) => {
+          const dateValue = date.format("YYYY-MM-DD");
+          const isSelected = dateValue === currentValue;
+          const isToday = date.isSame(dayjs(), "day");
+          const isOutsideMonth = !date.isSame(visibleMonth, "month");
+
+          return (
+            <button
+              type="button"
+              key={dateValue}
+              className={[
+                "notification-calendar-day",
+                isSelected ? "selected" : "",
+                isToday ? "today" : "",
+                isOutsideMonth ? "outside-month" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              onClick={() => chooseDate(date)}
+              role="gridcell"
+              aria-selected={isSelected}
+              aria-label={date.format("DD/MM/YYYY")}
+            >
+              {date.date()}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="notification-calendar-footer">
+        <button
+          type="button"
+          className="notification-calendar-action"
+          onClick={() => {
+            changeCurrentValue("");
+            setOpenField(null);
+          }}
+        >
+          {t("clear_date")}
+        </button>
+        <button
+          type="button"
+          className="notification-calendar-action today"
+          onClick={chooseToday}
+        >
+          {t("today")}
+        </button>
+      </div>
+    </div>
+  ) : null;
+
   return (
     <div className="notification-date-group notification-date-picker" ref={pickerRef}>
       <button
@@ -105,92 +212,9 @@ export function DateRangePicker({
         </span>
       </button>
 
-      {openField && (
-        <div
-          className="notification-calendar-popover"
-          role="dialog"
-          aria-label={t("calendar")}
-        >
-          <div className="notification-calendar-header">
-            <button
-              type="button"
-              className="notification-calendar-nav"
-              onClick={() => setVisibleMonth((month) => month.subtract(1, "month"))}
-              aria-label={t("previous_month")}
-            >
-              <FaChevronLeft aria-hidden="true" />
-            </button>
-            <span className="notification-calendar-month">{monthLabel}</span>
-            <button
-              type="button"
-              className="notification-calendar-nav"
-              onClick={() => setVisibleMonth((month) => month.add(1, "month"))}
-              aria-label={t("next_month")}
-            >
-              <FaChevronRight aria-hidden="true" />
-            </button>
-          </div>
-
-          <div className="notification-calendar-grid" role="grid">
-            {weekDays.map((weekDay, index) => (
-              <span
-                key={`${weekDay}-${index}`}
-                className="notification-calendar-weekday"
-                role="columnheader"
-              >
-                {weekDay}
-              </span>
-            ))}
-            {calendarDays.map((date) => {
-              const dateValue = date.format("YYYY-MM-DD");
-              const isSelected = dateValue === currentValue;
-              const isToday = date.isSame(dayjs(), "day");
-              const isOutsideMonth = !date.isSame(visibleMonth, "month");
-
-              return (
-                <button
-                  type="button"
-                  key={dateValue}
-                  className={[
-                    "notification-calendar-day",
-                    isSelected ? "selected" : "",
-                    isToday ? "today" : "",
-                    isOutsideMonth ? "outside-month" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={() => chooseDate(date)}
-                  role="gridcell"
-                  aria-selected={isSelected}
-                  aria-label={date.format("DD/MM/YYYY")}
-                >
-                  {date.date()}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="notification-calendar-footer">
-            <button
-              type="button"
-              className="notification-calendar-action"
-              onClick={() => {
-                changeCurrentValue("");
-                setOpenField(null);
-              }}
-            >
-              {t("clear_date")}
-            </button>
-            <button
-              type="button"
-              className="notification-calendar-action today"
-              onClick={chooseToday}
-            >
-              {t("today")}
-            </button>
-          </div>
-        </div>
-      )}
+      {isMobile && calendarPopover
+        ? createPortal(calendarPopover, document.body)
+        : calendarPopover}
     </div>
   );
 }

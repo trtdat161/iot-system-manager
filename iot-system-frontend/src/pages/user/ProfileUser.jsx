@@ -13,9 +13,9 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import {
   ConfirmPassword,
-  GetUserProfile,
-  UpdateUserProfile,
-} from "../../api/user/profileApi";
+  GetProfile,
+  UpdateProfile,
+} from "../../api/common/profileApi";
 import { useTranslation } from "react-i18next";
 
 const languageCodeById = {
@@ -182,7 +182,7 @@ export function ProfileUser() {
         payload.password = form.password;
       }
 
-      const response = await UpdateUserProfile(payload);
+      const response = await UpdateProfile(payload);
       if (!response?.data) {
         setErrors({ form: "errors.update_failed" });
         return;
@@ -228,7 +228,7 @@ export function ProfileUser() {
   useEffect(() => {
     let isMounted = true;
 
-    GetUserProfile()
+    GetProfile()
       .then((response) => {
         if (!isMounted) {
           return;

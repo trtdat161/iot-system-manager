@@ -20,17 +20,17 @@ export function FrameLayout() {
 
   // break cum
   const breadcrumbs = [
-    { to: "/frame-layout/dashboard-admin", label: t("home") },
-    { to: "/frame-layout/manager-user", label: t("user") },
-    { to: "/frame-layout/manager-devices", label: t("devices") },
-    { to: "/frame-layout/admin-history", label: t("notification") },
+    { to: "/admin-frame-layout/dashboard-admin", label: t("home") },
+    { to: "/admin-frame-layout/manager-user", label: t("user") },
+    { to: "/admin-frame-layout/manager-devices", label: t("devices") },
+    { to: "/admin-frame-layout/admin-history", label: t("notification") },
   ];
 
   const isActiveBreadcrumb = (crumb) => {
-    if (crumb.to === "/frame-layout/manager-user") {
+    if (crumb.to === "/admin-frame-layout/manager-user") {
       return (
         location.pathname.startsWith(crumb.to) ||
-        location.pathname.startsWith("/frame-layout/lock-account")
+        location.pathname.startsWith("/admin-frame-layout/lock-account")
       );
     }
 
@@ -174,7 +174,7 @@ export function FrameLayout() {
                   {/* left */}
                   <div className="d-flex align-items-center gap-3 flex-wrap">
                     <Link
-                      to="/frame-layout/admin-history"
+                      to="/admin-frame-layout/admin-history"
                       aria-label={t("notification_count", {
                         count: unreadCount,
                       })}

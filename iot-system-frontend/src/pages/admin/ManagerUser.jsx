@@ -26,8 +26,8 @@ import { Pagination } from "../../components/common/Pagination";
 import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 
 export function ManagerUser() {
-  const [errorAccount, _setErrorAccount] = useState("");
   const [deleteUser, setDeleteUser] = useState(null); // null nhận object
+  const [deleteSuccess, setDeleteSuccess] = useState("");
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
@@ -57,6 +57,7 @@ export function ManagerUser() {
     try {
       const response = await DeleteAccount(id);
       if (response.data) {
+        setDeleteSuccess(t("delete_account_success"));
         setDeleteUser(null); //nếu api xoá ok thì set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
         const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages; // nếu user chỉ còn 1 trên trang và ko phải trag 1 thì sau khi xoá sẽ về trang trước đó, ko thì vẫn ở trang hiện tại
         newPage !== pages ? setPages(newPage) : fetchAccounts(pages);
@@ -96,6 +97,13 @@ export function ManagerUser() {
   useEffect(() => {
     fetchAccounts(pages);
   }, [pages]);
+
+  useEffect(() => {
+    if (!deleteSuccess) return undefined;
+
+    const timeoutId = window.setTimeout(() => setDeleteSuccess(""), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [deleteSuccess]);
 
   return (
     <div>
@@ -176,7 +184,11 @@ export function ManagerUser() {
           </div>
         </div>
       </h5>
-      {errorAccount && <span className="text-danger">{errorAccount}</span>}
+      {deleteSuccess && (
+        <div className="alert alert-success" role="status">
+          {deleteSuccess}
+        </div>
+      )}
       <div className="table-wrapper-fixed">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -273,7 +285,7 @@ export function ManagerUser() {
                       {account.role === "admin" ? (
                         <button
                           className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1"
-                          onClick={() => navigate("/frame-layout/profile")}
+                          onClick={() => navigate("/admin-frame-layout/profile")}
                         >
                           <FaEdit size={12} />
                           <span>{t("edit_account_admin")}</span>
@@ -284,7 +296,7 @@ export function ManagerUser() {
                           <button
                             onClick={() =>
                               navigate(
-                                `/frame-layout/lock-account/${account.id}`,
+                                `/admin-frame-layout/lock-account/${account.id}`,
                               )
                             }
                             className={`btn btn-sm d-inline-flex align-items-center gap-1 ${

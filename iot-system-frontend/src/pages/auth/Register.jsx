@@ -234,11 +234,8 @@ export function Register() {
               <div className="contact-info">
                 <p className="small text-light text-center">
                   {t("support")}
-                  <a
-                    href="mailto:trtdat161@gmail.com"
-                    className="auth-contact-link"
-                  >
-                    <span className="p-1">trtdat161@gmail.com</span>
+                  <a href="mailto:test@gmail.com" className="auth-contact-link">
+                    <span className="p-1">test@gmail.com</span>
                   </a>
                 </p>
               </div>

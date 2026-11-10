@@ -121,15 +121,6 @@
   margin: 0 0 0.5rem 0;
   letter-spacing: 1.5px;
   text-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.lock-title::before {
-  content: "⚠️";
-  font-size: 1.5rem;
 }
 
 .lock-subtitle {
@@ -273,14 +264,6 @@
   border-radius: 6px;
   color: #66ff99;
   font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.lock-success::before {
-  content: "✅";
-  font-size: 1rem;
 }
 
 /* ─── BUTTONS ─── */
@@ -414,11 +397,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.lock-modal-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
 }
 
 .lock-modal-title {

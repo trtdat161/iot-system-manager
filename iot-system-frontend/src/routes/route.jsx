@@ -14,56 +14,54 @@ import { ProfileAdmin } from "../pages/admin/ProfileAdmin";
 import { WaitingConnection } from "../pages/user/WaitingConnection";
 import { AdminGetHistory } from "../pages/admin/AdminGetHistory";
 import { HistoryDetail } from "../pages/admin/HistoryDetail";
+import { ProtectedRoute } from "../pages/auth/ProtectedRoute";
 
 export function CreateRouter() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LandingPage />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
+        {/* ===== Public: không bọc ===== */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        {/* outlet sidebar admin */}
-        {/* thằng outlet có / rồi nên mấy thằng con ko cần / nữa */}
-        {/* =============== admin =============== */}
-        <Route path="/frame-layout" element={<FrameLayout />}>
-          <Route path="dashboard-admin" element={<DashboardAdmin />}></Route>
-          <Route path="manager-user" element={<ManagerUser />}></Route>
-          <Route path="lock-account/:id" element={<LockAccount />}></Route>
-          <Route path="profile" element={<ProfileAdmin />}></Route>
-          <Route path="admin-history" element={<AdminGetHistory />}></Route>
-          <Route path="history-detail/:id" element={<HistoryDetail />}></Route>
+        {/* ===== Admin ===== */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin-frame-layout" element={<FrameLayout />}>
+            <Route path="dashboard-admin" element={<DashboardAdmin />} />
+            <Route path="manager-user" element={<ManagerUser />} />
+            <Route path="lock-account/:id" element={<LockAccount />} />
+            <Route path="profile" element={<ProfileAdmin />} />
+            <Route path="admin-history" element={<AdminGetHistory />} />
+            <Route path="history-detail/:id" element={<HistoryDetail />} />
+          </Route>
         </Route>
 
-        {/* =============== user =============== */}
-        <Route
-          path="/dashboard-user"
-          element={<Navigate to="/user-frame-layout/dashboard-user" replace />}
-        ></Route>
-        <Route path="/user-frame-layout" element={<FrameLayoutUser />}>
+        {/* ===== User ===== */}
+        <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route
-            index
-            element={<Navigate to="dashboard-user" replace />}
-          ></Route>
-          <Route path="dashboard-user" element={<DashboardUser />}></Route>
-          <Route
-            path="device-notifications" // user xem thông báo đồng thời là xem lịch sử thiết bị gửi thông báo luôn
-            element={<DeviceNotificationHistory />}
-          ></Route>
-          <Route
-            path="help"
+            path="/dashboard-user"
             element={
               <Navigate to="/user-frame-layout/dashboard-user" replace />
             }
-          ></Route>
-          <Route path="profile" element={<ProfileUser />}></Route>
-          <Route
-            path="waiting-connection"
-            element={<WaitingConnection />}
-          ></Route>
+          />
+          <Route path="/user-frame-layout" element={<FrameLayoutUser />}>
+            <Route index element={<Navigate to="dashboard-user" replace />} />
+            <Route path="dashboard-user" element={<DashboardUser />} />
+            <Route
+              path="device-notifications"
+              element={<DeviceNotificationHistory />}
+            />
+            <Route
+              path="help"
+              element={
+                <Navigate to="/user-frame-layout/dashboard-user" replace />
+              }
+            />
+            <Route path="profile" element={<ProfileUser />} />
+            <Route path="waiting-connection" element={<WaitingConnection />} />
+          </Route>
         </Route>
-
-        {/*  */}
       </Routes>
     </>
   );

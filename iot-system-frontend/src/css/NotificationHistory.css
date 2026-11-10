@@ -964,11 +964,11 @@
 @media (max-width: 768px) {
   .admin-notification-history,
   .user-notification-history {
-    padding: 12px;
+    padding: 10px;
   }
 
   .notification-glass-panel {
-    padding: 16px;
+    padding: 12px;
   }
 
   .notification-item {
@@ -1010,12 +1010,15 @@
 
   .notification-search-filter-left {
     justify-content: flex-start;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .notification-search-filter-right {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 8px;
+    min-width: 0;
   }
 
   .notification-date-group,
@@ -1084,6 +1087,11 @@
     width: 100%;
   }
 
+  .notification-search-filter-left {
+    width: 100%;
+    gap: 8px;
+  }
+
   .notification-date-group {
     gap: 6px;
     padding: 6px 8px;
@@ -1092,7 +1100,11 @@
   .notification-date-picker {
     justify-content: space-between;
     gap: 5px;
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
     padding: 5px;
+    box-sizing: border-box;
   }
 
   .notification-date-trigger {
@@ -1100,12 +1112,20 @@
     flex: 1 1 0;
     gap: 6px;
     padding: 7px 6px;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .notification-calendar-popover {
-    width: min(304px, calc(100vw - 48px));
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1100;
+    width: min(304px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
     padding: 11px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
   }
 
   .filter-select {

@@ -47,6 +47,7 @@
   "load_user_failed": "Không thể tải thông tin người dùng!",
   "lock_account_failed": "Khoá tài khoản thất bại!",
   "unlock_account_failed": "Mở khoá tài khoản thất bại!",
+  "delete_account_success": "Xoá tài khoản thành công!",
   "lock_account_success": "Khoá tài khoản thành công!",
   "unlock_account_success": "Mở khoá tài khoản thành công!"
 }
