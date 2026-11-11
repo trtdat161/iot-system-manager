@@ -53,6 +53,13 @@ public class AccountAuthController : ControllerBase
     public IActionResult CheckAuth()
     {
         string role = User.FindFirst(ClaimTypes.Role)?.Value;
-        return Ok(new { role = role });
+        return Ok(new { role }); // json trả { "role": "admin" } có thể viết role = role nhưng do tên key trùng tên biến nên gọn đc
+        /*
+         - User là là thuộc tính có sẵn của controllerBase nó là thông tin người đag gọi api
+         - FindFirst(ClaimTypes.Role) là trong list claim của token tìm claim đầu tiên có loại là Role. Trả về claim hoặc null
+           (Claim = một mẩu thông tin về user, dạng cặp Type - Value)
+         - ?.Value nếu claim là null thì cả biểu thức null, không văng NullReferenceException. 
+           Nếu có thì lấy chuỗi giá trị, ví dụ "admin"
+         */
     }
 }

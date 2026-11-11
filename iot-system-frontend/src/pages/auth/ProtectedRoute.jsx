@@ -30,7 +30,7 @@ export function ProtectedRoute({ allowedRoles }) {
   }, []);
 
   if (status === "checking") {
-    return <div>Loading...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   // "un"
@@ -39,13 +39,16 @@ export function ProtectedRoute({ allowedRoles }) {
   }
 
   if (status === "error") {
-    return <div>Cannot verify authentication status.</div>;
+    return (
+      <div className="text-center">Cannot verify authentication status.</div>
+    );
   }
 
-  // Đã đăng nhập nhưng sai khu vực (vd: User gõ URL của Admin)
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to={homeByRole[role] ?? "/login"} replace />;
+  // Role hợp lệ với khu vực này -> cho về dashboard của họ
+  if (allowedRoles.includes(role)) {
+    return <Outlet />;
   }
 
-  return <Outlet />;
+  // Sai khu vực (vd: User gõ URL của Admin) -> chuyển về trang của họ, thêm trang login để có chỗ đi
+  return <Navigate to={homeByRole[role] ?? "/login"} replace />;
 }
