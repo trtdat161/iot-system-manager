@@ -397,11 +397,11 @@ namespace IoT_system.Services.Mqtt
         {
             return $@"
             <div style='font-family:Arial,sans-serif;max-width:480px'>
-                <h2 style='color:#d9534f'>Cảnh báo thiết bị</h2>
+                <h2 style='color:#d9534f'>Cảnh báo từ thiết bị</h2>
                 <p><b>{WebUtility.HtmlEncode(message)}</b></p>
                 <p>Thiết bị: {WebUtility.HtmlEncode(mac)}<br/>
                    Thời gian: {time:HH:mm:ss dd/MM/yyyy}</p>
-                <p style='color:#888'>Email tự động từ DTECH TTD.</p>
+                <p style='color:#888'>Email tự động từ DTECH SYSTEM (Dat ty phu).</p>
             </div>";
         }
         private static string BuildMessage(string kind, SensorPayload s) => kind switch
