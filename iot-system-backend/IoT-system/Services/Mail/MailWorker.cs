@@ -3,6 +3,7 @@ using System.ComponentModel;
 
 namespace IoT_system.Services.Mail
 {
+    //Chạy nền, lấy thư từ ống ra gửi, lỗi thì thử lại
     public class MailWorker : BackgroundService
     {
         private readonly MailQueueService queue;

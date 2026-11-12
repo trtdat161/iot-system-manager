@@ -310,11 +310,12 @@ namespace IoT_system.Services.Mqtt
 
             var targets = pending.Except(hasUnreadUserIds).ToList();
 
+            // Đưa lên trước if vì email cũng cần dùng
+            var message = BuildMessage(kind, sensor);
+            var now = TimeHelper.VnNow(); // dùng chung 1 mốc để HistoryDetail gom đúng người nhận
+
             if (targets.Count > 0)
             {
-                var message = BuildMessage(kind, sensor);
-                var now = TimeHelper.VnNow(); // dùng chung 1 mốc để HistoryDetail gom đúng người nhận
-
                 foreach (var userId in targets)
                 {
                     await db.Database.ExecuteSqlRawAsync(
@@ -331,8 +332,10 @@ namespace IoT_system.Services.Mqtt
                     CreatedAt = now,
                     UserIds = targets   // frontend dùng để lọc đúng người nhận
                 });
-                await EnqueueEmails(db, targets, mac, message, now);
             }
+
+            // Email gửi cho TẤT CẢ user chưa được xử lý trong đợt này (không phụ thuộc đã đọc hay chưa)
+            await EnqueueEmails(db, pending, mac, message, now);
 
             // Đánh dấu SAU khi insert thành công. Nếu insert lỗi thì tin kế tiếp sẽ thử lại.
             foreach (var id in pending)
@@ -401,7 +404,7 @@ namespace IoT_system.Services.Mqtt
                 <p><b>{WebUtility.HtmlEncode(message)}</b></p>
                 <p>Thiết bị: {WebUtility.HtmlEncode(mac)}<br/>
                    Thời gian: {time:HH:mm:ss dd/MM/yyyy}</p>
-                <p style='color:#888'>Email tự động từ DTECH SYSTEM (Dat ty phu).</p>
+                <p style='color:#888'>Email tự động từ DTECH SYSTEM (TTD).</p>
             </div>";
         }
         private static string BuildMessage(string kind, SensorPayload s) => kind switch

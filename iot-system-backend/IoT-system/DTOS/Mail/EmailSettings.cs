@@ -2,9 +2,9 @@
 {
     public class EmailSettings
     {
-        public string Host { get; set; } = "smtp.gmail.com";
+        public string Host { get; set; } = "smtp.gmail.com"; // địa chỉ gửi mail của Gmail (smtp.gmail.com, cổng 587).
         public int Port { get; set; } = 587;
-        public string SenderName { get; set; } = "IoT System";
+        public string SenderName { get; set; } = "DTECH IoT";
         public string SenderEmail { get; set; } = "";
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";

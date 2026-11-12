@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>IoT_system</RootNamespace>
     <NuGetAudit>false</NuGetAudit>
+    <UserSecretsId>c97741c2-c6c0-4ecd-a6a6-5c4089118746</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

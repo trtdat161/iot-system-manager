@@ -53,7 +53,7 @@ builder.Services.AddScoped<NotificationServices, NotificationServicesImpl>();
 //builder.Services.AddScoped<TokenService, TokenServiceImpl>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-builder.Services.AddSingleton<MailQueueService, MailServiceQueueImpl>();
+builder.Services.AddSingleton<MailQueueService, MailQueueServiceImpl>();
 builder.Services.AddSingleton<MailSenderService, MailSenderServiceImpl>();
 builder.Services.AddHostedService<MailWorker>();
 /* Hàng đợi bắt buộc là Singleton: nếu không, IotMqttIngestService và MailWorker sẽ mỗi bên cầm một hàng đợi khác nhau và thư không bao giờ tới nơi */
