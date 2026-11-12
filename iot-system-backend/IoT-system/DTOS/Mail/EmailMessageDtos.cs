@@ -7,4 +7,4 @@
         public string HtmlBody { get; set; } = "";
     }
 }
-// EmailMessageDto.cs là một “lá thư” nằm trong hàng đợi
+// EmailMessageDto.cs là một “lá thư” nằm trong hàng đợi gửi cho ai... tiêu đề, nội dung

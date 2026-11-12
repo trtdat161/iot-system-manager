@@ -3,11 +3,11 @@ using System.Threading.Channels;
 
 namespace IoT_system.Services.Mail
 {
-    public class MailServiceQueueImpl : MailQueueService
+    public class MailQueueServiceImpl : MailQueueService
     {
         private readonly Channel<EmailMessageDtos> channel;
 
-        public MailServiceQueueImpl()
+        public MailQueueServiceImpl()
         {
             var options = new BoundedChannelOptions(200)
             {
