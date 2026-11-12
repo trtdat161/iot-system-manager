@@ -1,6 +1,7 @@
 ﻿using IoT_system.Configurations.jwt;
 using IoT_system.Configurations.midleware;
 using IoT_system.Configurations.mqtt;
+using IoT_system.DTOS.Mail;
 using IoT_system.Hubs;
 using IoT_system.Models;
 using IoT_system.Profiles;
@@ -8,6 +9,7 @@ using IoT_system.Services.Accounts;
 using IoT_system.Services.DashboardAdmin;
 using IoT_system.Services.Devices;
 using IoT_system.Services.Languages;
+using IoT_system.Services.Mail;
 using IoT_system.Services.Mqtt;
 using IoT_system.Services.Notifications;
 //using IoT_system.Services.Token;
@@ -49,6 +51,12 @@ builder.Services.AddScoped<DeviceServices, DeviceServiceImpl>();
 builder.Services.AddScoped<DashboardAdminServices, DashboardAdminServicesImpl>();
 builder.Services.AddScoped<NotificationServices, NotificationServicesImpl>();
 //builder.Services.AddScoped<TokenService, TokenServiceImpl>();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<MailQueueService, MailServiceQueueImpl>();
+builder.Services.AddSingleton<MailSenderService, MailSenderServiceImpl>();
+builder.Services.AddHostedService<MailWorker>();
+/* Hàng đợi bắt buộc là Singleton: nếu không, IotMqttIngestService và MailWorker sẽ mỗi bên cầm một hàng đợi khác nhau và thư không bao giờ tới nơi */
 
 
 // ===== MQTT IoT =====

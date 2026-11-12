@@ -9,7 +9,10 @@ using MQTTnet.Client;
 using MQTTnet.Protocol;
 using System;
 using System.Text.Json;
-using System.Collections.Concurrent;   
+using System.Collections.Concurrent;
+using IoT_system.DTOS.Mail;
+using IoT_system.Services.Mail;
+using System.Net;
 
 
 /*  QUAN TRỌNG NHẤT: file mqtt là cấu hình lắng nghe toàn app 24/24 đê xử lý esp gửi lên,... */
@@ -24,6 +27,8 @@ namespace IoT_system.Services.Mqtt
         private readonly IServiceScopeFactory scopeFactory;// Tạo “mini DI container” tạm thời để lấy service scoped hợp lệ
         private readonly ILogger<IotMqttIngestService> logger;
         private readonly IHubContext<NotificationHub> hubContext;// hub for realtime
+        private readonly MailQueueService mailQueue;
+
 
         /* 
          * ILogger kiểu nó sẽ theo dõi toàn app, Dùng để biết:
@@ -53,13 +58,15 @@ namespace IoT_system.Services.Mqtt
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
             ILogger<IotMqttIngestService> _logger,
-            IHubContext<NotificationHub> _hubContext
+            IHubContext<NotificationHub> _hubContext,
+            MailQueueService _mailQueue
             )
 
         {
             scopeFactory = _scopeFactory;
             logger = _logger;
             hubContext = _hubContext;
+            mailQueue = _mailQueue;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -324,6 +331,7 @@ namespace IoT_system.Services.Mqtt
                     CreatedAt = now,
                     UserIds = targets   // frontend dùng để lọc đúng người nhận
                 });
+                await EnqueueEmails(db, targets, mac, message, now);
             }
 
             // Đánh dấu SAU khi insert thành công. Nếu insert lỗi thì tin kế tiếp sẽ thử lại.
@@ -351,6 +359,50 @@ namespace IoT_system.Services.Mqtt
                              && n.AlertCount < count)
                     .ExecuteUpdateAsync(s => s.SetProperty(n => n.AlertCount, count));
             }
+        }
+        // Lấy email của các user vừa được insert thông báo, rồi bỏ từng thư vào hàng đợi
+        private async Task EnqueueEmails(DatabaseContext db, List<int> userIds, string mac, string message, DateTime time)
+        {
+            try
+            {
+                var emails = await db.Accounts
+                    .AsNoTracking()
+                    .Where(a => userIds.Contains(a.Id) && a.Email != null && a.Email != "")
+                    .Select(a => a.Email)
+                    .ToListAsync();
+
+                foreach (var email in emails)
+                {
+                    var mail = new EmailMessageDtos
+                    {
+                        To = email,
+                        Subject = $"[IoT System] Cảnh báo từ thiết bị {mac}",
+                        HtmlBody = BuildEmailBody(mac, message, time)
+                    };
+
+                    if (!mailQueue.Enqueue(mail))
+                    {
+                        logger.LogWarning("Mail queue is full, dropped email to {To}", email);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Lỗi email không được phép làm hỏng luồng thông báo chính
+                logger.LogError(ex, "Failed to enqueue alert emails for device {Mac}", mac);
+            }
+        }
+
+        private static string BuildEmailBody(string mac, string message, DateTime time)
+        {
+            return $@"
+            <div style='font-family:Arial,sans-serif;max-width:480px'>
+                <h2 style='color:#d9534f'>Cảnh báo thiết bị</h2>
+                <p><b>{WebUtility.HtmlEncode(message)}</b></p>
+                <p>Thiết bị: {WebUtility.HtmlEncode(mac)}<br/>
+                   Thời gian: {time:HH:mm:ss dd/MM/yyyy}</p>
+                <p style='color:#888'>Email tự động từ DTECH TTD.</p>
+            </div>";
         }
         private static string BuildMessage(string kind, SensorPayload s) => kind switch
         {
