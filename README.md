@@ -17,7 +17,7 @@ The project addresses these needs by:
 - Providing account and device management features with role-based access.
 - Bringing device, user, and notification information together in one web application.
 
-The system currently supports gas, temperature, and humidity sensor payloads. Email delivery, household or group management, automatic sensor-signal-loss alerts, and complete historical analytics are not yet implemented. Some dashboard visualizations currently use static data.
+The system currently supports gas, temperature, and humidity sensor payloads. It saves sensor alerts as notifications and emails affected users. Household or group management, automatic sensor-signal-loss alerts, and complete historical analytics are not yet implemented. Some dashboard visualizations currently use static data.
 
 ## Technology Stack
 
@@ -29,6 +29,7 @@ The system currently supports gas, temperature, and humidity sensor payloads. Em
 | Authentication and authorization | JWT stored in cookies, role-based access     |
 | Real-time updates                | SignalR                                      |
 | Device messaging                 | MQTTnet                                      |
+| Alert email                      | MailKit, SMTP with STARTTLS                  |
 | Localization                     | i18next, English and Vietnamese              |
 | Embedded device                  | ESP8266 Arduino libraries, MQTT              |
 | Hardware referenced by firmware  | ESP8266, DHT11, MQ2 gas sensor, 16x2 I2C LCD |
@@ -45,22 +46,32 @@ MQTT Broker
 ASP.NET Core Backend
    ├── Updates device last-seen information
    ├── Stores alert notifications in SQL Server
+   ├── Queues alert emails for associated users
    └── Publishes live events through SignalR
           │  ReceiveSensorData / ReceiveAlert
           ▼
 React Frontend
    └── Displays live sensor readings and alerts on the dashboard
+
+ASP.NET Core Backend ── SMTP (STARTTLS) ──► User email inboxes
 ```
 
 1. **Device to broker:** An ESP8266 publishes its MAC address when announcing itself and sends sensor readings, such as gas, temperature, and humidity, over MQTT.
 2. **Broker to backend:** The backend subscribes to `devices/announce` and `devices/{MAC}/data`. It registers newly announced devices, processes incoming readings, and updates the device's last-seen time.
-3. **Backend processing:** Sensor readings are sent to connected dashboards in real time. When a reading indicates an alert, the backend creates notification records for users associated with the device and avoids repeating notifications for each user during the same active alert incident.
+3. **Backend processing:** Sensor readings are sent to connected dashboards in real time. When a reading indicates an alert, the backend creates notification records for users associated with the device and avoids repeating notifications for each user during the same active alert incident. It also queues an email for each associated user once per alert kind and active incident, even if that user already has an unread notification.
 4. **Backend to frontend:** The backend emits `ReceiveSensorData` and, when applicable, `ReceiveAlert` through SignalR. The frontend joins a SignalR group for the device MAC and updates the dashboard as events arrive.
-5. **Review and acknowledgement:** Users can view saved notifications in their history and mark them as read. On the initial claim flow, the backend publishes `claimed` to `devices/{MAC}/command`; the firmware also recognizes `unclaim`, `on`, and `off`, but the backend currently does not publish those commands.
+5. **Email delivery:** A background worker sends queued alert emails over SMTP using STARTTLS. Each email is attempted up to three times (two retries after the initial attempt). The in-memory queue holds up to 200 messages; email delivery failures are logged and do not stop the main sensor notification flow.
+6. **Review and acknowledgement:** Users can view saved notifications in their history and mark them as read. On the initial claim flow, the backend publishes `claimed` to `devices/{MAC}/command`; the firmware also recognizes `unclaim`, `on`, and `off`, but the backend currently does not publish those commands.
+
+### Email configuration
+
+Configure the backend's `EmailSettings` through .NET configuration. The SMTP host defaults to `smtp.gmail.com` on port `587` with STARTTLS; provide the sender address, SMTP username, and password before enabling email delivery. For local development, use .NET user secrets; in deployment, use environment variables or a secret manager rather than committing credentials to `appsettings.json`.
+
+The corresponding environment variable names are `EmailSettings__Host`, `EmailSettings__Port`, `EmailSettings__SenderName`, `EmailSettings__SenderEmail`, `EmailSettings__Username`, and `EmailSettings__Password`.
 
 ## Firmware and Hardware
 
-The ESP8266 firmware reads a DHT11 temperature/humidity sensor and an analog gas sensor, displays status on a 16x4 I2C LCD, and exchanges announcements, readings, and commands with the backend over MQTT. The code and hardware pin mapping are documented in [firmware/esp8266/README.md](./firmware/esp8266/README.md).
+The ESP8266 firmware reads a DHT11 temperature/humidity sensor and an analog gas sensor, displays status on a 16x2 I2C LCD, and exchanges announcements, readings, and commands with the backend over MQTT. The code and hardware pin mapping are documented in [firmware/esp8266/README.md](./firmware/esp8266/README.md).
 
 The hardware list and pin mapping in the firmware README are inferred from the source code; the repository does not include a schematic, bill of materials, or a specific gas sensor model. Check the ESP8266 board's analog-input voltage limits and sensor supply requirements before wiring. Firmware currently uses the public HiveMQ broker on port `1883` without TLS or broker credentials; treat this as a development configuration.
 
