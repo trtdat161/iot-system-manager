@@ -71,5 +71,16 @@ namespace IoT_system.Controllers.Devices
             var result = await deviceService.GetConnectedDeviceAsync(userId);
             return Ok(result);
         }
+
+        [HttpGet("get-status-device")]
+        [Produces("application/json")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetStatusDevices([FromQuery] string? status,
+                                                          [FromQuery] int page = 1,
+                                                          [FromQuery] int pageSize = 10)
+        {
+            var result = await deviceService.GetStatusDevice(page, pageSize, status);
+            return Ok(result);
+        }
     }
 }

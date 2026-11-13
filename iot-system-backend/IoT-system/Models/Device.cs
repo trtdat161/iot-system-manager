@@ -15,8 +15,6 @@ public partial class Device
 
     public DateTime? UpdatedAt { get; set; }
 
-    public DateTime? DeletedAt { get; set; }
-
     public DateTime? LastSeenAt { get; set; }
 
     public string MacAddress { get; set; } = null!;

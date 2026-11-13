@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using IoT_system.Configurations.mqtt;
+using IoT_system.DTOS.Accounts;
+using IoT_system.DTOS.Common;
 using IoT_system.DTOS.Devices;
 using IoT_system.Helper;
+using IoT_system.Helpers;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
 namespace IoT_system.Services.Devices
@@ -49,7 +52,6 @@ namespace IoT_system.Services.Devices
             return await db.Devices
                 .AsNoTracking()
                 .Where(d =>
-                    d.DeletedAt == null &&
                     d.LastSeenAt != null &&
                     d.LastSeenAt >= limitTime &&
                     !d.Accounts.Any(a => a.Id == userId)) // phủ đinh lại kiểu nếu user có rồi thì sẽ true => false muc đích để lọc và hiển thị ra thiết bị chưa được liên kết với tài khoản 
@@ -74,7 +76,7 @@ namespace IoT_system.Services.Devices
                 return false;
 
             var device = await db.Devices
-                .FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+                .FirstOrDefaultAsync(d => d.Id == deviceId);
 
             if (device == null)
                 return false;
@@ -132,7 +134,7 @@ namespace IoT_system.Services.Devices
                 throw new BadHttpRequestException("Account not found!");
             }
 
-            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId);
 
             if (device == null)
             {
@@ -188,7 +190,7 @@ namespace IoT_system.Services.Devices
                 throw new BadHttpRequestException("Account not found!");
             }
 
-            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId && d.DeletedAt == null);
+            var device = await db.Devices.FirstOrDefaultAsync(d => d.Id == deviceId);
 
             if (device == null)
             {
@@ -237,7 +239,7 @@ namespace IoT_system.Services.Devices
 
             var device = await db.Devices
                 .AsNoTracking()
-                .FirstOrDefaultAsync(d => d.Id == deviceId.Value && d.DeletedAt == null);
+                .FirstOrDefaultAsync(d => d.Id == deviceId.Value);
 
             if (device == null)
             {
@@ -251,6 +253,28 @@ namespace IoT_system.Services.Devices
                 IsConnected = account.DeviceId != null // FE dựa vào cờ này để khóa/mở nút
             };
         }
+
+
+        public async Task<PagedResponseDtos<DeviceResponseDtos>> GetStatusDevice(int page, int pageSize, string? status)
+        {
+            var query = db.Devices.AsNoTracking();
+            var threshold = DateTime.UtcNow.AddSeconds(-30);
+
+            if (status == "online")
+            {
+                query = query.Where(d => d.LastSeenAt >= threshold); 
+                // thời điểm hiện tại - đi 30s, có heartbeat trong 30 giây gần nhất -> Online
+            }
+
+            else if(status == "offline")
+            {
+                query = query.Where(d => d.LastSeenAt == null || d.LastSeenAt < threshold);
+                // Không có heartbeat trong vòng 30 giây gần nhất -> Offline
+            }
+
+            return await PaginationHelper.GetPagedAsync<Device, DeviceResponseDtos>(
+                query.OrderByDescending(d => d.CreatedAt), page, pageSize, mapper);
+        } 
 
     }
 }
