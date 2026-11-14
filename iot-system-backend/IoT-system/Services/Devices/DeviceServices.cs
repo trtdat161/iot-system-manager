@@ -17,6 +17,6 @@ namespace IoT_system.Services.Devices
         public Task<DeviceResponseDtos?> GetConnectedDeviceAsync(int userId);
 
         // hiển thị các thiết bị có trong hệ thống và trạng thái on + off
-        public Task<PagedResponseDtos<DeviceResponseDtos>> ListStatusDevice(int page, int pageSize, string? status); // dashboard admin list user
+        public Task<PagedResponseDtos<DeviceResponseDtos>> GetStatusDevice(int page, int pageSize, string? status); // dashboard admin list user
     }
 }
