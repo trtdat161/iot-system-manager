@@ -19,13 +19,10 @@ namespace IoT_system.Services.DashboardAdmin
         public async Task<DashboardAdminResponseDtos> DashboardAdmin()
         {
             var accountTotal = await dbContext.Accounts.Where(a => a.DeletedAt == null).CountAsync();
-            //var deviceTotal = await dbContext.Devices.Where(a => a.DeletedAt == null).CountAsync();
 
             var userActive = await dbContext.Accounts.Where(a => a.DeletedAt == null && a.Status == true).CountAsync();
             var userLock = await dbContext.Accounts.Where(a => a.DeletedAt == null && a.Status == false).CountAsync();
 
-            var deviceOnl = await dbContext.Devices.Where(d => d.DeletedAt == null && d.Status == true).CountAsync();
-            var deviceOff = await dbContext.Devices.Where(d => d.DeletedAt == null && d.Status == false).CountAsync();
             var totalAlerts = await dbContext.Notifications.CountAsync();
 
             // Thống kê user mới trong 1 tháng qua
@@ -41,8 +38,6 @@ namespace IoT_system.Services.DashboardAdmin
                 AccountTotal = accountTotal,
                 UserActive = userActive,// dùng để làm biểu đồ tròn user đã có luôn
                 UserLock = userLock,// dùng để làm biểu đồ tròn user bị khoá
-                DeviceOnline = deviceOnl,
-                DeviceOffline = deviceOff,
                 TotalAlerts = totalAlerts,
                 CountUserOneMonth = countUserOneMonth
             };

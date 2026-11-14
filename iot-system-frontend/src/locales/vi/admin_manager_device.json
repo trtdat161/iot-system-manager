@@ -1,0 +1,19 @@
+{
+  "total_devices": "Tổng số thiết bị",
+  "manage_devices": "Quản lý thiết bị:",
+  "all_status": "Tất cả trạng thái",
+  "online": "Trực tuyến",
+  "offline": "Ngoại tuyến",
+  "name": "Tên thiết bị",
+  "mac_address": "Địa chỉ MAC",
+  "status": "Trạng thái",
+  "claim_status": "Liên kết tài khoản",
+  "claimed": "Đã liên kết",
+  "unclaimed": "Chưa liên kết",
+  "last_seen_at": "Hoạt động gần nhất",
+  "created_at": "Ngày tạo",
+  "not_available": "Chưa có",
+  "loading_devices": "Đang tải danh sách thiết bị...",
+  "no_device_data": "Không có dữ liệu thiết bị",
+  "load_devices_failed": "Không thể tải trạng thái thiết bị."
+}

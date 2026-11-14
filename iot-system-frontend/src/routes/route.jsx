@@ -15,6 +15,7 @@ import { WaitingConnection } from "../pages/user/WaitingConnection";
 import { AdminGetHistory } from "../pages/admin/AdminGetHistory";
 import { HistoryDetail } from "../pages/admin/HistoryDetail";
 import { ProtectedRoute } from "../pages/auth/ProtectedRoute";
+import { StatusDevice } from "../pages/admin/StatusDevice";
 
 export function CreateRouter() {
   return (
@@ -30,6 +31,7 @@ export function CreateRouter() {
           <Route path="/admin-frame-layout" element={<FrameLayout />}>
             <Route path="dashboard-admin" element={<DashboardAdmin />} />
             <Route path="manager-user" element={<ManagerUser />} />
+            <Route path="status-device" element={<StatusDevice />} />
             <Route path="lock-account/:id" element={<LockAccount />} />
             <Route path="profile" element={<ProfileAdmin />} />
             <Route path="admin-history" element={<AdminGetHistory />} />

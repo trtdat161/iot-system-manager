@@ -54,6 +54,7 @@ namespace IoT_system.Services.Mqtt
         /* Đếm số lần ESP push lên trong đợt cảnh báo đang diễn ra.
          * Reset (TryRemove) cùng lúc với incidents khi sensor về bình thường. */
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), int> alertCounts = new();
+        private const int DeviceOnlineWindowSeconds = 30;
 
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
@@ -156,12 +157,20 @@ namespace IoT_system.Services.Mqtt
             var now = TimeHelper.VnNow();
 
             // Device đã có trong DB: chỉ cập nhật LastSeenAt rồi thoát
+            var existingDevice = await db.Devices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.MacAddress == mac);
             var updated = await db.Devices
                 .Where(x => x.MacAddress == mac)
                 .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, now));
 
             if (updated > 0)
             {
+                if (!IsDeviceOnline(existingDevice?.LastSeenAt, now))
+                {
+                    await NotifyAdminsDeviceStatus(mac);
+                }
+
                 return;
             }
 
@@ -182,7 +191,10 @@ namespace IoT_system.Services.Mqtt
             catch (DbUpdateException)
             {
                 logger.LogWarning("Device {Mac} This message has already been inserted by another message, ignore it.", mac);
+                return;
             }
+
+            await NotifyAdminsDeviceStatus(mac);
         }
 
         private async Task HandleSensorData(DatabaseContext db, string topic, string payload)
@@ -200,9 +212,11 @@ namespace IoT_system.Services.Mqtt
                 return;
             }
 
+            var now = TimeHelper.VnNow();
+            var wasOffline = !IsDeviceOnline(device.LastSeenAt, now);
             await db.Devices
                 .Where(x => x.Id == device.Id)
-                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, TimeHelper.VnNow()));
+                .ExecuteUpdateAsync(s => s.SetProperty(d => d.LastSeenAt, now));
 
             var sensor = JsonSerializer.Deserialize<SensorPayload>(payload);
             if (sensor == null)
@@ -235,6 +249,7 @@ namespace IoT_system.Services.Mqtt
             {
                 newNotificationCounts[kind] = await NotifyUsers(db, device.Id, mac, sensor, kind);
             }
+
             await SaveAlertCounts(db, device.Id, result.counts);
 
             foreach (var kind in result.activeKinds)
@@ -250,7 +265,21 @@ namespace IoT_system.Services.Mqtt
                     NewNotificationCount = newNotificationCounts[kind]
                 });
             }
+
+            if (wasOffline)
+            {
+                await NotifyAdminsDeviceStatus(mac);
+            }
         }
+
+        private static bool IsDeviceOnline(DateTime? lastSeenAt, DateTime now) =>
+            lastSeenAt.HasValue &&
+            lastSeenAt.Value >= now.AddSeconds(-DeviceOnlineWindowSeconds);
+
+        private Task NotifyAdminsDeviceStatus(string mac) =>
+            hubContext.Clients.Group(NotificationHub.AdminGroup).SendAsync(
+                "ReceiveDeviceStatus",
+                new { MacAddress = mac });
 
         private (List<string> activeKinds, Dictionary<string, int> counts) UpdateIncidents(int deviceId, SensorPayload sensor)
         {

@@ -1,0 +1,19 @@
+{
+  "total_devices": "Total devices",
+  "manage_devices": "Manage devices:",
+  "all_status": "All statuses",
+  "online": "Online",
+  "offline": "Offline",
+  "name": "Device name",
+  "mac_address": "MAC address",
+  "status": "Status",
+  "claim_status": "Account link",
+  "claimed": "Linked",
+  "unclaimed": "Not linked",
+  "last_seen_at": "Last seen",
+  "created_at": "Created at",
+  "not_available": "Not available",
+  "loading_devices": "Loading devices...",
+  "no_device_data": "No device data available",
+  "load_devices_failed": "Failed to load device statuses."
+}

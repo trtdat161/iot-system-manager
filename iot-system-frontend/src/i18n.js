@@ -31,6 +31,8 @@ import vi_landing_page from "./locales/vi/landing_page.json";
 import en_landing_page from "./locales/en/landing_page.json";
 import vi_admin_history_detail from "./locales/vi/admin_history_detail.json";
 import en_admin_history_detail from "./locales/en/admin_history_detail.json";
+import vi_admin_manager_device from "./locales/vi/admin_manager_device.json";
+import en_admin_manager_device from "./locales/en/admin_manager_device.json";
 
 i18next.use(initReactI18next).init({
   // file này sẽ đc gọi ở main.jsx một lần khi app start
@@ -52,6 +54,7 @@ i18next.use(initReactI18next).init({
       user_notification_history: vi_user_notification_history,
       landing_page: vi_landing_page,
       admin_history_detail: vi_admin_history_detail,
+      admin_manager_device: vi_admin_manager_device,
     },
     "en-US": {
       register_login: en_register_login,
@@ -69,6 +72,7 @@ i18next.use(initReactI18next).init({
       user_notification_history: en_user_notification_history,
       landing_page: en_landing_page,
       admin_history_detail: en_admin_history_detail,
+      admin_manager_device: en_admin_manager_device,
     },
   },
   lng: localStorage.getItem("lang") || "en-US",

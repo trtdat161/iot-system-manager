@@ -79,7 +79,6 @@ public partial class DatabaseContext : DbContext
             entity.HasIndex(e => e.MacAddress, "UQ_Device_MacAddress").IsUnique();
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.MacAddress).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(250);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");

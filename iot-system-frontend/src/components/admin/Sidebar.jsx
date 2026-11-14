@@ -31,7 +31,7 @@ const MENU_ITEMS = [
   {
     key: "devices",
     icon: <MdDevices size={18} />,
-    path: "/admin-frame-layout/",
+    path: "/admin-frame-layout/status-device",
   },
   {
     key: "notifications", // lịch sử thiết bị gửi thông báo lên

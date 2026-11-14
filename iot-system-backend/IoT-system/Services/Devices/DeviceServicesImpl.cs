@@ -258,7 +258,10 @@ namespace IoT_system.Services.Devices
         public async Task<PagedResponseDtos<DeviceResponseDtos>> GetStatusDevice(int page, int pageSize, string? status)
         {
             var query = db.Devices.AsNoTracking();
-            var threshold = DateTime.UtcNow.AddSeconds(-30);
+            var threshold = TimeHelper.VnNow().AddSeconds(-onlineWindowSeconds);
+
+            Console.WriteLine($"[DEBUG] VnNow={TimeHelper.VnNow():yyyy-MM-dd HH:mm:ss} threshold={threshold:yyyy-MM-dd HH:mm:ss} status={status}");
+
 
             if (status == "online")
             {
