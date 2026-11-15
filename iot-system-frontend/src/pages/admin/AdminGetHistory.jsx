@@ -10,6 +10,7 @@ import {
   FaExclamationTriangle,
   FaSearch,
   FaRedoAlt,
+  FaUserCheck,
   FaUserClock,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
@@ -182,9 +183,7 @@ export function AdminGetHistory() {
             <option value="" className="text-center">
               {t("notification_type")}
             </option>
-            <option value="gas">
-              {tAlert("alerts.labels.gas")}
-            </option>
+            <option value="gas">{tAlert("alerts.labels.gas")}</option>
             <option value="gas_danger">
               {tAlert("alerts.labels.gas_danger")}
             </option>
@@ -284,11 +283,11 @@ export function AdminGetHistory() {
               const alertCount =
                 notification.alertCount ?? notification.AlertCount ?? 1;
               const hasUnreadRecipient =
-                notification.hasUnreadRecipient ??
-                notification.HasUnreadRecipient ??
-                false;
-              const sentAt =
-                notification.createdAt ?? notification.CreatedAt;
+                notification.hasUnreadRecipient === true ||
+                notification.HasUnreadRecipient === true ||
+                notification.isRead === false ||
+                notification.IsRead === false;
+              const sentAt = notification.createdAt ?? notification.CreatedAt;
               const deviceId = notification.deviceId ?? notification.DeviceId;
 
               return (
@@ -315,14 +314,26 @@ export function AdminGetHistory() {
                       })}
                     >
                       <strong>{alertCount}</strong>
-                      <span>{tAlert("alerts.repeated", { count: alertCount })}</span>
-                    </span>
-                    {hasUnreadRecipient && (
-                      <span className="notification-unread-recipient-note">
-                        <FaUserClock aria-hidden="true" />
-                        {t("unread_recipient_notice")}
+                      <span>
+                        {tAlert("alerts.repeated", { count: alertCount })}
                       </span>
-                    )}
+                    </span>
+                    <span
+                      className={`notification-recipient-status ${
+                        hasUnreadRecipient ? "unread" : "read"
+                      }`}
+                    >
+                      {hasUnreadRecipient ? (
+                        <FaUserClock aria-hidden="true" />
+                      ) : (
+                        <FaUserCheck aria-hidden="true" />
+                      )}
+                      {t(
+                        hasUnreadRecipient
+                          ? "unread_recipient_notice"
+                          : "read_recipient_notice",
+                      )}
+                    </span>
                     {deviceId != null && (
                       <p className="notification-item-subtitle">
                         {t("device_id", { id: deviceId })}

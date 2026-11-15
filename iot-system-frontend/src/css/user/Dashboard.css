@@ -59,6 +59,10 @@
   min-width: 0;
 }
 
+.user-dashboard > .alert {
+  margin-bottom: 0;
+}
+
 .user-glass-panel {
   background: linear-gradient(
     145deg,

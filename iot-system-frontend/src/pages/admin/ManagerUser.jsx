@@ -57,7 +57,9 @@ export function ManagerUser() {
         setDeleteSuccess(t("delete_account_success"));
         setDeleteUser(null); //nếu api xoá ok thì set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
         const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages; // nếu user chỉ còn 1 trên trang và ko phải trag 1 thì sau khi xoá sẽ về trang trước đó, ko thì vẫn ở trang hiện tại
-        newPage !== pages ? setPages(newPage) : setRefreshIndex((value) => value + 1);
+        newPage !== pages
+          ? setPages(newPage)
+          : setRefreshIndex((value) => value + 1);
         /*
         nếu page thay đổi -> chuyển sang page mới, nếu page không đổi -> chỉ reload lại data của page hiện tại
         */
@@ -294,7 +296,9 @@ export function ManagerUser() {
                       {account.role === "admin" ? (
                         <button
                           className="btn btn-sm btn-outline-warning admin-edit d-inline-flex align-items-center gap-1"
-                          onClick={() => navigate("/admin-frame-layout/profile")}
+                          onClick={() =>
+                            navigate("/admin-frame-layout/profile")
+                          }
                         >
                           <FaEdit size={12} />
                           <span>{t("edit_account_admin")}</span>

@@ -137,12 +137,13 @@ namespace IoT_system.Services.Notifications
                     Type = notification.Type,
                     DeviceId = notification.DeviceId,
                     IsRead = notification.IsRead,
-                    HasUnreadRecipient = dbContext.Notifications.Any(recipient =>
-                        recipient.DeviceId == notification.DeviceId &&
-                        recipient.Message == notification.Message &&
-                        recipient.Type == notification.Type &&
-                        recipient.CreatedAt == notification.CreatedAt &&
-                        !recipient.IsRead),
+                    HasUnreadRecipient = !notification.IsRead ||
+                        dbContext.Notifications.Any(recipient =>
+                            recipient.DeviceId == notification.DeviceId &&
+                            recipient.Message == notification.Message &&
+                            recipient.Type == notification.Type &&
+                            recipient.CreatedAt == notification.CreatedAt &&
+                            !recipient.IsRead),
                     AlertCount = notification.AlertCount,
                     CreatedAt = notification.CreatedAt
                 })
