@@ -17,7 +17,40 @@ The project addresses these needs by:
 - Providing account and device management features with role-based access.
 - Bringing device, user, and notification information together in one web application.
 
-The system currently supports gas, temperature, and humidity sensor payloads. It saves sensor alerts as notifications and emails affected users. Household or group management, automatic sensor-signal-loss alerts, and complete historical analytics are not yet implemented. Some dashboard visualizations currently use static data.
+The system supports gas, temperature, and humidity sensor payloads. It saves alerts for each recipient, lets users acknowledge them independently, and shows administrators whether any recipient still has an unread alert. The admin dashboard provides account/device summaries and alert trends for the most recent 12 months, with a daily breakdown for a selected month. The public landing page contains an illustrative dashboard preview; that preview is not connected to live device data.
+
+Household/group management and automatic alerts for a device losing its connection are outside the current scope. Gas readings are raw ADC values and are not calibrated concentration measurements.
+
+## Application Features
+
+### Public and authentication
+
+- Public landing page describing the platform.
+- User registration and login with role-based access.
+- Access and refresh tokens are stored in HTTP-only cookies; expired sessions are refreshed by the frontend when possible.
+- English and Vietnamese interface translations.
+
+### User
+
+- Live device dashboard with sensor readings and alerts delivered over SignalR.
+- Device claim flow and controls to connect or disconnect the account's assigned device.
+- Notification history with date, type, and read-status filters; users can mark each notification as read.
+- Profile management and a page for devices waiting to be connected.
+
+### Administrator
+
+- Dashboard with account/device totals, account status summaries, and alert trends.
+- User management, including account search, lock/unlock, and removal.
+- Device status and account/device administration pages.
+- Notification history with date/type filters and notification detail pages listing each recipient's read status. A history card is marked unread if at least one recipient has not read it.
+- Administrator profile management.
+
+### Device and notification workflow
+
+- Each device can be associated with multiple user accounts; each account is associated with one device at a time.
+- Sensor alerts are saved per recipient. During an active alert incident, unread notifications are not repeatedly recreated for the same recipient.
+- Alert emails are queued for associated users independently of whether they already have an unread notification.
+- The firmware publishes readings and alert states over MQTT; the backend updates device activity and distributes live events to connected dashboards.
 
 ## Technology Stack
 
@@ -48,10 +81,11 @@ ASP.NET Core Backend
    ├── Stores alert notifications in SQL Server
    ├── Queues alert emails for associated users
    └── Publishes live events through SignalR
-          │  ReceiveSensorData / ReceiveAlert
+          │  ReceiveSensorData / ReceiveAlert / ReceiveAdminAlert
           ▼
 React Frontend
-   └── Displays live sensor readings and alerts on the dashboard
+   ├── Displays live sensor readings and alerts on the user dashboard
+   └── Updates administrator notification history for new alerts
 
 ASP.NET Core Backend ── SMTP (STARTTLS) ──► User email inboxes
 ```
@@ -59,7 +93,7 @@ ASP.NET Core Backend ── SMTP (STARTTLS) ──► User email inboxes
 1. **Device to broker:** An ESP8266 publishes its MAC address when announcing itself and sends sensor readings, such as gas, temperature, and humidity, over MQTT.
 2. **Broker to backend:** The backend subscribes to `devices/announce` and `devices/{MAC}/data`. It registers newly announced devices, processes incoming readings, and updates the device's last-seen time.
 3. **Backend processing:** Sensor readings are sent to connected dashboards in real time. When a reading indicates an alert, the backend creates notification records for users associated with the device and avoids repeating notifications for each user during the same active alert incident. It also queues an email for each associated user once per alert kind and active incident, even if that user already has an unread notification.
-4. **Backend to frontend:** The backend emits `ReceiveSensorData` and, when applicable, `ReceiveAlert` through SignalR. The frontend joins a SignalR group for the device MAC and updates the dashboard as events arrive.
+4. **Backend to frontend:** The backend emits `ReceiveSensorData` and `ReceiveAlert` to device groups and `ReceiveAdminAlert` to administrators through SignalR. Connected pages update their sensor readings, alerts, or notification history as events arrive.
 5. **Email delivery:** A background worker sends queued alert emails over SMTP using STARTTLS. Each email is attempted up to three times (two retries after the initial attempt). The in-memory queue holds up to 200 messages; email delivery failures are logged and do not stop the main sensor notification flow.
 6. **Review and acknowledgement:** Users can view saved notifications in their history and mark them as read. On the initial claim flow, the backend publishes `claimed` to `devices/{MAC}/command`; the firmware also recognizes `unclaim`, `on`, and `off`, but the backend currently does not publish those commands.
 
