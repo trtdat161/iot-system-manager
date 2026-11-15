@@ -7,5 +7,6 @@ namespace IoT_system.Services.DashboardAdmin
     public interface DashboardAdminServices
     {
         public Task<DashboardAdminResponseDtos> DashboardAdmin();
+        public Task<DashboardAlertTrendResponseDtos> GetAlertTrend(string? type, DateTime? month);
     }
 }

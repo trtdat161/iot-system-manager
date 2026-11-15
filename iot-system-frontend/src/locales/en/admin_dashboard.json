@@ -6,9 +6,17 @@
     "total_alerts": "Total alerts",
     "active_users_note": "+12% in 7 days",
     "locked_users_note": "Needs review",
-    "online_devices_note": "Realtime online",
+    "online_devices_note": "Online devices",
     "total_alerts_note": "All recorded alerts"
   },
+  "device_activity_loading": "Loading device status...",
+  "device_activity_unavailable": "Could not load device status",
+  "device_online_now": "Device {{name}} is online",
+  "device_online_recently": "Device {{name}} was online {{time}} ago",
+  "device_no_recent_activity": "No recently online devices",
+  "time_minutes": "{{count}} min",
+  "time_hours": "{{count}} hr",
+  "time_days": "{{count}} days",
   "health": {
     "stable": "Stable",
     "unstable": "Unstable"
@@ -22,25 +30,40 @@
   "subtitle": "Data overview for the DTECH IoT system",
   "weather": "Weather",
   "loading": "Loading...",
-  "last_7_days": "Last 7 days",
-  "active_devices": "Active devices",
-  "fake_data": "Fake data",
-  "active_devices_chart": "Active devices bar chart",
+  "alert_frequency": "Alert frequency",
+  "alert_frequency_chart": "Alert incidents during the last 12 months",
   "user_growth": "User growth",
   "new_users": "New users",
   "one_month": "1 Month",
   "new_registrations": "New registrations",
   "activated": "Activated",
   "locked": "Locked",
+  "last_12_months": "Last 12 months",
+  "alert_type_filter": "Filter by alert type",
+  "all_alert_types": "All alert types",
+  "alert_types": {
+    "gas": "Gas",
+    "gas_danger": "Dangerous gas",
+    "temp_high": "High temperature",
+    "humid_low": "Low humidity",
+    "humid_high": "High humidity"
+  },
+  "alert_legend": "Alert severity legend",
+  "alert_levels": {
+    "none": "No alerts",
+    "warning": "Warning",
+    "danger": "Danger (dangerous gas alerts only)"
+  },
+  "bar_height_legend": "Taller/darker bars mean more alerts",
+  "alert_trend_loading": "Loading alert statistics...",
+  "alert_trend_error": "Could not load alert statistics",
+  "month_bar_aria": "{{count}} alert incidents in {{month}}",
+  "month_label": "{{month}}/{{year}}",
+  "daily_alerts": "Daily details",
+  "month_detail_title": "{{month}}",
+  "peak_alert_day": "Peak day: {{date}} ({{count}} incidents)",
+  "no_alerts_in_month": "No alerts this month",
+  "daily_alerts_chart": "Daily alert incidents during the selected month",
   "system_health": "System health",
-  "owner": "Tran Tien Dat - DTECH",
-  "days": {
-    "monday": "Mon",
-    "tuesday": "Tue",
-    "wednesday": "Wed",
-    "thursday": "Thu",
-    "friday": "Fri",
-    "saturday": "Sat",
-    "sunday": "Sun"
-  }
+  "owner": "Tran Tien Dat - DTECH"
 }

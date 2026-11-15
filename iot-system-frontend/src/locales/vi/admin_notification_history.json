@@ -20,6 +20,7 @@
   "no": "Không",
   "detail": "Chi Tiết",
   "device_id": "Thiết bị #{{id}}",
+  "unread_recipient_notice": "Còn người dùng chưa đọc cảnh báo",
   "pending": "Đang Xử Lý",
   "filter_time": "Lọc Thời Gian",
   "from_date": "Từ ngày",

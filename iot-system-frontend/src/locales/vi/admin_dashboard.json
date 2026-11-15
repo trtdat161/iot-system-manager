@@ -6,9 +6,17 @@
     "total_alerts": "Tổng số cảnh báo",
     "active_users_note": "+12% trong 7 ngày",
     "locked_users_note": "Cần kiểm tra",
-    "online_devices_note": "Online realtime",
+    "online_devices_note": "Thiết bị online",
     "total_alerts_note": "Tất cả cảnh báo đã ghi nhận"
   },
+  "device_activity_loading": "Đang tải trạng thái thiết bị...",
+  "device_activity_unavailable": "Không tải được trạng thái thiết bị",
+  "device_online_now": "Thiết bị {{name}} đang online",
+  "device_online_recently": "Thiết bị {{name}} online {{time}} trước",
+  "device_no_recent_activity": "Không có thiết bị online gần đây",
+  "time_minutes": "{{count}} phút",
+  "time_hours": "{{count}} giờ",
+  "time_days": "{{count}} ngày",
   "health": {
     "stable": "Ổn định",
     "unstable": "Không ổn định"
@@ -22,25 +30,40 @@
   "subtitle": "Tổng quan dữ liệu của hệ thống IoT DTECH",
   "weather": "Thời tiết",
   "loading": "Đang tải...",
-  "last_7_days": "7 ngày qua",
-  "active_devices": "Thiết bị hoạt động",
-  "fake_data": "Dữ liệu mẫu",
-  "active_devices_chart": "Biểu đồ cột thiết bị hoạt động",
+  "alert_frequency": "Tần suất cảnh báo",
+  "alert_frequency_chart": "Biểu đồ số đợt cảnh báo trong 12 tháng gần nhất",
   "user_growth": "Tăng trưởng người dùng",
   "new_users": "Người dùng mới",
   "one_month": "1 Tháng",
   "new_registrations": "Mới đăng ký",
   "activated": "Đã kích hoạt",
   "locked": "Bị khóa",
+  "last_12_months": "12 tháng gần nhất",
+  "alert_type_filter": "Lọc theo loại cảnh báo",
+  "all_alert_types": "Tất cả loại cảnh báo",
+  "alert_types": {
+    "gas": "Khí gas",
+    "gas_danger": "Khí gas nguy hiểm",
+    "temp_high": "Nhiệt độ cao",
+    "humid_low": "Độ ẩm thấp",
+    "humid_high": "Độ ẩm cao"
+  },
+  "alert_legend": "Chú giải mức độ cảnh báo",
+  "alert_levels": {
+    "none": "Không có cảnh báo",
+    "warning": "Cảnh báo",
+    "danger": "Nguy hiểm (chỉ áp dụng với cảnh báo khí gas nguy hiểm)"
+  },
+  "bar_height_legend": "Cột càng cao/đậm thì số cảnh báo càng nhiều",
+  "alert_trend_loading": "Đang tải thống kê cảnh báo...",
+  "alert_trend_error": "Không tải được thống kê cảnh báo",
+  "month_bar_aria": "Tháng {{month}} có {{count}} đợt cảnh báo",
+  "month_label": "T{{month}}/{{year}}",
+  "daily_alerts": "Chi tiết theo ngày",
+  "month_detail_title": "Tháng {{month}}",
+  "peak_alert_day": "Ngày nhiều nhất: {{date}} ({{count}} đợt)",
+  "no_alerts_in_month": "Tháng này không có cảnh báo",
+  "daily_alerts_chart": "Biểu đồ số đợt cảnh báo theo ngày trong tháng",
   "system_health": "Tình trạng hệ thống",
-  "owner": "Trần Tiến Đạt - DTECH",
-  "days": {
-    "monday": "T2",
-    "tuesday": "T3",
-    "wednesday": "T4",
-    "thursday": "T5",
-    "friday": "T6",
-    "saturday": "T7",
-    "sunday": "CN"
-  }
+  "owner": "Trần Tiến Đạt - DTECH"
 }

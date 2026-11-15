@@ -275,8 +275,13 @@ namespace IoT_system.Services.Devices
                 // Không có heartbeat trong vòng 30 giây gần nhất -> Offline
             }
 
+            // Đưa thiết bị có heartbeat mới nhất lên đầu để dashboard lấy đúng trạng thái gần nhất.
             return await PaginationHelper.GetPagedAsync<Device, DeviceResponseDtos>(
-                query.OrderByDescending(d => d.CreatedAt), page, pageSize, mapper);
+                query.OrderByDescending(d => d.LastSeenAt)
+                    .ThenByDescending(d => d.CreatedAt),
+                page,
+                pageSize,
+                mapper);
         } 
 
     }

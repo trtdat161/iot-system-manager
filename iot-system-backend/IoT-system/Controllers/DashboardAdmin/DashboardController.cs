@@ -22,5 +22,16 @@ namespace IoT_system.Controllers.DashboardAdmin
             var result = await dashboardAdminServices.DashboardAdmin();
             return Ok(result);
         }
+
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [HttpGet("alert-trend")]
+        public async Task<IActionResult> AlertTrend(
+            [FromQuery] string? type = null,
+            [FromQuery] DateTime? month = null)
+        {
+            var result = await dashboardAdminServices.GetAlertTrend(type, month);
+            return Ok(result);
+        }
     }
 }

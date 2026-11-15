@@ -499,9 +499,43 @@ C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-validation\IoT-sy
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-validation\IoT-system.runtimeconfig.json
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-validation\IoT-system.dll
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-validation\IoT-system.pdb
-D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\MailKit.dll
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\MimeKit.dll
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\System.Security.Cryptography.Pkcs.dll
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-dashboard-validation-a1b1383bf7994b95b412d7fd9fe7385f\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-device-dashboard-validation-fdbc5cc8ab5949e5b8174a59184083f4\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-validation-dfd84b10d8e245be8423d63120f42c26\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-annual-alert-final-fc10062a9de04962b16f19e55fda4ac4\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.pdb

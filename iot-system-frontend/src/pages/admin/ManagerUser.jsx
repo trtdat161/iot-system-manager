@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  DeleteAccount,
-  GetAccounts,
-  SearchAccount,
-} from "../../api/admin/accountApi";
+import { DeleteAccount, GetAccounts } from "../../api/admin/accountApi";
 import {
   FaTrash,
   FaLock,
@@ -30,6 +26,7 @@ export function ManagerUser() {
   const [deleteSuccess, setDeleteSuccess] = useState("");
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [refreshIndex, setRefreshIndex] = useState(0);
   const PAGE_SIZE = 10;
 
   const [accounts, setAccounts] = useState([]);
@@ -37,21 +34,21 @@ export function ManagerUser() {
   const navigate = useNavigate();
   const [searchStatus, setSearchStatus] = useState(null);
   const [searchName, setSearchName] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState(null);
   const { t } = useTranslation("admin_manager_user");
+  const nameFilter = appliedSearch?.name?.trim().toLowerCase() ?? "";
+  const statusFilter = appliedSearch?.status ?? "";
+  const visibleAccounts = accounts
+    .map((account, pageIndex) => ({ account, pageIndex }))
+    .filter(({ account }) => {
+      const matchesStatus =
+        !statusFilter || String(account.status) === statusFilter;
+      const matchesName =
+        !nameFilter ||
+        (account.fullname ?? "").toLowerCase().includes(nameFilter);
 
-  const fetchAccounts = async (currentPage) => {
-    try {
-      const response = await GetAccounts(currentPage, PAGE_SIZE);
-      const paged = response.data;
-      // i18n.changeLanguage(localStorage.getItem("lang") || "vi-VN");
-      setTotalUsers(paged.totalItems ?? 0); // totalItems là của BE PagedResponseDtos
-      setAccounts(Array.isArray(paged.data) ? paged.data : []);
-      setTotalPages(paged.totalPages ?? 1); // totalPages là của BE PagedResponseDtos
-    } catch (err) {
-      console.log("error:", err?.message || err);
-      setAccounts([]);
-    }
-  };
+      return matchesStatus && matchesName;
+    });
 
   const removeAccount = async (id) => {
     try {
@@ -60,7 +57,7 @@ export function ManagerUser() {
         setDeleteSuccess(t("delete_account_success"));
         setDeleteUser(null); //nếu api xoá ok thì set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
         const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages; // nếu user chỉ còn 1 trên trang và ko phải trag 1 thì sau khi xoá sẽ về trang trước đó, ko thì vẫn ở trang hiện tại
-        newPage !== pages ? setPages(newPage) : fetchAccounts(pages);
+        newPage !== pages ? setPages(newPage) : setRefreshIndex((value) => value + 1);
         /*
         nếu page thay đổi -> chuyển sang page mới, nếu page không đổi -> chỉ reload lại data của page hiện tại
         */
@@ -74,29 +71,41 @@ export function ManagerUser() {
   };
 
   // search + filter
-  const handleSearch = async (name, status) => {
-    try {
-      const response = await SearchAccount(pages, PAGE_SIZE, name, status); // đúng thứ tự
-      const paged = response.data;
-      setAccounts(Array.isArray(paged.data) ? paged.data : []);
-      setTotalPages(paged.totalPages ?? 1);
-      setTotalUsers(paged.totalItems ?? 0);
-      setSearchName("");
-    } catch (err) {
-      console.log("error:", err?.message || err);
-      setAccounts([]);
-    }
+  const handleSearch = (name, status) => {
+    setAppliedSearch({ name, status });
   };
 
   const handleReset = () => {
     setSearchName("");
     setSearchStatus("");
-    fetchAccounts(1);
+    setAppliedSearch(null);
+    setPages(1);
   };
 
   useEffect(() => {
-    fetchAccounts(pages);
-  }, [pages]);
+    let ignore = false;
+
+    const loadAccounts = async () => {
+      try {
+        const response = await GetAccounts(pages, PAGE_SIZE);
+        if (ignore) return;
+
+        const paged = response.data;
+        setTotalUsers(paged.totalItems ?? 0);
+        setAccounts(Array.isArray(paged.data) ? paged.data : []);
+        setTotalPages(paged.totalPages ?? 1);
+      } catch (err) {
+        if (ignore) return;
+        console.log("error:", err?.message || err);
+        setAccounts([]);
+      }
+    };
+
+    loadAccounts();
+    return () => {
+      ignore = true;
+    };
+  }, [pages, refreshIndex]);
 
   useEffect(() => {
     if (!deleteSuccess) return undefined;
@@ -123,7 +132,7 @@ export function ManagerUser() {
               <span className="account-count-badge">
                 {t("manage_users")}
                 <MdManageAccounts />
-                {accounts.length}
+                {visibleAccounts.length}
               </span>
             </div>
           </div>
@@ -205,18 +214,18 @@ export function ManagerUser() {
             </thead>
 
             <tbody>
-              {accounts.length === 0 ? (
+              {visibleAccounts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center">
                     {t("no_user_data")}
                   </td>
                 </tr>
               ) : (
-                accounts.map((account, index) => (
+                visibleAccounts.map(({ account, pageIndex }) => (
                   <tr key={account.id}>
                     {/* số thứ tự đúng theo trang */}
                     <td className="text-muted">
-                      {(pages - 1) * PAGE_SIZE + index + 1}
+                      {(pages - 1) * PAGE_SIZE + pageIndex + 1}
                     </td>
 
                     {/* fullname */}

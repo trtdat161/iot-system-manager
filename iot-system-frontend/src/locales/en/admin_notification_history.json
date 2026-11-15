@@ -20,6 +20,7 @@
   "no": "No",
   "detail": "Detail",
   "device_id": "Device #{{id}}",
+  "unread_recipient_notice": "Some recipients haven't read this alert",
   "pending": "Pending",
   "filter_time": "Filter Time",
   "from_date": "From date",

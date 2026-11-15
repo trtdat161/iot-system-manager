@@ -14,6 +14,8 @@ namespace IoT_system.DTOS.Notification
 
         public bool IsRead { get; set; }
 
+        public bool HasUnreadRecipient { get; set; }
+
         public int AlertCount { get; set; }
 
         public DateTime CreatedAt { get; set; }

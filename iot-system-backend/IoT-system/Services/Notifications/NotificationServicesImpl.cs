@@ -28,9 +28,8 @@ namespace IoT_system.Services.Notifications
 
         public async Task<PagedResponseDtos<NotificationResponseDtos>>HistoryForAdmin(int page, int pageSize)
         {
-            var notification = dbContext.Notifications.OrderByDescending(n => n.CreatedAt).AsNoTracking();
-
-            return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(notification, page, pageSize, mapper);
+            var notifications = dbContext.Notifications.AsNoTracking();
+            return await GetAdminHistoryPage(notifications, page, pageSize);
         }
 
         // ================= USER =================
@@ -109,7 +108,53 @@ namespace IoT_system.Services.Notifications
 
             query = query.OrderByDescending(n => n.CreatedAt);
 
+            if (!userId.HasValue)
+            {
+                return await GetAdminHistoryPage(query, page, pageSize);
+            }
+
             return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(query, page, pageSize, mapper);
+        }
+
+        private async Task<PagedResponseDtos<NotificationResponseDtos>> GetAdminHistoryPage(
+            IQueryable<Notification> query,
+            int page,
+            int pageSize)
+        {
+            page = page <= 0 ? 1 : page;
+            pageSize = pageSize <= 0 || pageSize > 100 ? 10 : pageSize;
+
+            var totalItems = await query.CountAsync();
+            var data = await query
+                .OrderByDescending(n => n.CreatedAt)
+                .ThenByDescending(n => n.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(notification => new NotificationResponseDtos
+                {
+                    Id = notification.Id,
+                    Message = notification.Message,
+                    Type = notification.Type,
+                    DeviceId = notification.DeviceId,
+                    IsRead = notification.IsRead,
+                    HasUnreadRecipient = dbContext.Notifications.Any(recipient =>
+                        recipient.DeviceId == notification.DeviceId &&
+                        recipient.Message == notification.Message &&
+                        recipient.Type == notification.Type &&
+                        recipient.CreatedAt == notification.CreatedAt &&
+                        !recipient.IsRead),
+                    AlertCount = notification.AlertCount,
+                    CreatedAt = notification.CreatedAt
+                })
+                .ToListAsync();
+
+            return new PagedResponseDtos<NotificationResponseDtos>
+            {
+                Data = data,
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
         }
 
         // khi click ấn đã xem để thiết bị không spam cảnh báo nữa

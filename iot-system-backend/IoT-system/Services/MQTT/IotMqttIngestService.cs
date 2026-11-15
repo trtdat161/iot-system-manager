@@ -119,6 +119,14 @@ namespace IoT_system.Services.Mqtt
         private async Task HandleMessage(MqttApplicationMessageReceivedEventArgs e)
         {
             var topic = e.ApplicationMessage.Topic;// lấy topic
+
+            // Tin retained là tin cũ broker phát lại lúc vừa subscribe, không phải dữ liệu realtime
+            if (e.ApplicationMessage.Retain)
+            {
+                logger.LogInformation("Ignore retained message from topic {Topic}", topic);
+                return;
+            }
+
             var payload = e.ApplicationMessage.ConvertPayloadToString();// lấy payload (dữ liệu esp push lên)
 
             // Bọc toàn bộ logic trong try/catch: 1 message lỗi (sai JSON, mất kết nối DB...)

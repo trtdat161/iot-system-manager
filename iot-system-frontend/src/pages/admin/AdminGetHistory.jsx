@@ -10,6 +10,7 @@ import {
   FaExclamationTriangle,
   FaSearch,
   FaRedoAlt,
+  FaUserClock,
 } from "react-icons/fa";
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
@@ -282,6 +283,10 @@ export function AdminGetHistory() {
               );
               const alertCount =
                 notification.alertCount ?? notification.AlertCount ?? 1;
+              const hasUnreadRecipient =
+                notification.hasUnreadRecipient ??
+                notification.HasUnreadRecipient ??
+                false;
               const sentAt =
                 notification.createdAt ?? notification.CreatedAt;
               const deviceId = notification.deviceId ?? notification.DeviceId;
@@ -312,6 +317,12 @@ export function AdminGetHistory() {
                       <strong>{alertCount}</strong>
                       <span>{tAlert("alerts.repeated", { count: alertCount })}</span>
                     </span>
+                    {hasUnreadRecipient && (
+                      <span className="notification-unread-recipient-note">
+                        <FaUserClock aria-hidden="true" />
+                        {t("unread_recipient_notice")}
+                      </span>
+                    )}
                     {deviceId != null && (
                       <p className="notification-item-subtitle">
                         {t("device_id", { id: deviceId })}
