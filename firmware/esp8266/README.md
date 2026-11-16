@@ -42,7 +42,7 @@ The broker is `broker.hivemq.com:1883` (plain MQTT, no authentication or TLS).
 | Device → broker | `devices/<MAC>/data` | JSON sensor data and alert state |
 | Firmware subscribes to | `devices/<MAC>/command` | `claimed`, `unclaim`, `on`, or `off` |
 
-The data payload can include `temperature`, `humidity`, `gas`, `tempAlert`, `humidLowAlert`, `humidHighAlert`, `alert`, `systemStatus`, and `type`. Temperature and humidity are sent after a valid DHT11 reading; `gas` is sent only while a gas alert is active. `type` is `gas_danger`, `gas`, `environment`, or `heartbeat`. Environmental alert booleans are separate from the gas `type`. The backend subscribes to `devices/announce` and `devices/+/data`.
+The data payload can include `temperature`, `humidity`, `gas`, `tempAlert`, `humidLowAlert`, `humidHighAlert`, `alert`, `systemStatus`, and `type`. Temperature and humidity are sent after a valid DHT11 reading; the MQ-2 `gas` reading is sent with every report. `type` is `gas_danger`, `gas`, `environment`, or `heartbeat`. Environmental alert booleans are separate from the gas `type`. The backend subscribes to `devices/announce` and `devices/+/data`.
 
 The public broker connection is not suitable for production without appropriate broker authentication, transport security, and topic access controls.
 

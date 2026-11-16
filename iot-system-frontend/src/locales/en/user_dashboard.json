@@ -45,7 +45,7 @@
   },
   "sensors": {
     "gas_safe": "Gas threshold",
-    "air_stable": "Air condition stable"
+    "air_stable": "Air humidity"
   },
   "waiting_connection": {
     "title": "Waiting for Connection",

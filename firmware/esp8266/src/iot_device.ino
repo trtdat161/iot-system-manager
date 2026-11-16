@@ -488,11 +488,7 @@ void sendSensor()
         doc["humidity"] = h;
     }
 
-    // Send gas value only when MQ-2 gas alert is confirmed
-    if (gasAlert)
-    {
-        doc["gas"] = gas;
-    }
+    doc["gas"] = gas;
 
     doc["tempAlert"] = tempAlert;
     doc["humidLowAlert"] = humidLowAlert;

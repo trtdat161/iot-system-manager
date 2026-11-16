@@ -52,7 +52,12 @@
   "alert_levels": {
     "none": "No alerts",
     "warning": "Warning",
-    "danger": "Danger (dangerous gas alerts only)"
+    "danger": "Danger"
+  },
+  "alert_level_descriptions": {
+    "none": "No alerts recorded for the selected period",
+    "warning": "Gas warnings, high temperature, low or high humidity",
+    "danger": "Dangerous gas alerts only"
   },
   "bar_height_legend": "Taller/darker bars mean more alerts",
   "alert_trend_loading": "Loading alert statistics...",

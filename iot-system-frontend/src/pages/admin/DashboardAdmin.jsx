@@ -346,7 +346,12 @@ export function DashboardAdmin() {
             {["none", "warning", "danger"].map((level) => (
               <span className="alert-legend-item" role="listitem" key={level}>
                 <span className={`alert-legend-dot ${level}`} />
-                {t(`alert_levels.${level}`)}
+                <span className="alert-legend-label">
+                  {t(`alert_levels.${level}`)}
+                </span>
+                <span className="alert-legend-description">
+                  {t(`alert_level_descriptions.${level}`)}
+                </span>
               </span>
             ))}
             <span className="alert-legend-note" role="listitem">

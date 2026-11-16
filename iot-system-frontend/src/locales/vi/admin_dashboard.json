@@ -52,7 +52,12 @@
   "alert_levels": {
     "none": "Không có cảnh báo",
     "warning": "Cảnh báo",
-    "danger": "Nguy hiểm (chỉ áp dụng với cảnh báo khí gas nguy hiểm)"
+    "danger": "Nguy hiểm"
+  },
+  "alert_level_descriptions": {
+    "none": "Không ghi nhận cảnh báo trong thời gian đang xem",
+    "warning": "Khí gas cảnh báo, nhiệt độ cao, độ ẩm thấp hoặc cao",
+    "danger": "Chỉ cảnh báo khí gas ở mức nguy hiểm"
   },
   "bar_height_legend": "Cột càng cao/đậm thì số cảnh báo càng nhiều",
   "alert_trend_loading": "Đang tải thống kê cảnh báo...",

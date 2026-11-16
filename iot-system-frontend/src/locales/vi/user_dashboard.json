@@ -45,7 +45,7 @@
   },
   "sensors": {
     "gas_safe": "Ngưỡng khí gas",
-    "air_stable": "Không khí ổn định"
+    "air_stable": "Độ ẩm không khí"
   },
   "waiting_connection": {
     "title": "Chờ kết nối",
