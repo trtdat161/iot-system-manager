@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Set `VITE_BASE_URL` in a local `.env` file to the backend API base URL before running the app. The frontend also connects to the SignalR hub at `https://localhost:7115/hubs/notification` in `src/hooks/useDeviceSignalR.jsx`; update that endpoint if the backend uses a different address.
+Set `VITE_BASE_URL` in a local `.env` file to the backend API base URL before running the app. The development setup uses `http://localhost:5239` for the backend and `http://localhost:5173` for the frontend so browser cookies work consistently across profiles. Update the API and SignalR hub URLs if the backend uses a different address.
 
 ## Available scripts
 

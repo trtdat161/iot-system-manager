@@ -53,7 +53,7 @@ export function FrameLayout() {
   useEffect(() => {
     let cancelled = false;
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7115/hubs/notification")
+      .withUrl("http://localhost:5239/hubs/notification")
       .withAutomaticReconnect()
       .build();
 

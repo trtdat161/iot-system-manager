@@ -36,6 +36,11 @@ public class AccountAuthController : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshTokenAccountU()
     {
+        if (!Request.Cookies.ContainsKey("refresh_token"))
+        {
+            return Unauthorized(new { error = "REFRESH_TOKEN_MISSING" });
+        }
+
         var result = await accountServices.RefreshToken();
         return Ok(result);
     }

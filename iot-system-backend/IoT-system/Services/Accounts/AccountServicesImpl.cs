@@ -8,6 +8,8 @@ using IoT_system.DTOS.Common;
 using IoT_system.DTOS.Notification;
 using IoT_system.Helpers;
 using IoT_system.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
@@ -23,13 +25,15 @@ namespace IoT_system.Services.Accounts
         private readonly IHttpContextAccessor httpContextAccessor; //IHttpContextAccessor
         private readonly JwtOptions options;
         private readonly IMapper mapper;
+        private readonly IWebHostEnvironment environment;
 
         public AccountServicesImpl(
             DatabaseContext _dbContext,
             JwtTokenServices _jwtTokenServices,
             IHttpContextAccessor _httpContextAccessor,
             IOptions<JwtOptions> _options,// IOptions   
-            IMapper _mapper
+            IMapper _mapper,
+            IWebHostEnvironment _environment
             )
         {
             dbContext = _dbContext;
@@ -37,30 +41,35 @@ namespace IoT_system.Services.Accounts
             httpContextAccessor = _httpContextAccessor;
             options = _options.Value;// có IOptions thêm .Value
             mapper = _mapper;
+            environment = _environment;
         }
 
         private const string RefreshTokenCookiePath = "/api/auth/refresh-token";
+        private CookieOptions CreateAuthCookieOptions(DateTimeOffset expires, string path)
+        {
+            var isDevelopment = environment.IsDevelopment();
+            return new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = !isDevelopment,
+                SameSite = isDevelopment ? SameSiteMode.Lax : SameSiteMode.None,
+                Expires = expires,
+                Path = path
+            };
+        }
+
         // generate jwt
         private void GenerateJwt(Account acc)
         {
             var token = jwtTokenServices.GenerateToken(acc);
 
-            httpContextAccessor.HttpContext!.Response.Cookies.Append("access_token", token, new CookieOptions
-            {
-                HttpOnly = true,// true js không được đọc cookie này
-                Secure = true, // Cookie chỉ được gửi qua HTTPS, không gửi qua HTTP
-                SameSite = SameSiteMode.None, //Cookie được phép gửi cross-origin (khác domain/port)
-                Expires = DateTimeOffset.UtcNow.AddMinutes(options.DurationInMinutes),// lấy time là 20 trùng vs bên kia
-                Path = "/"
-            });
-            /*
-             None   => gửi được từ localhost:5173 => localhost:7115 (bắt buộc Secure=true)
-             Lax    => chỉ gửi khi cùng origin hoặc navigate bằng link
-             Strict => chỉ gửi khi cùng origin tuyệt đối
-
-            Quy tắc "bộ đôi bất ly thân" cần nhớ:
-            SameSite=None  <->  Secure=true  (tách ra là browser DROP cookie)
-             */
+            httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "access_token",
+                token,
+                CreateAuthCookieOptions(
+                    DateTimeOffset.UtcNow.AddMinutes(options.DurationInMinutes),
+                    "/"));
+            // Development uses same-site HTTP; production keeps Secure + SameSite=None.
         }
         /*
          generate refreshtoken
@@ -78,14 +87,12 @@ namespace IoT_system.Services.Accounts
             /*
              Backend đưa cookie vào HTTP response trả về cho browser. Browser nhận response và lưu cookie đó lại.
              */
-            httpContextAccessor.HttpContext!.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddDays(7),
-                Path = RefreshTokenCookiePath // đổi
-            });
+            httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "refresh_token",
+                refreshToken,
+                CreateAuthCookieOptions(
+                    DateTimeOffset.UtcNow.AddDays(7),
+                    RefreshTokenCookiePath));
         }
 
         // list account for admin
