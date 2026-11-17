@@ -111,6 +111,84 @@
     color: #0d6efd;
 }
 
+.manager-user-status-filter {
+    position: relative;
+}
+
+.status-filter-dropdown {
+    position: relative;
+    flex: 1 1 160px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.status-filter-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: #374151;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.status-filter-trigger > span:first-child,
+.status-filter-option {
+    overflow-wrap: anywhere;
+}
+
+.status-filter-chevron {
+    flex: 0 0 auto;
+}
+
+.status-filter-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 20;
+    display: grid;
+    gap: 2px;
+    width: 100%;
+    max-width: calc(100vw - 24px);
+    max-height: 40vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.status-filter-option {
+    width: 100%;
+    min-width: 0;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #374151;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.status-filter-option:hover,
+.status-filter-option:focus-visible,
+.status-filter-option[aria-pressed="true"] {
+    background: #e9f5f2;
+    outline: none;
+}
+
 .search-group {
     display: flex;
     align-items: center;
@@ -329,6 +407,7 @@
     overflow-x: auto;
     border-radius: 8px;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
 }
 
 .table-wrapper-fixed .table {
@@ -400,6 +479,19 @@
         width: 100%;
     }
 
+    .filter-group {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .status-filter-dropdown {
+        width: 100%;
+    }
+
     .btn-search,
     .btn-reset {
         flex: 1 1 0;
@@ -408,6 +500,31 @@
 
     .sure-delete {
         width: calc(100vw - 32px);
+        min-width: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .table-wrapper-fixed .table {
+        min-width: 920px;
+    }
+
+    .table-wrapper-fixed th,
+    .table-wrapper-fixed td {
+        white-space: nowrap;
+    }
+
+    .search-filter-container,
+    .search-filter {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .filter-group,
+    .filter-select,
+    .search-group {
+        box-sizing: border-box;
         min-width: 0;
     }
 }
@@ -444,6 +561,23 @@
 .admin-app-frame .filter-select option {
     color: var(--app-text);
     background: var(--app-surface);
+}
+
+.admin-app-frame .status-filter-trigger,
+.admin-app-frame .status-filter-option {
+    color: var(--app-text);
+}
+
+.admin-app-frame .status-filter-menu {
+    border-color: var(--app-border);
+    background: var(--app-surface);
+    color: var(--app-text);
+}
+
+.admin-app-frame .status-filter-option:hover,
+.admin-app-frame .status-filter-option:focus-visible,
+.admin-app-frame .status-filter-option[aria-pressed="true"] {
+    background: rgba(114, 240, 206, 0.12);
 }
 
 .admin-app-frame .table-wrapper-fixed {

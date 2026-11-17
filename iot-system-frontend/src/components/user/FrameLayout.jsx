@@ -160,9 +160,7 @@ export function FrameLayoutUser() {
 
   useEffect(() => {
     const syncSidebarWithViewport = () => {
-      if (window.innerWidth <= 767) {
-        setCollapsed(true);
-      }
+      setCollapsed(window.innerWidth <= 767);
     };
 
     syncSidebarWithViewport();
@@ -172,7 +170,7 @@ export function FrameLayoutUser() {
   }, [setCollapsed]);
 
   const styleFrame = {
-    marginLeft: collapsed ? "7px" : "162px",
+    marginLeft: collapsed ? "35px" : "190px",
     transition: "margin-left 0.24s ease-out",
     padding: "20px",
   };

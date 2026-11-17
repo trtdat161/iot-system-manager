@@ -10,7 +10,7 @@
     "aria": "DTECH introduction",
     "badge": "Personal IoT project",
     "subtitle": "Manager IoT",
-    "description": "A personal IoT device management system that helps you monitor fire alerts, gas levels, temperature, and receive realtime notifications through the dashboard and email.",
+    "description": "A personal IoT device management system that helps you monitor gas levels, temperature, humidity, and receive realtime notifications through the dashboard and email.",
     "create_account": "+ Create free account",
     "login": "-> Login"
   },
@@ -28,7 +28,7 @@
       {
         "icon": "IoT",
         "title": "IoT device management",
-        "desc": "Add and monitor fire alarm modules, gas alarm modules, temperature sensors, and more through a friendly interface."
+        "desc": "Add and monitor gas alarm modules, temperature sensors, humidity sensors, and more through a friendly interface."
       },
       {
         "icon": "Alert",
@@ -44,11 +44,6 @@
         "icon": "Role",
         "title": "Clear permissions",
         "desc": "Admins manage users and devices. Users monitor their personal dashboard and update their profile."
-      },
-      {
-        "icon": "AI",
-        "title": "AI assistance (optional)",
-        "desc": "Integrate LangChain and LangGraph to automate processing and provide smarter alerts."
       }
     ]
   },
@@ -79,6 +74,6 @@
     "recent_devices": "Recent devices",
     "gas_module": "Gas Alarm Module",
     "temperature_sensor": "Temperature Sensor",
-    "fire_module": "Fire Alarm Module"
+    "humidity_sensor": "Humidity Sensor"
   }
 }

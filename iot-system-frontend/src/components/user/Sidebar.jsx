@@ -68,6 +68,12 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
         onCancel={() => setShowLogoutDialog(false)}
         onConfirm={LogoutAction}
       />
+      <button
+        type="button"
+        className={`mobile-sidebar-backdrop ${collapsed ? "" : "is-open"}`}
+        aria-label="Close navigation menu"
+        onClick={() => setCollapsed(true)}
+      />
       <aside className={`user-sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="user-sidebar-brand">
           {!collapsed && (
@@ -104,7 +110,10 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
               className={`user-sidebar-link ${
                 isActive(item.path) ? "active" : ""
               }`}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path);
+                if (window.innerWidth <= 767) setCollapsed(true);
+              }}
               title={collapsed ? t(item.key) : ""}
             >
               <span

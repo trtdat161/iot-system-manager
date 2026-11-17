@@ -136,9 +136,7 @@ export function FrameLayout() {
 
   useEffect(() => {
     const syncSidebarWithViewport = () => {
-      if (window.innerWidth <= 767) {
-        setCollapsed(true);
-      }
+      setCollapsed(window.innerWidth <= 767);
     };
 
     syncSidebarWithViewport();
@@ -149,7 +147,7 @@ export function FrameLayout() {
 
   // style content
   const styleFrame = {
-    marginLeft: collapsed ? "7px" : "162px",
+    marginLeft: collapsed ? "35px" : "190px",
     transition: "margin-left 0.24s ease-out",
     padding: collapsed ? "10px" : "20px",
   };
@@ -172,7 +170,7 @@ export function FrameLayout() {
               <div className="admin-app-header rounded p-2">
                 <div className="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                   {/* left */}
-                  <div className="d-flex align-items-center gap-3 flex-wrap">
+                  <div className="admin-app-header-nav d-flex align-items-center gap-3 flex-wrap">
                     <Link
                       to="/admin-frame-layout/admin-history"
                       aria-label={t("notification_count", {
@@ -289,7 +287,7 @@ export function FrameLayout() {
                     {/* break cum */}
                   </div>
                   {/* right */}
-                  <div className="d-flex align-items-center gap-3 flex-wrap">
+                  <div className="admin-app-header-account d-flex align-items-center gap-3 flex-wrap">
                     <span>
                       {t("welcome_admin")} {fullname}
                     </span>

@@ -8,10 +8,9 @@ import {
   ChartNoAxesCombined,
   Check,
   Cpu,
-  Flame,
+  Droplets,
   Gauge,
   ShieldCheck,
-  Sparkles,
   Waves,
 } from "lucide-react";
 import { LanguageSwitcher } from "../../components/switchLanguage/LanguageSwitch";
@@ -22,7 +21,6 @@ const featureIcons = {
   Alert: BellRing,
   Chart: ChartNoAxesCombined,
   Role: ShieldCheck,
-  AI: Sparkles,
 };
 
 export function LandingPage() {
@@ -49,7 +47,9 @@ export function LandingPage() {
             <span className="landing-brand-mark">
               <Waves size={20} strokeWidth={2.4} />
             </span>
-            <span>DTECH<span className="landing-brand-period">.</span></span>
+            <span>
+              DTECH<span className="landing-brand-period">.</span>
+            </span>
           </Link>
 
           <div className="landing-nav-actions">
@@ -89,11 +89,17 @@ export function LandingPage() {
             <p className="landing-description">{t("hero.description")}</p>
 
             <div className="landing-hero-actions">
-              <Link className="landing-button landing-button-primary" to="/register">
+              <Link
+                className="landing-button landing-button-primary"
+                to="/register"
+              >
                 {t("hero.create_account")}
                 <ArrowRight size={18} />
               </Link>
-              <Link className="landing-button landing-button-secondary" to="/login">
+              <Link
+                className="landing-button landing-button-secondary"
+                to="/login"
+              >
                 {t("hero.login")}
                 <ArrowDownRight size={17} />
               </Link>
@@ -112,18 +118,26 @@ export function LandingPage() {
 
           <div className="landing-visual">
             <div className="landing-visual-caption">
-              <span className="landing-caption-icon"><Activity size={15} /></span>
+              <span className="landing-caption-icon">
+                <Activity size={15} />
+              </span>
               {t("mockup.live_overview")}
-              <span className="landing-caption-status">{t("mockup.system_online")}</span>
+              <span className="landing-caption-status">
+                {t("mockup.system_online")}
+              </span>
             </div>
             <DashboardMockup t={t} />
             <div className="landing-float-card">
-              <span className="landing-float-icon"><BellRing size={17} /></span>
+              <span className="landing-float-icon">
+                <BellRing size={17} />
+              </span>
               <span>
                 <strong>{t("mockup.alert_title")}</strong>
                 <small>{t("mockup.alert_description")}</small>
               </span>
-              <span className="landing-float-check"><Check size={13} /></span>
+              <span className="landing-float-check">
+                <Check size={13} />
+              </span>
             </div>
           </div>
         </section>
@@ -141,13 +155,10 @@ export function LandingPage() {
                   {t("features.tag")}
                 </p>
                 <h2 id="landing-features-title">
-                  {t("features.title")}{" "}
-                  <span>{t("features.highlight")}</span>
+                  {t("features.title")} <span>{t("features.highlight")}</span>
                 </h2>
               </div>
-              <p className="landing-section-note">
-                {t("features.note")}
-              </p>
+              <p className="landing-section-note">{t("features.note")}</p>
             </div>
 
             <div className="landing-feature-grid">
@@ -188,7 +199,7 @@ export function LandingPage() {
           </div>
           <div className="landing-footer-meta">
             <a href="mailto:trtdat161@gmail.com">trtdat161@gmail.com</a>
-            <a href="tel:0374757256">0374 757 256</a>
+            <a href="tel:0123456789">0123 456 789</a>
             <span>{t("footer.copy", { year })}</span>
           </div>
         </div>
@@ -216,7 +227,9 @@ function DashboardMockup({ t }) {
           <span />
           <span />
         </div>
-        <span className="landing-dashboard-name">{t("mockup.dashboard_title")}</span>
+        <span className="landing-dashboard-name">
+          {t("mockup.dashboard_title")}
+        </span>
         <span className="landing-dashboard-live">
           <span className="landing-live-dot" />
           LIVE
@@ -226,10 +239,14 @@ function DashboardMockup({ t }) {
       <div className="landing-dashboard-content">
         <div className="landing-dashboard-heading">
           <div>
-            <span className="landing-dashboard-overline">{t("mockup.environment")}</span>
+            <span className="landing-dashboard-overline">
+              {t("mockup.environment")}
+            </span>
             <strong>{t("mockup.overview")}</strong>
           </div>
-          <span className="landing-dashboard-date">{t("mockup.today")} <span>·</span> 09:41</span>
+          <span className="landing-dashboard-date">
+            {t("mockup.today")} <span>·</span> 09:41
+          </span>
         </div>
 
         <div className="landing-metric-grid">
@@ -237,60 +254,110 @@ function DashboardMockup({ t }) {
             <div className="landing-metric-label">
               <Gauge size={14} /> {t("mockup.gas")}
             </div>
-            <strong>0.85<span>%</span></strong>
-            <small><span /> {t("mockup.gas_note")}</small>
+            <strong>
+              0.85<span>%</span>
+            </strong>
+            <small>
+              <span /> {t("mockup.gas_note")}
+            </small>
           </div>
           <div className="landing-metric-card">
             <div className="landing-metric-label">
               <Activity size={14} /> {t("mockup.temperature")}
             </div>
-            <strong>31.4<span>°C</span></strong>
-            <small className="landing-metric-ok"><span /> {t("mockup.temperature_note")}</small>
+            <strong>
+              31.4<span>°C</span>
+            </strong>
+            <small className="landing-metric-ok">
+              <span /> {t("mockup.temperature_note")}
+            </small>
           </div>
         </div>
 
         <div className="landing-chart-card">
           <div className="landing-chart-heading">
             <span>{t("mockup.sensor_activity")}</span>
-            <span className="landing-chart-range">{t("mockup.last_12_hours")}</span>
+            <span className="landing-chart-range">
+              {t("mockup.last_12_hours")}
+            </span>
           </div>
           <div className="landing-chart">
-            <div className="landing-chart-lines"><i /><i /><i /></div>
-            <svg viewBox="0 0 520 88" preserveAspectRatio="none" aria-hidden="true">
+            <div className="landing-chart-lines">
+              <i />
+              <i />
+              <i />
+            </div>
+            <svg
+              viewBox="0 0 520 88"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
               <defs>
-                <linearGradient id="landing-chart-fill" x1="0" x2="0" y1="0" y2="1">
+                <linearGradient
+                  id="landing-chart-fill"
+                  x1="0"
+                  x2="0"
+                  y1="0"
+                  y2="1"
+                >
                   <stop offset="0%" stopColor="#4ee5c1" stopOpacity=".25" />
                   <stop offset="100%" stopColor="#4ee5c1" stopOpacity="0" />
                 </linearGradient>
               </defs>
-              <path d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15 V88 H0Z" fill="url(#landing-chart-fill)" />
-              <path d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15" fill="none" stroke="#4ee5c1" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              <path
+                d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15 V88 H0Z"
+                fill="url(#landing-chart-fill)"
+              />
+              <path
+                d="M0 65 C32 63 35 42 65 47 S100 72 130 58 S165 38 195 45 S230 65 260 48 S295 30 325 42 S360 60 390 37 S425 45 455 24 S490 34 520 15"
+                fill="none"
+                stroke="#4ee5c1"
+                strokeWidth="2"
+                vectorEffect="non-scaling-stroke"
+              />
             </svg>
           </div>
           <div className="landing-chart-times">
-            <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span>
+            <span>00:00</span>
+            <span>04:00</span>
+            <span>08:00</span>
+            <span>12:00</span>
           </div>
         </div>
 
         <div className="landing-devices-card">
           <div className="landing-devices-heading">
             <span>{t("mockup.recent_devices")}</span>
-            <span className="landing-device-count">{t("mockup.devices_value")}</span>
+            <span className="landing-device-count">
+              {t("mockup.devices_value")}
+            </span>
           </div>
           <div className="landing-device-row">
-            <span className="landing-device-symbol"><Gauge size={15} /></span>
+            <span className="landing-device-symbol">
+              <Gauge size={15} />
+            </span>
             <span>{t("mockup.gas_module")}</span>
-            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
+            <span className="landing-device-status">
+              <i /> {t("mockup.online")}
+            </span>
           </div>
           <div className="landing-device-row">
-            <span className="landing-device-symbol"><Activity size={15} /></span>
+            <span className="landing-device-symbol">
+              <Activity size={15} />
+            </span>
             <span>{t("mockup.temperature_sensor")}</span>
-            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
+            <span className="landing-device-status">
+              <i /> {t("mockup.online")}
+            </span>
           </div>
           <div className="landing-device-row">
-            <span className="landing-device-symbol"><Flame size={15} /></span>
-            <span>{t("mockup.fire_module")}</span>
-            <span className="landing-device-status"><i /> {t("mockup.online")}</span>
+            <span className="landing-device-symbol">
+              <Droplets size={15} />
+            </span>
+            <span>{t("mockup.humidity_sensor")}</span>
+            <span className="landing-device-status">
+              <i /> {t("mockup.online")}
+            </span>
           </div>
         </div>
       </div>

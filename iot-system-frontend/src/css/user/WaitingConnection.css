@@ -355,3 +355,23 @@
   gap: 8px;
   white-space: nowrap;
 }
+
+@media (max-width: 767px) {
+  .waiting-device-item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .waiting-device-info-left,
+  .waiting-device-info-right {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .waiting-device-info-right {
+    justify-content: flex-start;
+  }
+
+  .waiting-device-status {
+    text-align: left;
+  }
+}

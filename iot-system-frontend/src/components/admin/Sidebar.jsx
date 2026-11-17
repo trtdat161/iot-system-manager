@@ -77,9 +77,16 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
         onCancel={() => setShowLogoutDialog(false)}
         onConfirm={LogoutAction}
       />
+      <button
+        type="button"
+        className={`mobile-sidebar-backdrop ${collapsed ? "" : "is-open"}`}
+        aria-label="Close navigation menu"
+        onClick={() => setCollapsed(true)}
+      />
       {/* ===== SIDEBAR ===== */}
 
       <div
+        className={`admin-sidebar ${collapsed ? "collapsed" : ""}`}
         style={{
           width: collapsed ? "35px" : "190px",
           minHeight: "100vh",
@@ -94,6 +101,7 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
           position: "fixed", // để là fixed để luôn đưng yên và không chiếm layout làm cho content thay đổi bị đẩy xuống
           top: 0,
           left: 0,
+          zIndex: 1030,
         }}
       >
         {/* --- Logo + Toggle --- */}
@@ -122,6 +130,8 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
             </div>
           )}
           <button
+            type="button"
+            aria-label="Toggle navigation menu"
             onClick={() => setCollapsed(!collapsed)}
             style={{
               background: "none",
@@ -182,7 +192,10 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
           {MENU_ITEMS.map((item) => (
             <button
               key={item.key}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path);
+                if (window.innerWidth <= 767) setCollapsed(true);
+              }}
               title={collapsed ? t(item.key) : ""}
               style={{
                 width: "100%",

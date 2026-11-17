@@ -10,7 +10,7 @@
     "aria": "Giới thiệu DTECH",
     "badge": "Dự án IoT cá nhân",
     "subtitle": "Quản lý IoT",
-    "description": "Hệ thống quản lý thiết bị IoT cá nhân giúp bạn theo dõi cảnh báo cháy, khí gas, nhiệt độ và nhận thông báo thời gian thực qua dashboard và email.",
+    "description": "Hệ thống quản lý thiết bị IoT cá nhân giúp bạn theo dõi khí gas, nhiệt độ, độ ẩm và nhận thông báo thời gian thực qua dashboard và email.",
     "create_account": "+ Tạo tài khoản miễn phí",
     "login": "-> Đăng nhập"
   },
@@ -28,7 +28,7 @@
       {
         "icon": "IoT",
         "title": "Quản lý thiết bị IoT",
-        "desc": "Thêm và theo dõi module báo cháy, module báo gas, cảm biến nhiệt độ và nhiều thiết bị khác qua giao diện thân thiện."
+        "desc": "Thêm và theo dõi module báo gas, cảm biến nhiệt độ, cảm biến độ ẩm và các thiết bị khác qua giao diện thân thiện."
       },
       {
         "icon": "Alert",
@@ -44,11 +44,6 @@
         "icon": "Role",
         "title": "Phân quyền rõ ràng",
         "desc": "Admin quản lý người dùng và thiết bị. User theo dõi dashboard cá nhân và cập nhật hồ sơ."
-      },
-      {
-        "icon": "AI",
-        "title": "Hỗ trợ AI tùy chọn",
-        "desc": "Tích hợp LangChain và LangGraph để tự động hóa xử lý và cung cấp cảnh báo thông minh hơn."
       }
     ]
   },
@@ -79,6 +74,6 @@
     "recent_devices": "Thiết bị gần đây",
     "gas_module": "Module báo gas",
     "temperature_sensor": "Cảm biến nhiệt độ",
-    "fire_module": "Module báo cháy"
+    "humidity_sensor": "Cảm biến độ ẩm"
   }
 }

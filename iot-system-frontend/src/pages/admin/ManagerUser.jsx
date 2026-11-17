@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DeleteAccount, GetAccounts } from "../../api/admin/accountApi";
 import {
   FaTrash,
@@ -37,11 +37,44 @@ export function ManagerUser() {
   const [totalUsers, setTotalUsers] = useState(0);
   const navigate = useNavigate();
   const [searchStatus, setSearchStatus] = useState(null);
+  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+  const [statusMenuPosition, setStatusMenuPosition] = useState(null);
+  const statusFilterRef = useRef(null);
+  const statusFilterButtonRef = useRef(null);
   const [searchName, setSearchName] = useState("");
   const [appliedSearch, setAppliedSearch] = useState(null);
   const { t } = useTranslation("admin_manager_user");
   const nameFilter = appliedSearch?.name?.trim().toLowerCase() ?? "";
   const statusFilter = appliedSearch?.status ?? "";
+  const statusOptions = [
+    { value: "", label: t("all_status") },
+    { value: "true", label: t("active_status") },
+    { value: "false", label: t("locked_status") },
+  ];
+  const selectedStatusLabel =
+    statusOptions.find((option) => option.value === (searchStatus || ""))?.label ??
+    statusOptions[0].label;
+  const getStatusMenuPosition = useCallback(() => {
+    const trigger = statusFilterButtonRef.current;
+    if (!trigger) return null;
+
+    const triggerBounds = trigger.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const gutter = 12;
+    const width = Math.min(
+      Math.max(triggerBounds.width, 180),
+      Math.max(0, viewportWidth - gutter * 2),
+    );
+
+    return {
+      top: triggerBounds.bottom + 4,
+      left: Math.max(
+        gutter,
+        Math.min(triggerBounds.left, viewportWidth - gutter - width),
+      ),
+      width,
+    };
+  }, []);
   const visibleAccounts = accounts
     .map((account, pageIndex) => ({ account, pageIndex }))
     .filter(({ account }) => {
@@ -199,6 +232,36 @@ export function ManagerUser() {
     return () => window.clearTimeout(timeoutId);
   }, [deleteSuccess]);
 
+  useEffect(() => {
+    if (!isStatusMenuOpen) return undefined;
+
+    const closeOnOutsideClick = (event) => {
+      if (!statusFilterRef.current?.contains(event.target)) {
+        setIsStatusMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+  }, [isStatusMenuOpen]);
+
+  useEffect(() => {
+    if (!isStatusMenuOpen) return undefined;
+
+    const updatePosition = () => {
+      const position = getStatusMenuPosition();
+      if (position) setStatusMenuPosition(position);
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [getStatusMenuPosition, isStatusMenuOpen]);
+
   return (
     <div>
       <h5 className="mb-3 fw-semibold parent">
@@ -224,25 +287,77 @@ export function ManagerUser() {
           {/* search */}
           <div className="search-filter-container">
             <div className="search-filter">
-              <div className="filter-group">
+              <div className="filter-group manager-user-status-filter">
                 <label className="filter-label">
                   <FaFilter size={14} />
                 </label>
-                <select
-                  className="filter-select"
-                  value={searchStatus || ""}
-                  onChange={(e) => setSearchStatus(e.target.value)}
+                <div
+                  className="status-filter-dropdown"
+                  ref={statusFilterRef}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                      setIsStatusMenuOpen(false);
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape") {
+                      setIsStatusMenuOpen(false);
+                      statusFilterButtonRef.current?.focus();
+                    }
+                  }}
                 >
-                  <option value="" className="text-center">
-                    {t("all_status")}
-                  </option>
-                  <option value="true" className="text-center">
-                    {t("active_status")}
-                  </option>
-                  <option value="false" className="text-center">
-                    {t("locked_status")}
-                  </option>
-                </select>
+                  <button
+                    type="button"
+                    className="status-filter-trigger"
+                    ref={statusFilterButtonRef}
+                    aria-label={t("status")}
+                    aria-expanded={isStatusMenuOpen}
+                    aria-controls="manager-user-status-options"
+                    onClick={() => {
+                      if (isStatusMenuOpen) {
+                        setIsStatusMenuOpen(false);
+                        return;
+                      }
+
+                      setStatusMenuPosition(getStatusMenuPosition());
+                      setIsStatusMenuOpen(true);
+                    }}
+                  >
+                    <span>{selectedStatusLabel}</span>
+                    <span className="status-filter-chevron" aria-hidden="true">
+                      ▾
+                    </span>
+                  </button>
+                  {isStatusMenuOpen && (
+                    <div
+                      className="status-filter-menu"
+                      id="manager-user-status-options"
+                      role="group"
+                      aria-label={t("status")}
+                      style={{
+                        position: "fixed",
+                        ...statusMenuPosition,
+                      }}
+                    >
+                      {statusOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className="status-filter-option"
+                          aria-pressed={(searchStatus || "") === option.value}
+                          onClick={() => {
+                            setSearchStatus(option.value);
+                            setIsStatusMenuOpen(false);
+                            setStatusMenuPosition(null);
+                            statusFilterButtonRef.current?.focus();
+                          }}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="search-group">
