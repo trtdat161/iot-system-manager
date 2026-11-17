@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace IoT_system.Controllers.Notification
 {
+    [ApiController]
     [Route("api/notification")]
     public class NotificationController : ControllerBase
     {

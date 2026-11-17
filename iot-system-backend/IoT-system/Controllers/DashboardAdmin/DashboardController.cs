@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IoT_system.Controllers.DashboardAdmin
 {
+    [ApiController]
     [Route("api/dashboard-admin")]
     public class DashboardController : ControllerBase
     {

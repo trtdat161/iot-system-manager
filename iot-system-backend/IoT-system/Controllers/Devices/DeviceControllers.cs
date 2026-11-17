@@ -5,6 +5,7 @@ using System.Security.Claims;
 
 namespace IoT_system.Controllers.Devices
 {
+    [ApiController]
     [Route("api/device")]
     public class DeviceControllers : ControllerBase
     {
