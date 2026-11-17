@@ -290,6 +290,10 @@ body:has(.auth-page) #root {
   color: #a3ffe8;
 }
 
+.auth-page .alert-info {
+  color: var(--dt-warning);
+}
+
 /* ─── SUBMIT BUTTON ─── */
 
 .btn-submit {
