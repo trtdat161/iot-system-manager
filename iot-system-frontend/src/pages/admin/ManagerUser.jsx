@@ -24,6 +24,10 @@ import { ConfirmDialog } from "../../components/common/ConfirmDialog";
 export function ManagerUser() {
   const [deleteUser, setDeleteUser] = useState(null); // null nhận object
   const [deleteSuccess, setDeleteSuccess] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [selectedAccountIds, setSelectedAccountIds] = useState([]);
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [pages, setPages] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [refreshIndex, setRefreshIndex] = useState(0);
@@ -51,11 +55,16 @@ export function ManagerUser() {
     });
 
   const removeAccount = async (id) => {
+    if (isDeleting) return;
+
+    setIsDeleting(true);
     try {
       const response = await DeleteAccount(id);
       if (response.data) {
         setDeleteSuccess(t("delete_account_success"));
+        setDeleteError("");
         setDeleteUser(null); //nếu api xoá ok thì set lại là null tức ko có id nào đc chọn nữa => dialog ẩn
+        setSelectedAccountIds((ids) => ids.filter((accountId) => accountId !== id));
         const newPage = accounts.length === 1 && pages > 1 ? pages - 1 : pages; // nếu user chỉ còn 1 trên trang và ko phải trag 1 thì sau khi xoá sẽ về trang trước đó, ko thì vẫn ở trang hiện tại
         newPage !== pages
           ? setPages(newPage)
@@ -65,11 +74,85 @@ export function ManagerUser() {
         */
       } else {
         setDeleteUser(null);
+        setDeleteError(t("delete_account_failed"));
       }
     } catch (err) {
       console.log("error:", err?.message || err);
       setDeleteUser(null);
+      setDeleteError(t("delete_account_failed"));
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const removeSelectedAccounts = async () => {
+    if (isDeleting || selectedAccountIds.length === 0) return;
+
+    setIsDeleting(true);
+    setDeleteError("");
+    const selectedIds = [...selectedAccountIds];
+
+    try {
+      const results = await Promise.allSettled(
+        selectedIds.map((id) => DeleteAccount(id)),
+      );
+      const deletedIds = results.flatMap((result, index) =>
+        result.status === "fulfilled" && result.value.data
+          ? [selectedIds[index]]
+          : [],
+      );
+      const failedCount = selectedIds.length - deletedIds.length;
+
+      setShowBulkDeleteDialog(false);
+      setSelectedAccountIds((ids) =>
+        ids.filter((id) => !deletedIds.includes(id)),
+      );
+
+      if (deletedIds.length > 0) {
+        setDeleteSuccess(
+          t("delete_selected_accounts_success", { count: deletedIds.length }),
+        );
+      }
+
+      if (failedCount > 0) {
+        setDeleteError(
+          t("delete_selected_accounts_failed", {
+            failed: failedCount,
+            succeeded: deletedIds.length,
+          }),
+        );
+      }
+
+      const deletedOnCurrentPage = deletedIds.filter((id) =>
+        accounts.some((account) => account.id === id),
+      ).length;
+      if (
+        deletedOnCurrentPage === accounts.length &&
+        deletedOnCurrentPage > 0 &&
+        pages > 1
+      ) {
+        setPages((page) => page - 1);
+      } else if (deletedIds.length > 0) {
+        setRefreshIndex((value) => value + 1);
+      }
+    } catch (err) {
+      console.log("error:", err?.message || err);
+      setDeleteError(
+        t("delete_selected_accounts_failed", {
+          failed: selectedIds.length,
+          succeeded: 0,
+        }),
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleAccountSelection = (id) => {
+    setSelectedAccountIds((ids) =>
+      ids.includes(id) ? ids.filter((accountId) => accountId !== id) : [...ids, id],
+    );
+    setDeleteError("");
   };
 
   // search + filter
@@ -200,6 +283,11 @@ export function ManagerUser() {
           {deleteSuccess}
         </div>
       )}
+      {deleteError && (
+        <div className="alert alert-danger" role="alert">
+          {deleteError}
+        </div>
+      )}
       <div className="table-wrapper-fixed">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -211,14 +299,30 @@ export function ManagerUser() {
                 <th>{t("role")}</th>
                 <th>{t("created_at")}</th>
                 <th>{t("status")}</th>
-                <th colSpan={2}>{t("actions")}</th>
+                <th className="text-center">{t("actions")}</th>
+                <th style={{ width: 72 }} className="text-center">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${
+                      selectedAccountIds.length > 0
+                        ? "btn-outline-danger"
+                        : "btn-outline-secondary"
+                    }`}
+                    title={t("delete_selected_accounts")}
+                    aria-label={t("delete_selected_accounts")}
+                    disabled={selectedAccountIds.length === 0}
+                    onClick={() => setShowBulkDeleteDialog(true)}
+                  >
+                    <FaTrash size={13} />
+                  </button>
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {visibleAccounts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     {t("no_user_data")}
                   </td>
                 </tr>
@@ -231,7 +335,7 @@ export function ManagerUser() {
                     </td>
 
                     {/* fullname */}
-                    <td>
+                    <td className="text-center">
                       {account.role === "admin" ? (
                         <span
                           className="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 fw-semibold"
@@ -304,7 +408,7 @@ export function ManagerUser() {
                           <span>{t("edit_account_admin")}</span>
                         </button>
                       ) : (
-                        <div className="d-flex gap-2">
+                        <div className="d-flex justify-content-center gap-2">
                           {/* lock / unlock */}
                           <button
                             onClick={() =>
@@ -346,6 +450,18 @@ export function ManagerUser() {
                         </div>
                       )}
                     </td>
+
+                    <td style={{ width: 72 }} className="text-center">
+                      {account.role !== "admin" && (
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={selectedAccountIds.includes(account.id)}
+                          aria-label={`${t("select_account")} ${account.fullname}`}
+                          onChange={() => toggleAccountSelection(account.id)}
+                        />
+                      )}
+                    </td>
                   </tr>
                 ))
               )}
@@ -362,6 +478,18 @@ export function ManagerUser() {
             DialogIcon={FaTrash}
             onCancel={() => setDeleteUser(null)}
             onConfirm={() => removeAccount(deleteUser)}
+          />
+          <ConfirmDialog
+            open={showBulkDeleteDialog}
+            title={t("delete_selected_accounts")}
+            message={t("confirm_delete_selected_accounts", {
+              count: selectedAccountIds.length,
+            })}
+            cancelLabel={t("cancel")}
+            confirmLabel={t("delete")}
+            DialogIcon={FaTrash}
+            onCancel={() => setShowBulkDeleteDialog(false)}
+            onConfirm={removeSelectedAccounts}
           />
         </div>
 

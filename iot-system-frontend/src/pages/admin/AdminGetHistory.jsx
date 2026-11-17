@@ -16,7 +16,11 @@ import {
 import "../../css/NotificationHistory.css";
 import { Pagination } from "../../components/common/Pagination";
 import dayjs from "dayjs";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import {
+  useNavigate,
+  useOutletContext,
+  useSearchParams,
+} from "react-router-dom";
 import { getDeviceAlertDetails } from "../../utils/deviceAlert";
 import { DateRangePicker } from "../../components/common/DateRangePicker";
 
@@ -25,7 +29,11 @@ export function AdminGetHistory() {
   const { t: tAlert } = useTranslation("user_notification_history");
   const outletContext = useOutletContext() || {};
   const connection = outletContext.connection;
-  const [pages, setPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedPage = Number(searchParams.get("page"));
+  const initialPage =
+    Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  const [pages, setPages] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10;
 
@@ -45,6 +53,19 @@ export function AdminGetHistory() {
   });
 
   const navigate = useNavigate();
+
+  const changePage = (page) => {
+    const nextPage = Math.max(1, page);
+    setPages(nextPage);
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    if (nextPage === 1) {
+      nextSearchParams.delete("page");
+    } else {
+      nextSearchParams.set("page", String(nextPage));
+    }
+    setSearchParams(nextSearchParams, { replace: true });
+  };
 
   const fetchNotifications = useCallback(
     async (currentPage, filters) => {
@@ -146,7 +167,7 @@ export function AdminGetHistory() {
 
   const handleSearch = () => {
     setActiveFilters({ fromDate, toDate, type });
-    setPages(1);
+    changePage(1);
   };
 
   const handleReload = () => {
@@ -154,7 +175,7 @@ export function AdminGetHistory() {
     setToDate("");
     setType("");
     setActiveFilters({ fromDate: "", toDate: "", type: "" });
-    setPages(1);
+    changePage(1);
   };
 
   return (
@@ -368,7 +389,7 @@ export function AdminGetHistory() {
         <Pagination
           page={pages}
           totalPages={totalPages}
-          onPageChange={setPages}
+          onPageChange={changePage}
         />
       </div>
     </main>
