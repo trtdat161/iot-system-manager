@@ -59,11 +59,15 @@ namespace IoT_system.Services.DashboardAdmin
                 query = query.Where(n => n.Type == type);
             }
 
-            // Gộp thông báo cùng thiết bị/loại/thời điểm để một đợt không bị đếm theo từng người nhận.
+            // Gộp theo đợt để không nhân số lượt theo người nhận; lấy count cao nhất vì người đã đọc có thể giữ count cũ.
             var alertEvents = await query
-                .Select(n => new { n.DeviceId, n.Type, n.CreatedAt })
-                .Distinct()
-                .Select(n => new { n.Type, n.CreatedAt })
+                .GroupBy(n => new { n.DeviceId, n.Type, n.CreatedAt })
+                .Select(group => new
+                {
+                    group.Key.Type,
+                    group.Key.CreatedAt,
+                    AlertCount = group.Max(notification => notification.AlertCount)
+                })
                 .ToListAsync();
 
             var eventsByMonth = alertEvents
@@ -78,7 +82,7 @@ namespace IoT_system.Services.DashboardAdmin
                     return new DashboardAlertMonthDtos
                     {
                         Month = monthStart,
-                        Count = monthEvents.Count,
+                        Count = monthEvents.Sum(alert => alert.AlertCount),
                         HasDanger = monthEvents.Any(alert => alert.Type == "gas_danger")
                     };
                 })
@@ -108,7 +112,7 @@ namespace IoT_system.Services.DashboardAdmin
                             return new DashboardAlertDayDtos
                             {
                                 Date = date,
-                                Count = dayEvents.Count,
+                                Count = dayEvents.Sum(alert => alert.AlertCount),
                                 HasDanger = dayEvents.Any(alert => alert.Type == "gas_danger")
                             };
                         })

@@ -74,6 +74,7 @@ namespace IoT_system.Services.Notifications
 
             var result = mapper.Map<NotificationDetailResponseDtos>(notification);
             result.Users = recipients;
+            result.IsRead = recipients.All(recipient => recipient.IsRead);
             return result;
         }
 
@@ -96,11 +97,6 @@ namespace IoT_system.Services.Notifications
                 query = query.Where(x => x.CreatedAt < toDate.Value.Date.AddDays(1));
             }
 
-            if (isRead.HasValue)
-            {
-                query = query.Where(x => x.IsRead == isRead);
-            }
-
             if (!string.IsNullOrWhiteSpace(type))
             {
                 query = query.Where(x => x.Type == type);
@@ -110,7 +106,12 @@ namespace IoT_system.Services.Notifications
 
             if (!userId.HasValue)
             {
-                return await GetAdminHistoryPage(query, page, pageSize);
+                return await GetAdminHistoryPage(query, page, pageSize, isRead);
+            }
+
+            if (isRead.HasValue)
+            {
+                query = query.Where(x => x.IsRead == isRead.Value);
             }
 
             return await PaginationHelper.GetPagedAsync<Notification, NotificationResponseDtos>(query, page, pageSize, mapper);
@@ -119,15 +120,43 @@ namespace IoT_system.Services.Notifications
         private async Task<PagedResponseDtos<NotificationResponseDtos>> GetAdminHistoryPage(
             IQueryable<Notification> query,
             int page,
-            int pageSize)
+            int pageSize,
+            bool? isRead = null)
         {
             page = page <= 0 ? 1 : page;
             pageSize = pageSize <= 0 || pageSize > 100 ? 10 : pageSize;
 
-            var totalItems = await query.CountAsync();
-            var data = await query
-                .OrderByDescending(n => n.CreatedAt)
-                .ThenByDescending(n => n.Id)
+            var groupedNotifications = query
+                .GroupBy(notification => new
+                {
+                    notification.DeviceId,
+                    notification.Message,
+                    notification.Type,
+                    notification.CreatedAt
+                })
+                .Select(group => new
+                {
+                    Id = group.Min(notification => notification.Id),
+                    LatestId = group.Max(notification => notification.Id),
+                    group.Key.DeviceId,
+                    group.Key.Message,
+                    group.Key.Type,
+                    group.Key.CreatedAt,
+                    IsRead = group.All(notification => notification.IsRead),
+                    HasUnreadRecipient = group.Any(notification => !notification.IsRead),
+                    AlertCount = group.Max(notification => notification.AlertCount)
+                });
+
+            if (isRead.HasValue)
+            {
+                groupedNotifications = groupedNotifications
+                    .Where(notification => notification.IsRead == isRead.Value);
+            }
+
+            var totalItems = await groupedNotifications.CountAsync();
+            var data = await groupedNotifications
+                .OrderByDescending(notification => notification.CreatedAt)
+                .ThenByDescending(notification => notification.LatestId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(notification => new NotificationResponseDtos
@@ -137,13 +166,7 @@ namespace IoT_system.Services.Notifications
                     Type = notification.Type,
                     DeviceId = notification.DeviceId,
                     IsRead = notification.IsRead,
-                    HasUnreadRecipient = !notification.IsRead ||
-                        dbContext.Notifications.Any(recipient =>
-                            recipient.DeviceId == notification.DeviceId &&
-                            recipient.Message == notification.Message &&
-                            recipient.Type == notification.Type &&
-                            recipient.CreatedAt == notification.CreatedAt &&
-                            !recipient.IsRead),
+                    HasUnreadRecipient = notification.HasUnreadRecipient,
                     AlertCount = notification.AlertCount,
                     CreatedAt = notification.CreatedAt
                 })
