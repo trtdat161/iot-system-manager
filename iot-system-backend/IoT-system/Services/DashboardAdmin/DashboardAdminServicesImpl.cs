@@ -24,7 +24,18 @@ namespace IoT_system.Services.DashboardAdmin
             var userActive = await dbContext.Accounts.Where(a => a.DeletedAt == null && a.Status == true).CountAsync();
             var userLock = await dbContext.Accounts.Where(a => a.DeletedAt == null && a.Status == false).CountAsync();
 
-            var totalAlerts = await dbContext.Notifications.CountAsync();
+            var alertIncidentCounts = await dbContext.Notifications
+                .AsNoTracking()
+                .GroupBy(notification => new
+                {
+                    notification.DeviceId,
+                    notification.Message,
+                    notification.Type,
+                    notification.CreatedAt
+                })
+                .Select(group => group.Max(notification => notification.AlertCount))
+                .ToListAsync();
+            var totalAlerts = alertIncidentCounts.Sum();
 
             // Thống kê user mới trong 1 tháng qua
             var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);// -1 lùi về 1 tháng

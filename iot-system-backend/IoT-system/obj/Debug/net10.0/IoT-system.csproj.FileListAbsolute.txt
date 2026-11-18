@@ -539,4 +539,18 @@ C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.de
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.runtimeconfig.json
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.dll
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-account-build\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-total-build\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.pdb
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
