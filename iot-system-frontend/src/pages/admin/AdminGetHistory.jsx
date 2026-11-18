@@ -46,10 +46,12 @@ export function AdminGetHistory() {
   const [toDate, setToDate] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [type, setType] = useState("");
+  const [isRead, setIsRead] = useState("");
   const [activeFilters, setActiveFilters] = useState({
     fromDate: "",
     toDate: "",
     type: "",
+    isRead: "",
   });
 
   const navigate = useNavigate();
@@ -79,7 +81,7 @@ export function AdminGetHistory() {
               PAGE_SIZE,
               filters.fromDate,
               filters.toDate,
-              "",
+              filters.isRead,
               filters.type,
             )
           : await adminGetHistory(currentPage, PAGE_SIZE);
@@ -166,7 +168,7 @@ export function AdminGetHistory() {
   }, [connection, fetchNotifications, pages, activeFilters]);
 
   const handleSearch = () => {
-    setActiveFilters({ fromDate, toDate, type });
+    setActiveFilters({ fromDate, toDate, type, isRead });
     changePage(1);
   };
 
@@ -174,7 +176,8 @@ export function AdminGetHistory() {
     setFromDate("");
     setToDate("");
     setType("");
-    setActiveFilters({ fromDate: "", toDate: "", type: "" });
+    setIsRead("");
+    setActiveFilters({ fromDate: "", toDate: "", type: "", isRead: "" });
     changePage(1);
   };
 
@@ -195,6 +198,22 @@ export function AdminGetHistory() {
         </div>
 
         <div className="notification-search-filter-right">
+          <select
+            className="filter-select"
+            value={isRead}
+            onChange={(e) => setIsRead(e.target.value)}
+            title={t("read_status")}
+          >
+            <option value="" className="text-center">
+              {t("read_status")}
+            </option>
+            <option value="false" className="text-center">
+              {t("unread")}
+            </option>
+            <option value="true" className="text-center">
+              {t("read")}
+            </option>
+          </select>
           <select
             className="filter-select"
             value={type}
