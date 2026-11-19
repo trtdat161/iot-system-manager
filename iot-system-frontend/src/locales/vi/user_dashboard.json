@@ -3,6 +3,8 @@
   "notification": "Thông báo từ thiết bị",
   "alerts": {
     "title": "Cảnh báo chưa đọc",
+    "last_alert": "Cảnh báo gần nhất",
+    "no_recorded": "Chưa ghi nhận cảnh báo",
     "summary": "{{count}} cảnh báo · {{groups}} loại",
     "open_history": "Xem lịch sử thông báo",
     "loading": "Đang tải cảnh báo...",

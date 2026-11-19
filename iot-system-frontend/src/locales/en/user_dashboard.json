@@ -3,6 +3,8 @@
   "notification": "Device notification",
   "alerts": {
     "title": "Unread alerts",
+    "last_alert": "Most recent alert",
+    "no_recorded": "No alert recorded",
     "summary": "{{count}} alerts · {{groups}} types",
     "open_history": "View notification history",
     "loading": "Loading alerts...",

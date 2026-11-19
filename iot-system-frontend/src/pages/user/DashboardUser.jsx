@@ -35,6 +35,32 @@ const getAlertTimestamp = (alert) =>
   getAlertField(alert, "timestamp", "Timestamp") ??
   "";
 
+const getAlertSummary = (alert) => {
+  const type = getAlertField(alert, "type", "Type");
+  return {
+    types: Array.isArray(alert.types) ? alert.types : type ? [type] : [],
+    timestamp: getAlertTimestamp(alert),
+  };
+};
+
+const preferLatestAlert = (currentAlert, incomingAlert) => {
+  if (!incomingAlert?.types.length) return currentAlert;
+  if (!currentAlert?.types.length) return incomingAlert;
+
+  const currentTimestamp = new Date(currentAlert.timestamp).getTime();
+  const incomingTimestamp = new Date(incomingAlert.timestamp).getTime();
+
+  if (Number.isNaN(incomingTimestamp)) return currentAlert;
+  if (
+    Number.isNaN(currentTimestamp) ||
+    incomingTimestamp >= currentTimestamp
+  ) {
+    return incomingAlert;
+  }
+
+  return currentAlert;
+};
+
 const getAlertCount = (alert) =>
   getAlertField(alert, "alertCount", "AlertCount") ?? 1;
 
@@ -128,6 +154,16 @@ export function DashboardUser() {
   useDeviceSignalR(isConnect ? device?.macAddress : null, {
     onSensorData: (data) => {
       const currentAlertCounts = data.alertCounts ?? {};
+      const activeAlertKinds = Object.keys(currentAlertCounts);
+      if (activeAlertKinds.length > 0) {
+        setLastAlert((previousAlert) =>
+          preferLatestAlert(previousAlert, {
+            types: activeAlertKinds,
+            timestamp: getAlertTimestamp(data),
+          }),
+        );
+      }
+
       setSensorData({
         gas: data.gas,
         temperature: data.temperature,
@@ -142,6 +178,9 @@ export function DashboardUser() {
     },
 
     onAlert: (data) => {
+      setLastAlert((previousAlert) =>
+        preferLatestAlert(previousAlert, getAlertSummary(data)),
+      );
       setAlerts((prev) => mergeAlerts(prev, [data]));
     },
   });
@@ -155,6 +194,7 @@ export function DashboardUser() {
   });
   // Keep unread alerts in sync with notification history across dashboard visits.
   const [alerts, setAlerts] = useState([]);
+  const [lastAlert, setLastAlert] = useState(null);
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(true);
   const [errorAlerts, setErrorAlerts] = useState("");
 
@@ -169,9 +209,11 @@ export function DashboardUser() {
       try {
         const firstResponse = await UserGetHistory(1, NOTIFICATION_PAGE_SIZE);
         const firstPage = firstResponse.data;
-        const unreadAlerts = (
-          Array.isArray(firstPage.data) ? firstPage.data : []
-        ).filter(isUnreadNotification);
+        const firstPageAlerts = Array.isArray(firstPage.data)
+          ? firstPage.data
+          : [];
+        const allAlerts = [...firstPageAlerts];
+        const unreadAlerts = firstPageAlerts.filter(isUnreadNotification);
         const totalPages = firstPage.totalPages ?? 1;
 
         for (
@@ -198,12 +240,22 @@ export function DashboardUser() {
             const items = Array.isArray(response.data.data)
               ? response.data.data
               : [];
+            allAlerts.push(...items);
             unreadAlerts.push(...items.filter(isUnreadNotification));
           });
         }
 
+        const latestAlert = allAlerts.reduce(
+          (latest, alert) =>
+            preferLatestAlert(latest, getAlertSummary(alert)),
+          null,
+        );
+
         if (isMounted) {
           setAlerts(unreadAlerts);
+          setLastAlert((previousAlert) =>
+            preferLatestAlert(previousAlert, latestAlert),
+          );
           setErrorAlerts("");
         }
       } catch (err) {
@@ -365,8 +417,18 @@ export function DashboardUser() {
       <div className="test-realtime user-glass-panel">
         <div className="sensor-grid">
           <div className="update-row">
-            <span>Cập nhật lúc</span>
-            <strong>{sensorData.timestamp ?? "--"}</strong>
+            <span>{t("alerts.last_alert")}</span>
+            <strong>
+              {lastAlert?.types.length
+                ? `${lastAlert.types
+                    .map((kind) =>
+                      t(`alerts.labels.${kind}`, {
+                        defaultValue: t("alerts.labels.unknown"),
+                      }),
+                    )
+                    .join(", ")} · ${formatTime(lastAlert.timestamp)}`
+                : t("alerts.no_recorded")}
+            </strong>
           </div>
         </div>
 
