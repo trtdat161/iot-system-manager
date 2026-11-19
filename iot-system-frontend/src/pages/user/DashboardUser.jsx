@@ -38,6 +38,42 @@ const getAlertTimestamp = (alert) =>
 const getAlertCount = (alert) =>
   getAlertField(alert, "alertCount", "AlertCount") ?? 1;
 
+const getLatestAlertValue = (kind, sensorData) => {
+  switch (kind) {
+    case "gas":
+    case "gas_danger":
+      return sensorData.gas;
+    case "temp_high":
+      return sensorData.temperature;
+    case "humid_low":
+    case "humid_high":
+      return sensorData.humidity;
+    default:
+      return null;
+  }
+};
+
+// notificationCounts = { [notificationId]: alertCount } do BE gửi theo từng dòng thông báo.
+// Mỗi user có dòng riêng (id riêng) nên chỉ cập nhật đúng dòng của mình, không dùng số cấp thiết bị nữa.
+const applyNotificationCounts = (alerts, notificationCounts) => {
+  if (!notificationCounts) return alerts;
+
+  let changed = false;
+  const nextAlerts = alerts.map((alert) => {
+    const id = getAlertField(alert, "id", "Id");
+    const count = id != null ? notificationCounts[id] : null;
+
+    if (count == null || count <= getAlertCount(alert)) {
+      return alert;
+    }
+
+    changed = true;
+    return { ...alert, alertCount: count };
+  });
+
+  return changed ? nextAlerts : alerts;
+};
+
 const sameAlert = (left, right) => {
   const leftId = getAlertField(left, "id", "Id");
   const rightId = getAlertField(right, "id", "Id");
@@ -86,18 +122,23 @@ export function DashboardUser() {
   const [errorDevice, setErrorDevice] = useState("");
   const [isLoadingDevice, setIsLoadingDevice] = useState(true);
   const [device, setDevice] = useState(null); // thiết bị gần nhất của user (id, macAddress, isConnected)
-  const [alertCounts, setAlertCounts] = useState({});
+  const [alertCounts, setAlertCounts] = useState({}); // cấp thiết bị: chỉ dùng để biết loại nào đang active
 
   // chỉ nghe realtime khi đang connected, disconnect thì hook tự dừng (nhờ "if (!mac) return;")
   useDeviceSignalR(isConnect ? device?.macAddress : null, {
     onSensorData: (data) => {
+      const currentAlertCounts = data.alertCounts ?? {};
       setSensorData({
         gas: data.gas,
         temperature: data.temperature,
         humidity: data.humidity,
         timestamp: data.timestamp,
       });
-      setAlertCounts(data.alertCounts ?? {});
+      setAlertCounts(currentAlertCounts);
+      // số hiển thị lấy theo từng dòng thông báo của user, không lấy số cấp thiết bị
+      setAlerts((prev) =>
+        applyNotificationCounts(prev, data.notificationCounts),
+      );
     },
 
     onAlert: (data) => {
@@ -223,7 +264,7 @@ export function DashboardUser() {
       const group = groups.get(details.kind);
 
       if (group) {
-        group.count += getAlertCount(alert);
+        group.count = Math.max(group.count, getAlertCount(alert));
         if (
           new Date(getAlertTimestamp(alert)).getTime() >
           new Date(getAlertTimestamp(group.alert)).getTime()
@@ -365,20 +406,23 @@ export function DashboardUser() {
               <p className="alerts-empty">{t("alerts.empty")}</p>
             )}
             {groupedAlerts.map(({ alert, details, count }) => {
-              const totalCount = Math.max(
-                count,
-                alertCounts[details.kind] ?? 0,
-              );
+              const activeCount = alertCounts[details.kind];
+              // Số lần cảnh báo = số của CHÍNH dòng thông báo của user này (không dùng số cấp thiết bị)
+              const totalCount = count;
+              const value =
+                (activeCount != null
+                  ? getLatestAlertValue(details.kind, sensorData)
+                  : null) ?? details.value;
 
               return (
                 <div key={details.kind} className="alert-item">
                   <div className="alert-body">
                     <div className="alert-label">
                       <span className={`alert-type ${details.kind}`}>
-                        {details.value === null
+                        {value === null
                           ? t(`alerts.labels.${details.kind}`)
                           : t(`alerts.messages.${details.kind}`, {
-                              value: details.value,
+                              value,
                             })}
                       </span>
                       {totalCount >= 1 && (

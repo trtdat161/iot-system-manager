@@ -51,9 +51,11 @@ namespace IoT_system.Services.Mqtt
          * Mất key => sensor đã về bình thường, lần vượt ngưỡng sau là đợt mới
          * Dùng ConcurrentDictionary vì service này là singleton. */
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), ConcurrentDictionary<int, byte>> incidents = new();
-        /* Đếm số lần ESP push lên trong đợt cảnh báo đang diễn ra.
-         * Reset (TryRemove) cùng lúc với incidents khi sensor về bình thường. */
+        /* Số lần cảnh báo theo thiết bị và loại, tiếp tục khi còn thông báo chưa đọc.
+         * LƯU Ý: đây là bộ đếm cấp THIẾT BỊ (chung cho cả nhà) -> chỉ dùng cho admin và để biết "loại này đang active".
+         * Số hiển thị cho từng user lấy từ cột Notification.AlertCount của chính dòng thông báo của user đó. */
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), int> alertCounts = new();
+        private readonly ConcurrentDictionary<(int DeviceId, string Kind), bool> hasUnreadNotifications = new();
         private const int DeviceOnlineWindowSeconds = 30;
 
         public IotMqttIngestService(
@@ -236,9 +238,25 @@ namespace IoT_system.Services.Mqtt
             logger.LogInformation("[SENSOR] MAC={Mac} type={Type} gas={Gas} alert={Alert}",
                 mac, sensor.Type, sensor.Gas, sensor.Alert);
 
-            // ============ 1. LUÔN BẮN TRẠNG THÁI HIỆN TẠI - MỖI LẦN ESP GỬI LÊN ============
+            // ============ 1. CẬP NHẬT SỔ ĐỢT CẢNH BÁO + TẠO THÔNG BÁO CHO USER ============
             // Type: "gas" | "gas_danger" | "heartbeat" (phần gas của payload)
-            var result = UpdateIncidents(device.Id, sensor);
+            var result = await UpdateIncidents(db, device.Id, sensor);
+
+            var newNotificationCounts = new Dictionary<string, int>();
+            var newNotificationUserIds = new Dictionary<string, List<int>>();
+            foreach (var kind in result.activeKinds)
+            {
+                var notificationResult = await NotifyUsers(db, device.Id, mac, sensor, kind);
+                newNotificationCounts[kind] = notificationResult.count;
+                newNotificationUserIds[kind] = notificationResult.userIds;
+            }
+
+            await SaveAlertCounts(db, device.Id, newNotificationUserIds);
+
+            // ============ 2. LUÔN BẮN TRẠNG THÁI HIỆN TẠI - MỖI LẦN ESP GỬI LÊN ============
+            // Gửi SAU khi insert + cộng AlertCount xong để NotificationCounts là số mới nhất của từng dòng thông báo.
+            // AlertCounts (cấp thiết bị) chỉ còn để FE biết loại nào đang active; số hiển thị cho user lấy từ NotificationCounts.
+            var notificationCounts = await GetUnreadAlertCounts(db, device.Id, result.activeKinds);
 
             await hubContext.Clients.Group(mac).SendAsync("ReceiveSensorData", new
             {
@@ -249,16 +267,9 @@ namespace IoT_system.Services.Mqtt
                 Temperature = sensor.Temperature,
                 Humidity = sensor.Humidity,
                 Timestamp = TimeHelper.VnNow(),
-                AlertCounts = result.counts
+                AlertCounts = result.counts,
+                NotificationCounts = notificationCounts
             });
-
-            var newNotificationCounts = new Dictionary<string, int>();
-            foreach (var kind in result.activeKinds)
-            {
-                newNotificationCounts[kind] = await NotifyUsers(db, device.Id, mac, sensor, kind);
-            }
-
-            await SaveAlertCounts(db, device.Id, result.counts);
 
             foreach (var kind in result.activeKinds)
             {
@@ -289,7 +300,10 @@ namespace IoT_system.Services.Mqtt
                 "ReceiveDeviceStatus",
                 new { MacAddress = mac });
 
-        private (List<string> activeKinds, Dictionary<string, int> counts) UpdateIncidents(int deviceId, SensorPayload sensor)
+        private async Task<(List<string> activeKinds, Dictionary<string, int> counts)> UpdateIncidents(
+            DatabaseContext db,
+            int deviceId,
+            SensorPayload sensor)
         {
             var activeKinds = new List<string>();
 
@@ -308,18 +322,56 @@ namespace IoT_system.Services.Mqtt
             {
                 incidents.TryRemove((deviceId, kind), out _);
                 alertCounts.TryRemove((deviceId, kind), out _);
+                hasUnreadNotifications.TryRemove((deviceId, kind), out _);
             }
 
             var counts = new Dictionary<string, int>();
             foreach (var kind in activeKinds)
             {
-                counts[kind] = alertCounts.AddOrUpdate((deviceId, kind), 1, (key, old) => old + 1);
+                var key = (deviceId, kind);
+                if (alertCounts.ContainsKey(key)
+                    && hasUnreadNotifications.TryGetValue(key, out var previouslyHadUnread)
+                    && previouslyHadUnread)
+                {
+                    var stillHasUnread = await db.Notifications
+                        .AsNoTracking()
+                        .AnyAsync(n => n.DeviceId == deviceId
+                                    && n.Type == kind
+                                    && n.IsRead == false);
+
+                    if (!stillHasUnread)
+                    {
+                        alertCounts[key] = 0;
+                        hasUnreadNotifications[key] = false;
+                    }
+                }
+
+                if (!alertCounts.ContainsKey(key))
+                {
+                    var persistedCount = await db.Notifications
+                        .AsNoTracking()
+                        .Where(n => n.DeviceId == deviceId
+                                 && n.Type == kind
+                                 && n.IsRead == false)
+                        .Select(n => (int?)n.AlertCount)
+                        .MaxAsync() ?? 0;
+
+                    alertCounts.TryAdd(key, persistedCount);
+                    hasUnreadNotifications.TryAdd(key, persistedCount > 0);
+                }
+
+                counts[kind] = alertCounts.AddOrUpdate(key, 1, (key, old) => old + 1);
             }
 
             return (activeKinds, counts);
         }
 
-        private async Task<int> NotifyUsers(DatabaseContext db, int deviceId, string mac, SensorPayload sensor, string kind)
+        private async Task<(int count, List<int> userIds)> NotifyUsers(
+            DatabaseContext db,
+            int deviceId,
+            string mac,
+            SensorPayload sensor,
+            string kind)
         {
             var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, byte>());
 
@@ -332,7 +384,7 @@ namespace IoT_system.Services.Mqtt
             // User chưa được xử lý trong đợt này.
             // Khi mọi người đã được xử lý -> rỗng -> return, không đụng DB thêm.
             var pending = userIds.Where(id => !handledUsers.ContainsKey(id)).ToList();
-            if (pending.Count == 0) return 0;
+            if (pending.Count == 0) return (0, new List<int>());
 
             // Check chưa đọc THEO TỪNG USER (không chỉ theo thiết bị)
             var hasUnreadUserIds = await db.Notifications
@@ -346,6 +398,10 @@ namespace IoT_system.Services.Mqtt
                 .ToListAsync();
 
             var targets = pending.Except(hasUnreadUserIds).ToList();
+            if (targets.Count > 0 || hasUnreadUserIds.Count > 0)
+            {
+                hasUnreadNotifications[(deviceId, kind)] = true;
+            }
 
             // Đưa lên trước if vì email cũng cần dùng
             var message = BuildMessage(kind, sensor);
@@ -356,19 +412,36 @@ namespace IoT_system.Services.Mqtt
                 foreach (var userId in targets)
                 {
                     await db.Database.ExecuteSqlRawAsync(
-                        "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5})",
-                        deviceId, userId, message, kind, false, now);
+                        "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt, AlertCount) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+                        deviceId, userId, message, kind, false, now, 1);
                 }
 
-                await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
+                // Lấy Id của các dòng vừa insert (targets chưa có dòng chưa đọc nào của loại này nên mỗi user chỉ có đúng 1 dòng)
+                var newRows = await db.Notifications
+                    .AsNoTracking()
+                    .Where(n => n.DeviceId == deviceId
+                             && n.Type == kind
+                             && n.IsRead == false
+                             && targets.Contains(n.UserId))
+                    .Select(n => new { n.Id, n.UserId })
+                    .ToListAsync();
+
+                // Gửi RIÊNG cho từng user kèm Id dòng thông báo của user đó,
+                // để FE gắn đúng số đếm (NotificationCounts) vào đúng dòng. UserIds vẫn giữ để FE lọc người nhận như cũ.
+                foreach (var row in newRows)
                 {
-                    Mac = mac,
-                    DeviceId = deviceId,
-                    Message = message,
-                    Type = kind,
-                    CreatedAt = now,
-                    UserIds = targets   // frontend dùng để lọc đúng người nhận
-                });
+                    await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
+                    {
+                        Id = row.Id,
+                        Mac = mac,
+                        DeviceId = deviceId,
+                        Message = message,
+                        Type = kind,
+                        CreatedAt = now,
+                        AlertCount = 1,
+                        UserIds = new List<int> { row.UserId }
+                    });
+                }
             }
 
             // Email gửi cho TẤT CẢ user chưa được xử lý trong đợt này (không phụ thuộc đã đọc hay chưa)
@@ -380,26 +453,66 @@ namespace IoT_system.Services.Mqtt
                 handledUsers.TryAdd(id, 0);
             }
 
-            return targets.Count;
+            return (targets.Count, targets);
         }
 
-        // update thông báo từng lần esp push lên
-        private async Task SaveAlertCounts(DatabaseContext db, int deviceId, Dictionary<string, int> counts)
+        // Mỗi user tiếp tục đếm trên thông báo chưa đọc riêng; thông báo vừa tạo bắt đầu từ 1.
+        private async Task SaveAlertCounts(
+            DatabaseContext db,
+            int deviceId,
+            Dictionary<string, List<int>> newNotificationUserIds)
         {
-            foreach (var item in counts)
+            foreach (var item in newNotificationUserIds)
             {
                 string kind = item.Key;
-                int count = item.Value;
+                var usersWithNewNotifications = item.Value;
 
-                // Chỉ cập nhật thông báo CHƯA ĐỌC, chỉ tăng không giảm
-                await db.Notifications
+                var latestUnreadNotificationIds = await db.Notifications
                     .Where(n => n.DeviceId == deviceId
                              && n.Type == kind
-                             && n.IsRead == false
-                             && n.AlertCount < count)
-                    .ExecuteUpdateAsync(s => s.SetProperty(n => n.AlertCount, count));
+                             && !n.IsRead
+                             && !usersWithNewNotifications.Contains(n.UserId))
+                    .GroupBy(n => n.UserId)
+                    .Select(group => group.Max(n => n.Id))
+                    .ToListAsync();
+
+                if (latestUnreadNotificationIds.Count == 0) continue;
+
+                await db.Notifications
+                    .Where(n => latestUnreadNotificationIds.Contains(n.Id))
+                    .ExecuteUpdateAsync(s => s.SetProperty(n => n.AlertCount, n => n.AlertCount + 1));
             }
         }
+
+        // Số lần cảnh báo hiện tại của TỪNG dòng thông báo chưa đọc (Key = Notification.Id, Value = AlertCount).
+        // Mỗi user có dòng riêng với số đếm riêng, FE chỉ lấy đúng dòng của mình theo Id.
+        private async Task<Dictionary<int, int>> GetUnreadAlertCounts(
+            DatabaseContext db,
+            int deviceId,
+            List<string> activeKinds)
+        {
+            var result = new Dictionary<int, int>();
+            if (activeKinds.Count == 0)
+            {
+                return result;
+            }
+
+            var rows = await db.Notifications
+                .AsNoTracking()
+                .Where(n => n.DeviceId == deviceId
+                         && n.IsRead == false
+                         && activeKinds.Contains(n.Type))
+                .Select(n => new { n.Id, n.AlertCount })
+                .ToListAsync();
+
+            foreach (var row in rows)
+            {
+                result[row.Id] = row.AlertCount;
+            }
+
+            return result;
+        }
+
         // Lấy email của các user vừa được insert thông báo, rồi bỏ từng thư vào hàng đợi
         private async Task EnqueueEmails(DatabaseContext db, List<int> userIds, string mac, string message, DateTime time)
         {

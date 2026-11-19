@@ -553,4 +553,11 @@ C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-sys
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.runtimeconfig.json
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.dll
 C:\Users\Admin\AppData\Local\Temp\iot-system-manager-dashboard-fix-build\IoT-system.pdb
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\appsettings.Development.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\appsettings.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\IoT-system.staticwebassets.endpoints.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\IoT-system.deps.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\IoT-system.runtimeconfig.json
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\IoT-system.dll
+C:\Users\Admin\AppData\Local\Temp\iot-system-build-check-e9860934\IoT-system.pdb
 D:\personal projects\iot-system-manager\iot-system-backend\IoT-system\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
