@@ -234,7 +234,8 @@ namespace IoT_system.Services.Accounts
             {
                 throw new BadHttpRequestException("Email is invalid");
             }
-            if (await dbContext.Accounts.AnyAsync(acc => acc.Email == accountRegisterDtos.Email))// check email unique
+            if (await dbContext.Accounts.AnyAsync(acc =>
+                    acc.Email == accountRegisterDtos.Email && acc.DeletedAt == null))// check email unique among active accounts
             {
                 throw new BadHttpRequestException("Email already exists");
             }
@@ -302,7 +303,8 @@ namespace IoT_system.Services.Accounts
 
             // ------- check tồn tại tk trước -------
             var account = await dbContext.Accounts.Include(a => a.Language) // load luôn language
-                                                  .FirstOrDefaultAsync(acc => acc.Email == accountLoginDtos.Email);
+                                                  .FirstOrDefaultAsync(acc =>
+                                                      acc.Email == accountLoginDtos.Email && acc.DeletedAt == null);
             if (account == null)
             {
                 throw new BadHttpRequestException("Email or password is incorrect");

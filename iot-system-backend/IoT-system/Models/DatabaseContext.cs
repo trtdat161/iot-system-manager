@@ -33,7 +33,9 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.Email, "IX_Account").IsUnique();
+            entity.HasIndex(e => e.Email, "IX_Account")
+                .IsUnique()
+                .HasFilter("[DeletedAt] IS NULL");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
