@@ -50,13 +50,24 @@ namespace IoT_system.Services.Mqtt
          * Có key  => đợt đang diễn ra (sensor vẫn vượt ngưỡng)
          * Mất key => sensor đã về bình thường, lần vượt ngưỡng sau là đợt mới
          * Dùng ConcurrentDictionary vì service này là singleton. */
-        private readonly ConcurrentDictionary<(int DeviceId, string Kind), ConcurrentDictionary<int, byte>> incidents = new();
+        private readonly ConcurrentDictionary<(int DeviceId, string Kind), ConcurrentDictionary<int, DateTime>> incidents = new();
+
         /* Số lần cảnh báo theo thiết bị và loại, tiếp tục khi còn thông báo chưa đọc.
          * LƯU Ý: đây là bộ đếm cấp THIẾT BỊ (chung cho cả nhà) -> chỉ dùng cho admin và để biết "loại này đang active".
          * Số hiển thị cho từng user lấy từ cột Notification.AlertCount của chính dòng thông báo của user đó. */
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), int> alertCounts = new();
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), bool> hasUnreadNotifications = new();
         private const int DeviceOnlineWindowSeconds = 30;
+
+        private static readonly Dictionary<string, TimeSpan> ReminderIntervals = new Dictionary<string, TimeSpan>
+        {
+            { "gas_danger", TimeSpan.FromMinutes(2) },
+            { "gas", TimeSpan.FromMinutes(5) },
+            { "temp_high", TimeSpan.FromMinutes(15) },
+            { "humid_low", TimeSpan.FromMinutes(15) },
+            { "humid_high", TimeSpan.FromMinutes(15) }
+        };
+        private static readonly TimeSpan DefaultReminderInterval = TimeSpan.FromMinutes(15);
 
         public IotMqttIngestService(
             IServiceScopeFactory _scopeFactory,
@@ -367,13 +378,15 @@ namespace IoT_system.Services.Mqtt
         }
 
         private async Task<(int count, List<int> userIds)> NotifyUsers(
-            DatabaseContext db,
-            int deviceId,
-            string mac,
-            SensorPayload sensor,
-            string kind)
+    DatabaseContext db,
+    int deviceId,
+    string mac,
+    SensorPayload sensor,
+    string kind)
         {
-            var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, byte>());
+            var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, DateTime>()); // ĐỔI: kiểu value
+            var now = TimeHelper.VnNow(); // ĐỔI: đưa lên đầu hàm để so với chu kỳ, dùng chung 1 mốc để HistoryDetail gom đúng người nhận
+            var reminderInterval = GetReminderInterval(kind); // ĐỔI
 
             var userIds = await db.Accounts
                 .AsNoTracking()
@@ -381,9 +394,8 @@ namespace IoT_system.Services.Mqtt
                 .Select(a => a.Id)
                 .ToListAsync();
 
-            // User chưa được xử lý trong đợt này.
-            // Khi mọi người đã được xử lý -> rỗng -> return, không đụng DB thêm.
-            var pending = userIds.Where(id => !handledUsers.ContainsKey(id)).ToList();
+            // ĐỔI: user chưa được báo, hoặc đã tới hạn báo lại
+            var pending = userIds.Where(id => NeedsAlert(handledUsers, id, now, reminderInterval)).ToList();
             if (pending.Count == 0) return (0, new List<int>());
 
             // Check chưa đọc THEO TỪNG USER (không chỉ theo thiết bị)
@@ -403,9 +415,7 @@ namespace IoT_system.Services.Mqtt
                 hasUnreadNotifications[(deviceId, kind)] = true;
             }
 
-            // Đưa lên trước if vì email cũng cần dùng
             var message = BuildMessage(kind, sensor);
-            var now = TimeHelper.VnNow(); // dùng chung 1 mốc để HistoryDetail gom đúng người nhận
 
             if (targets.Count > 0)
             {
@@ -416,7 +426,6 @@ namespace IoT_system.Services.Mqtt
                         deviceId, userId, message, kind, false, now, 1);
                 }
 
-                // Lấy Id của các dòng vừa insert (targets chưa có dòng chưa đọc nào của loại này nên mỗi user chỉ có đúng 1 dòng)
                 var newRows = await db.Notifications
                     .AsNoTracking()
                     .Where(n => n.DeviceId == deviceId
@@ -426,8 +435,6 @@ namespace IoT_system.Services.Mqtt
                     .Select(n => new { n.Id, n.UserId })
                     .ToListAsync();
 
-                // Gửi RIÊNG cho từng user kèm Id dòng thông báo của user đó,
-                // để FE gắn đúng số đếm (NotificationCounts) vào đúng dòng. UserIds vẫn giữ để FE lọc người nhận như cũ.
                 foreach (var row in newRows)
                 {
                     await hubContext.Clients.Group(mac).SendAsync("ReceiveAlert", new
@@ -444,16 +451,43 @@ namespace IoT_system.Services.Mqtt
                 }
             }
 
-            // Email gửi cho TẤT CẢ user chưa được xử lý trong đợt này (không phụ thuộc đã đọc hay chưa)
+            // Email: giữ nguyên, gửi cho TẤT CẢ user trong pending
             await EnqueueEmails(db, pending, mac, message, now);
 
-            // Đánh dấu SAU khi insert thành công. Nếu insert lỗi thì tin kế tiếp sẽ thử lại.
+            // ĐỔI: ghi lại thời điểm báo (trước đây là TryAdd(id, 0))
             foreach (var id in pending)
             {
-                handledUsers.TryAdd(id, 0);
+                handledUsers[id] = now;
             }
 
             return (targets.Count, targets);
+        }
+
+        private static TimeSpan GetReminderInterval(string kind)
+        {
+            TimeSpan interval;
+            if (ReminderIntervals.TryGetValue(kind, out interval))
+            {
+                return interval;
+            }
+
+            return DefaultReminderInterval;
+        }
+
+        // Cần báo khi: user chưa được báo trong đợt này, hoặc lần báo gần nhất đã quá chu kỳ
+        private static bool NeedsAlert(
+            ConcurrentDictionary<int, DateTime> handledUsers,
+            int userId,
+            DateTime now,
+            TimeSpan reminderInterval)
+        {
+            DateTime lastAlertedAt;
+            if (!handledUsers.TryGetValue(userId, out lastAlertedAt))
+            {
+                return true;
+            }
+
+            return now - lastAlertedAt >= reminderInterval;
         }
 
         // Mỗi user tiếp tục đếm trên thông báo chưa đọc riêng; thông báo vừa tạo bắt đầu từ 1.
