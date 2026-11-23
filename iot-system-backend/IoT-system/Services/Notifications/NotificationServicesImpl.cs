@@ -2,6 +2,7 @@
 using IoT_system.DTOS.Accounts;
 using IoT_system.DTOS.Common;
 using IoT_system.DTOS.Notification;
+using IoT_system.Helper;
 using IoT_system.Helpers;
 using IoT_system.Models;
 using Microsoft.EntityFrameworkCore;
@@ -192,6 +193,7 @@ namespace IoT_system.Services.Notifications
             }
 
             notification.IsRead = true;// khi ng dùng ấn xác nhận thì là true, device ko spam nữa
+            notification.ReadAt = TimeHelper.VnNow();
             await dbContext.SaveChangesAsync();
             return mapper.Map<NotificationIsreadResponseDtos>(notification);
 
