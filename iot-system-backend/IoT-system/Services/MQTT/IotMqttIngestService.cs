@@ -55,17 +55,20 @@ namespace IoT_system.Services.Mqtt
         /* Số lần cảnh báo theo thiết bị và loại, tiếp tục khi còn thông báo chưa đọc.
          * LƯU Ý: đây là bộ đếm cấp THIẾT BỊ (chung cho cả nhà) -> chỉ dùng cho admin và để biết "loại này đang active".
          * Số hiển thị cho từng user lấy từ cột Notification.AlertCount của chính dòng thông báo của user đó. */
+        private const int AlertCountIntervalSeconds = 30;
+        private readonly ConcurrentDictionary<(int DeviceId, string Kind), DateTime> lastCountedAt = new();
+
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), int> alertCounts = new();
         private readonly ConcurrentDictionary<(int DeviceId, string Kind), bool> hasUnreadNotifications = new();
         private const int DeviceOnlineWindowSeconds = 30;
 
         private static readonly Dictionary<string, TimeSpan> ReminderIntervals = new Dictionary<string, TimeSpan>
         {
-            { "gas_danger", TimeSpan.FromMinutes(2) },
-            { "gas", TimeSpan.FromMinutes(5) },
-            { "temp_high", TimeSpan.FromMinutes(15) },
-            { "humid_low", TimeSpan.FromMinutes(15) },
-            { "humid_high", TimeSpan.FromMinutes(15) }
+            { "gas_danger", TimeSpan.FromMinutes(1) },
+            { "gas", TimeSpan.FromMinutes(1) },
+            { "temp_high", TimeSpan.FromMinutes(1) },
+            { "humid_low", TimeSpan.FromMinutes(1) },
+            { "humid_high", TimeSpan.FromMinutes(1) }
         };
         private static readonly TimeSpan DefaultReminderInterval = TimeSpan.FromMinutes(15);
 
@@ -262,7 +265,7 @@ namespace IoT_system.Services.Mqtt
                 newNotificationUserIds[kind] = notificationResult.userIds;
             }
 
-            await SaveAlertCounts(db, device.Id, newNotificationUserIds);
+            await SaveAlertCounts(db, device.Id, newNotificationUserIds, result.countedKinds);
 
             // ============ 2. LUÔN BẮN TRẠNG THÁI HIỆN TẠI - MỖI LẦN ESP GỬI LÊN ============
             // Gửi SAU khi insert + cộng AlertCount xong để NotificationCounts là số mới nhất của từng dòng thông báo.
@@ -311,12 +314,14 @@ namespace IoT_system.Services.Mqtt
                 "ReceiveDeviceStatus",
                 new { MacAddress = mac });
 
-        private async Task<(List<string> activeKinds, Dictionary<string, int> counts)> UpdateIncidents(
-            DatabaseContext db,
-            int deviceId,
-            SensorPayload sensor)
+        private async Task<(List<string> activeKinds, Dictionary<string, int> counts, List<string> countedKinds)> UpdateIncidents(
+    DatabaseContext db,
+    int deviceId,
+    SensorPayload sensor)
         {
+            var now = TimeHelper.VnNow(); // MỚI
             var activeKinds = new List<string>();
+            var countedKinds = new List<string>(); // MỚI: các loại được cộng số đếm ở lượt này
 
             string? gasType = sensor.Type;
             bool gasAlert = sensor.Alert && gasType != null && GasKinds.Contains(gasType);
@@ -334,6 +339,7 @@ namespace IoT_system.Services.Mqtt
                 incidents.TryRemove((deviceId, kind), out _);
                 alertCounts.TryRemove((deviceId, kind), out _);
                 hasUnreadNotifications.TryRemove((deviceId, kind), out _);
+                lastCountedAt.TryRemove((deviceId, kind), out _); // MỚI
             }
 
             var counts = new Dictionary<string, int>();
@@ -371,10 +377,21 @@ namespace IoT_system.Services.Mqtt
                     hasUnreadNotifications.TryAdd(key, persistedCount > 0);
                 }
 
-                counts[kind] = alertCounts.AddOrUpdate(key, 1, (key, old) => old + 1);
+                // MỚI: chỉ cộng khi tới nhịp, chưa tới thì giữ nguyên số hiện tại
+                if (ShouldCount(key, now))
+                {
+                    counts[kind] = alertCounts.AddOrUpdate(key, 1, (key, old) => old + 1);
+                    countedKinds.Add(kind);
+                }
+                else
+                {
+                    int currentCount;
+                    alertCounts.TryGetValue(key, out currentCount);
+                    counts[kind] = currentCount > 0 ? currentCount : 1; // đang active thì tối thiểu là 1
+                }
             }
 
-            return (activeKinds, counts);
+            return (activeKinds, counts, countedKinds); // MỚI: thêm countedKinds
         }
 
         private async Task<(int count, List<int> userIds)> NotifyUsers(
@@ -384,9 +401,9 @@ namespace IoT_system.Services.Mqtt
     SensorPayload sensor,
     string kind)
         {
-            var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, DateTime>()); // ĐỔI: kiểu value
-            var now = TimeHelper.VnNow(); // ĐỔI: đưa lên đầu hàm để so với chu kỳ, dùng chung 1 mốc để HistoryDetail gom đúng người nhận
-            var reminderInterval = GetReminderInterval(kind); // ĐỔI
+            var handledUsers = incidents.GetOrAdd((deviceId, kind), _ => new ConcurrentDictionary<int, DateTime>());
+            var now = TimeHelper.VnNow(); // dùng chung 1 mốc để HistoryDetail gom đúng người nhận
+            var reminderInterval = GetReminderInterval(kind);
 
             var userIds = await db.Accounts
                 .AsNoTracking()
@@ -394,9 +411,40 @@ namespace IoT_system.Services.Mqtt
                 .Select(a => a.Id)
                 .ToListAsync();
 
-            // ĐỔI: user chưa được báo, hoặc đã tới hạn báo lại
+            // Bước 1 (chỉ dùng RAM): user chưa được báo, hoặc đã quá chu kỳ kể từ mốc gần nhất
             var pending = userIds.Where(id => NeedsAlert(handledUsers, id, now, reminderInterval)).ToList();
             if (pending.Count == 0) return (0, new List<int>());
+
+            // Bước 2 (chạy DB, chỉ khi tới hạn nhắc): user nào vừa bấm đã đọc trong vòng 1 chu kỳ
+            // thì hoãn, và chu kỳ mới tính từ lúc bấm. Chỉ áp dụng cho user đã được báo trong đợt này,
+            // user mới của đợt vẫn được báo ngay.
+            var reminderUserIds = pending.Where(id => handledUsers.ContainsKey(id)).ToList();
+            if (reminderUserIds.Count > 0)
+            {
+                var readSince = now - reminderInterval;
+
+                var recentReads = await db.Notifications
+                    .AsNoTracking()
+                    .Where(n => n.DeviceId == deviceId
+                             && n.Type == kind
+                             && n.ReadAt != null
+                             && n.ReadAt > readSince
+                             && reminderUserIds.Contains(n.UserId))
+                    .GroupBy(n => n.UserId)
+                    .Select(group => new { UserId = group.Key, LastReadAt = group.Max(n => n.ReadAt) })
+                    .ToListAsync();
+
+                foreach (var read in recentReads)
+                {
+                    if (read.LastReadAt.HasValue)
+                    {
+                        handledUsers[read.UserId] = read.LastReadAt.Value; // dời mốc sang lúc bấm
+                        pending.Remove(read.UserId);
+                    }
+                }
+
+                if (pending.Count == 0) return (0, new List<int>());
+            }
 
             // Check chưa đọc THEO TỪNG USER (không chỉ theo thiết bị)
             var hasUnreadUserIds = await db.Notifications
@@ -451,10 +499,13 @@ namespace IoT_system.Services.Mqtt
                 }
             }
 
-            // Email: giữ nguyên, gửi cho TẤT CẢ user trong pending
+            // Email: gửi cho TẤT CẢ user còn lại trong pending
             await EnqueueEmails(db, pending, mac, message, now);
 
-            // ĐỔI: ghi lại thời điểm báo (trước đây là TryAdd(id, 0))
+            // MỚI: vừa gửi thông báo/email nên lần cộng số đếm kế tiếp phải cách đây đủ AlertCountIntervalSeconds
+            lastCountedAt[(deviceId, kind)] = now;
+
+            // Ghi lại thời điểm báo
             foreach (var id in pending)
             {
                 handledUsers[id] = now;
@@ -490,16 +541,40 @@ namespace IoT_system.Services.Mqtt
             return now - lastAlertedAt >= reminderInterval;
         }
 
+        private bool ShouldCount((int DeviceId, string Kind) key, DateTime now)
+        {
+            DateTime lastCounted;
+            if (!lastCountedAt.TryGetValue(key, out lastCounted))
+            {
+                lastCountedAt[key] = now;
+                return true;
+            }
+
+            if ((now - lastCounted).TotalSeconds >= AlertCountIntervalSeconds)
+            {
+                lastCountedAt[key] = now;
+                return true;
+            }
+
+            return false;
+        }
+
         // Mỗi user tiếp tục đếm trên thông báo chưa đọc riêng; thông báo vừa tạo bắt đầu từ 1.
+        // Mỗi user tiếp tục đếm trên thông báo chưa đọc riêng; thông báo vừa tạo bắt đầu từ 1.
+        // Chỉ cộng cho các loại nằm trong countedKinds (đã tới nhịp AlertCountIntervalSeconds).
         private async Task SaveAlertCounts(
             DatabaseContext db,
             int deviceId,
-            Dictionary<string, List<int>> newNotificationUserIds)
+            Dictionary<string, List<int>> newNotificationUserIds,
+            List<string> countedKinds)
         {
             foreach (var item in newNotificationUserIds)
             {
                 string kind = item.Key;
                 var usersWithNewNotifications = item.Value;
+
+                // MỚI: chưa tới nhịp đếm thì bỏ qua loại này
+                if (!countedKinds.Contains(kind)) continue;
 
                 var latestUnreadNotificationIds = await db.Notifications
                     .Where(n => n.DeviceId == deviceId
