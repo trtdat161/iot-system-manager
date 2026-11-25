@@ -36,7 +36,7 @@ builder.Services.AddCors(options =>
 });
 
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
-builder.Services.AddDbContext<DatabaseContext>(option => option.UseLazyLoadingProxies().UseSqlServer(connectionString));
+builder.Services.AddDbContext<DatabaseContext>(option => option.UseLazyLoadingProxies().UseNpgsql(connectionString));
 
 // khai báo web api để sau dùng các services
 builder.Services.AddControllers();

@@ -6,10 +6,6 @@ namespace IoT_system.Models;
 
 public partial class DatabaseContext : DbContext
 {
-    public DatabaseContext()
-    {
-    }
-
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
     {
@@ -23,44 +19,29 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DAT-CODE;Database=IoTSystem;Trusted_Connection=True;TrustServerCertificate=True");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.Email, "IX_Account")
-                .IsUnique()
-                .HasFilter("[DeletedAt] IS NULL");
-
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Email)
-                .HasMaxLength(250)
-                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DeletedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.Email).HasMaxLength(250);
             entity.Property(e => e.Fullname).HasMaxLength(250);
-            entity.Property(e => e.LanguageId).HasDefaultValue(1, "DF_Account_LanguageId");
+            entity.Property(e => e.LanguageId).HasDefaultValue(1);
             entity.Property(e => e.Note).HasMaxLength(250);
-            entity.Property(e => e.Password)
-                .HasMaxLength(250)
-                .IsUnicode(false);
+            entity.Property(e => e.Password).HasMaxLength(250);
             entity.Property(e => e.RefreshToken).HasMaxLength(200);
+            entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("timestamp without time zone");
             entity.Property(e => e.ResetToken)
                 .HasMaxLength(255)
-                .IsUnicode(false)
                 .HasColumnName("reset_token");
             entity.Property(e => e.ResetTokenExpires)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("reset_token_expires");
-            entity.Property(e => e.Role)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasDefaultValueSql("(user_name())", "DF_Account_Role");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Role).HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Device).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.DeviceId)
@@ -80,21 +61,18 @@ public partial class DatabaseContext : DbContext
 
             entity.HasIndex(e => e.MacAddress, "UQ_Device_MacAddress").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.LastSeenAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.MacAddress).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(250);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
         });
 
         modelBuilder.Entity<Language>(entity =>
         {
             entity.ToTable("Language");
 
-            entity.HasIndex(e => e.Code, "IX_Language").IsUnique();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.Code).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
@@ -102,12 +80,11 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("Notification");
 
-            entity.Property(e => e.AlertCount).HasDefaultValue(1, "DF_Notification_AlertCount"); // <-- THÊM
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.AlertCount).HasDefaultValue(1);
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp without time zone");
             entity.Property(e => e.Message).HasMaxLength(255);
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.ReadAt).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.Type).HasMaxLength(50);
 
             entity.HasOne(d => d.Device).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.DeviceId)

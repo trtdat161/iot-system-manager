@@ -21,8 +21,6 @@ public partial class Account
 
     public int? DeviceId { get; set; }
 
-    public int? LastDeviceId { get; set; } // để sau khi disconnect còn biết thiết bị liên kết user nào 
-
     public int LanguageId { get; set; }
 
     public DateTime CreatedAt { get; set; }
@@ -38,6 +36,8 @@ public partial class Account
     public string? RefreshToken { get; set; }
 
     public DateTime? RefreshTokenExpiryTime { get; set; }
+
+    public int? LastDeviceId { get; set; }
 
     public virtual Device? Device { get; set; }
 

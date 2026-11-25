@@ -5,6 +5,8 @@ namespace IoT_system.Models;
 
 public partial class Notification
 {
+    public int Id { get; set; }
+
     public int DeviceId { get; set; }
 
     public int UserId { get; set; }
@@ -15,13 +17,11 @@ public partial class Notification
 
     public bool IsRead { get; set; }
 
-    public DateTime? ReadAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public int AlertCount { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public int Id { get; set; }
+    public DateTime? ReadAt { get; set; }
 
     public virtual Device Device { get; set; } = null!;
 
