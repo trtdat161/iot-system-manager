@@ -18,7 +18,10 @@ export function useDeviceSignalR(mac, handlers = {}) {
     const normalizedMac = mac.trim().toUpperCase();
 
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5239/hubs/notification")
+      .withUrl(
+        import.meta.env.VITE_BASE_URL.replace(/\/api\/?$/, "") +
+          "/hubs/notification",
+      )
       .withAutomaticReconnect()
       .build();
 

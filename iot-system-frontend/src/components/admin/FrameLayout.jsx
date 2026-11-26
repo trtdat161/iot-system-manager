@@ -53,7 +53,10 @@ export function FrameLayout() {
   useEffect(() => {
     let cancelled = false;
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5239/hubs/notification")
+      .withUrl(
+        import.meta.env.VITE_BASE_URL.replace(/\/api\/?$/, "") +
+          "/hubs/notification",
+      )
       .withAutomaticReconnect()
       .build();
 
@@ -104,7 +107,14 @@ export function FrameLayout() {
       if (isLoading) return;
       isLoading = true;
       try {
-        const response = await SearchAndFilterHistory(1, 1, "", "", "false", "");
+        const response = await SearchAndFilterHistory(
+          1,
+          1,
+          "",
+          "",
+          "false",
+          "",
+        );
         if (isMounted) {
           setUnreadCount(response.data.totalItems ?? 0);
         }
