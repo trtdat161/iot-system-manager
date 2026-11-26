@@ -27,7 +27,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactApp", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173" // dev FE
+                "http://localhost:5173", // dev FE
+                "https://iot-system-manager.vercel.app" // FE trên Vercel
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
