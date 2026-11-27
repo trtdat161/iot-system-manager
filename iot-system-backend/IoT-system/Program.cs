@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
+// Cho phép Npgsql ghi DateTime.UtcNow vào cột "timestamp without time zone"
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 /* ======================================== BUILDER ==================================== */
 var builder = WebApplication.CreateBuilder(args);
 
