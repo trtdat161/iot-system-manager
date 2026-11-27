@@ -415,8 +415,19 @@ body:has(.auth-page) #root {
     font-size: 0.85rem;
   }
   .btn-submit {
+    min-height: 44px;
     padding: 0.8rem 1.2rem;
     font-size: 0.9rem;
+  }
+  .auth-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 4px 2px;
+  }
+  .login-password-label .auth-link {
+    min-height: 40px;
+    padding: 4px 2px;
   }
 }
 

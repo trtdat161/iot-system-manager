@@ -993,7 +993,8 @@ body:has(.landing-page) #root {
   }
 
   .landing-nav .lang-switcher button {
-    padding: 5px 6px;
+    min-height: 44px;
+    padding: 7px 8px;
   }
 
   .landing-hero {
@@ -1285,7 +1286,7 @@ body:has(.landing-page) #root {
 
   .landing-dock-login,
   .landing-dock-register {
-    min-height: 43px;
+    min-height: 46px;
     display: flex;
     justify-content: center;
     align-items: center;

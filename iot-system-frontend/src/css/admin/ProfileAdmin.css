@@ -345,6 +345,23 @@
     width: 100%;
   }
 }
+
+@media (max-width: 767px) {
+  .admin-profile .profile-edit-button {
+    min-height: 44px;
+    height: auto;
+  }
+
+  .admin-profile .profile-password-toggle {
+    width: 44px;
+    height: 44px;
+    right: 4px;
+  }
+
+  .admin-profile .profile-password-control input {
+    padding-right: 54px;
+  }
+}
 /* disable button */
 .profile-edit-button:disabled {
   opacity: 0.4;

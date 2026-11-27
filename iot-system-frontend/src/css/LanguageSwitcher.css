@@ -21,6 +21,12 @@
     transform 0.18s ease;
 }
 
+@media (max-width: 767px) {
+  .lang-switcher button {
+    min-height: 44px;
+  }
+}
+
 .lang-switcher button:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.24);

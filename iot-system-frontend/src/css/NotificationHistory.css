@@ -1065,6 +1065,26 @@
   .btn-search,
   .btn-reset {
     flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  .notification-date-trigger {
+    min-height: 44px;
+  }
+
+  .notification-calendar-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .notification-calendar-day {
+    min-height: 36px;
+  }
+
+  .notification-calendar-action,
+  .notification-detail-button,
+  .notification-mark-read-button {
+    min-height: 44px;
   }
 }
 
@@ -1167,8 +1187,21 @@
 
   .btn-search,
   .btn-reset {
-    padding: 6px 10px;
+    box-sizing: border-box;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .notification-detail-button,
+  .notification-mark-read-button {
+    padding: 8px 12px;
     font-size: 12px;
+  }
+
+  .notification-calendar-day {
+    min-height: 38px;
   }
 }
 

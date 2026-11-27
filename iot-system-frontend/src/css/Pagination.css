@@ -74,7 +74,7 @@
 
 @media (max-width: 480px) {
   .pagination-controls { gap: 0.3rem; }
-  .pagination-controls .pagination-arrow { width: 2rem; height: 2rem; }
+  .pagination-controls .pagination-arrow { width: 2.5rem; height: 2.5rem; }
   .pagination-pages { gap: 0.2rem; }
-  .pagination-page { flex-basis: 2rem; width: 2rem; height: 2rem; }
+  .pagination-page { flex-basis: 2.5rem; width: 2.5rem; height: 2.5rem; }
 }

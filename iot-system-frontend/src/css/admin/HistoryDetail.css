@@ -319,6 +319,10 @@
     align-items: flex-start;
   }
 
+  .history-detail-back-btn {
+    min-height: 44px;
+  }
+
   .history-detail-card {
     padding: 16px;
   }
@@ -337,6 +341,7 @@
 
   .history-detail-back-btn {
     width: 100%;
+    min-height: 44px;
     justify-content: center;
   }
 }

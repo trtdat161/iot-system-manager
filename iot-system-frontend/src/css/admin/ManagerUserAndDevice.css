@@ -504,6 +504,16 @@
     .btn-reset {
         flex: 1 1 0;
         width: auto;
+        min-height: 44px;
+    }
+
+    .status-filter-trigger,
+    .status-filter-option {
+        min-height: 44px;
+    }
+
+    .sure-delete-actions .btn {
+        min-height: 44px;
     }
 
     .sure-delete {
@@ -534,6 +544,18 @@
     .search-group {
         box-sizing: border-box;
         min-width: 0;
+    }
+
+    .status-filter-trigger,
+    .status-filter-option {
+        min-height: 44px;
+    }
+
+    .table-wrapper-fixed .table .btn {
+        box-sizing: border-box;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px 10px;
     }
 }
 

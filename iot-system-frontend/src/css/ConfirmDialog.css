@@ -54,7 +54,7 @@
 
 .confirm-dialog-actions button {
   min-width: 110px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -87,5 +87,6 @@
 
   .confirm-dialog-actions button {
     width: 100%;
+    min-height: 44px;
   }
 }

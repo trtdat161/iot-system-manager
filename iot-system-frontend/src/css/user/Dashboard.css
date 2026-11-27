@@ -434,6 +434,12 @@
   background: rgba(114, 240, 206, 0.18);
 }
 
+@media (max-width: 767px) {
+  .alerts-history-button {
+    min-height: 44px;
+  }
+}
+
 .alerts-error,
 .alerts-empty {
   margin: 0;

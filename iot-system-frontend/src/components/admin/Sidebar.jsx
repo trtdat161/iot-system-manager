@@ -131,6 +131,7 @@ export function Sidebar({ collapsed, setCollapsed, unreadCount = 0 }) {
           )}
           <button
             type="button"
+            className="admin-sidebar-toggle"
             aria-label="Toggle navigation menu"
             onClick={() => setCollapsed(!collapsed)}
             style={{

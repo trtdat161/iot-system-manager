@@ -502,6 +502,10 @@
   .lock-button-group {
     flex-direction: column;
   }
+  .lock-btn,
+  .lock-modal-btn {
+    min-height: 44px;
+  }
   .lock-modal-content {
     margin: 1rem;
     max-width: 90%;

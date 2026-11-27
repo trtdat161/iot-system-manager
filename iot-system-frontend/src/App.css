@@ -274,9 +274,17 @@ body:has(.app-page-frame) .admin-app-header {
 
   .admin-app-header nav a {
     max-width: 100%;
+    min-height: 44px;
     padding: 6px 8px !important;
     font-size: 0.76rem !important;
     overflow-wrap: anywhere;
+  }
+
+  .admin-app-header > .admin-app-header-nav > a {
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -301,6 +309,20 @@ body:has(.app-page-frame) .admin-app-header {
     min-height: 100dvh !important;
     z-index: 1030 !important;
     overflow-y: auto;
+  }
+
+  .admin-sidebar-toggle {
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0 !important;
+    flex: 0 0 44px;
+  }
+
+  .admin-sidebar nav > button,
+  .admin-sidebar > div:last-child button {
+    min-height: 44px;
   }
 
   .admin-sidebar:not(.collapsed) {

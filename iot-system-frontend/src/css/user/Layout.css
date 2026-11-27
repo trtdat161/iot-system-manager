@@ -464,6 +464,21 @@
 }
 
 @media (max-width: 767px) {
+    .user-sidebar-toggle {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .user-sidebar-link,
+    .user-sidebar.collapsed .user-sidebar-link,
+    .user-sidebar-logout,
+    .user-sidebar.collapsed .user-sidebar-logout {
+        min-height: 44px;
+    }
+
     .user-frame {
         margin-left: 44px !important;
         padding: 12px !important;
@@ -499,6 +514,11 @@
 
     .user-frame-breadcrumb {
         width: 100%;
+    }
+
+    .user-frame-crumb-link,
+    .user-home-btn {
+        min-height: 44px;
     }
 
     .user-frame-crumb-link {
