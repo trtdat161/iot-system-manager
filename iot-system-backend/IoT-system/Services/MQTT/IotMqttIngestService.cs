@@ -470,7 +470,7 @@ namespace IoT_system.Services.Mqtt
                 foreach (var userId in targets)
                 {
                     await db.Database.ExecuteSqlRawAsync(
-                        "INSERT INTO [Notification] (DeviceId, UserId, Message, Type, IsRead, CreatedAt, AlertCount) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+                        "INSERT INTO \"Notification\" (\"DeviceId\", \"UserId\", \"Message\", \"Type\", \"IsRead\", \"CreatedAt\", \"AlertCount\") VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6})",
                         deviceId, userId, message, kind, false, now, 1);
                 }
 
