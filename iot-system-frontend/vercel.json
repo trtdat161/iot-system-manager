@@ -4,6 +4,10 @@
       "source": "/api/:path*",
       "destination": "https://iot-system-api.onrender.com/api/:path*"
     },
+    {
+      "source": "/hubs/:path*",
+      "destination": "https://iot-system-api.onrender.com/hubs/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
